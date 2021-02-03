@@ -25,9 +25,7 @@ class datanogAPP(QtWidgets.QMainWindow):
 		QtWidgets.QMainWindow.__init__(self)
 		self.ui = uic.loadUi('main.ui',self)
 		self.resize(800, 480)
-        self.canvas = MplCanvas(self, width=5, height=4, dpi=100)
-		self.ui.gridLayout_4.addWidget(self.canvas, 2, 1, 1, 1)
-		self.reference_plot = None
+        
 		self.q = queue.Queue(maxsize=10000)
         dn = datanog.daq()
         self.pushButton.clicked.connect(self.pulldata)
@@ -40,8 +38,8 @@ class datanogAPP(QtWidgets.QMainWindow):
             if ti-tf>=dn.dt:
                 tf = ti
                 i+=1
-                data0.append(dn.pull())
-    
+                self.q.put(dn.pull())
+                    
         t1 = time.perf_counter()
         print(t1-t0)
 
