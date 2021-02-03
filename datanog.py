@@ -31,7 +31,8 @@ class daq:
         for device in range(128):
             try:
                 self.bus.read_byte(device)
-                self.devices.append(device)
+                if device == 0x6b or 0x6a:
+                    self.devices.append([device, 0x22, 12])
                 self.config(device)
                 print("Device Config: ", device)
 
@@ -52,7 +53,7 @@ class daq:
             
 
     def pull(self, _device):
-        return bus.read_i2c_block_data(self.bus_addr[-1],0x22,12)
+        return self.bus.read_i2c_block_data(_device[0],_device[1], _device[2])
 
 
 
