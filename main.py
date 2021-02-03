@@ -9,7 +9,8 @@ import numpy as np
 from PyQt5 import QtCore, QtWidgets,QtGui
 from PyQt5 import uic
 from PyQt5.QtCore import pyqtSlot
-import datanog 
+import datanog
+import time
 
 
 class MplCanvas(FigureCanvas):
