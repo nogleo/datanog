@@ -11,7 +11,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import pyqtSlot
 import datanog 
 
-
+dn = datanog.daq()
 
 class MplCanvas(FigureCanvas):
 	def __init__(self, parent=None, width=5, height=4, dpi=100):
@@ -25,6 +25,7 @@ class datanogAPP(QtWidgets.QMainWindow):
 		QtWidgets.QMainWindow.__init__(self)
 		self.ui = uic.loadUi('main.ui',self)
 		self.resize(800, 480)
+        self.comboBox.addItems(dn.devices)
 
 
 app = QtWidgets.QApplication(sys.argv)

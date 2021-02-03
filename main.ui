@@ -119,6 +119,16 @@
      <attribute name="title">
       <string>Tab 2</string>
      </attribute>
+     <widget class="QComboBox" name="comboBox">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>30</y>
+        <width>351</width>
+        <height>27</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
    </widget>
   </widget>
