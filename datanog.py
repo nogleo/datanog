@@ -53,7 +53,7 @@ class daq:
             
 
     def pull(self, _device):
-        return self.bus.read_i2c_block_data(_device[0],_device[1], _device[2])
+        return unpack('<hhhhhh', self.bus.read_i2c_block_data(_device[0],_device[1], _device[2]))
 
 
 

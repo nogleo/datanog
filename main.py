@@ -25,7 +25,7 @@ class datanogAPP(QtWidgets.QMainWindow):
 		QtWidgets.QMainWindow.__init__(self)
 		self.ui = uic.loadUi('main.ui',self)
 		self.resize(800, 480)
-        self.comboBox.addItems(dn.devices[:][0])
+        
 
 
 app = QtWidgets.QApplication(sys.argv)
