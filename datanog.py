@@ -15,7 +15,11 @@ import smbus
 class daq:
     def __init__(self):
         self.__name__ = "daq"
-        bus = smbus.SMBus(1)
+        try:
+            bus = smbus.SMBus(1)
+        except Exception as e:
+            pass
+
         devices = []
         self.fs = 3330
         self.dt = 1/self.fs
@@ -26,8 +30,8 @@ class daq:
             try:
                 bus.read_byte(device)
                 devices.append(device)
-                print(device)
                 self.config(device)
+                print("Device Config: ", device)
             except: # exception if read_byte fails
                 pass
 
@@ -43,6 +47,8 @@ class daq:
                 except Exception as e:
                     print("ERROR: ",e)
             
+
+
 
 
 
