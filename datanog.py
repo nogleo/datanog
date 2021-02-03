@@ -17,6 +17,7 @@ class daq:
         self.__name__ = "daq"
         try:
             self.bus = smbus.SMBus(1)
+            print("bus connected")
         except Exception as e:
             print("ERROR ", e)
 
@@ -34,8 +35,8 @@ class daq:
                 self.config(device)
                 print("Device Config: ", device)
 
-            except: # exception if read_byte fails
-                pass
+            except Exception as e:
+                print("ERROR ", e)
 
     def config(self, _device):
         if _device == 0x6a or 0x6b:
