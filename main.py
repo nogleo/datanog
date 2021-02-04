@@ -12,13 +12,13 @@ from PyQt5.QtCore import pyqtSlot
 import datanog
 import time
 
-
+dn = datanog.daq()
 class MplCanvas(FigureCanvas):
-	def __init__(self, parent=None, width=5, height=4, dpi=100):
-		fig = Figure(figsize=(width, height), dpi=dpi)
-		self.axes = fig.add_subplot(111)
-		super(MplCanvas, self).__init__(fig)
-		fig.tight_layout()
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+        super(MplCanvas, self).__init__(fig)
+        fig.tight_layout()
 
 class datanogAPP(QtWidgets.QMainWindow):
     def __init__(self):
@@ -26,7 +26,7 @@ class datanogAPP(QtWidgets.QMainWindow):
         self.ui = uic.loadUi('main.ui',self)
         self.resize(800, 480)
         self.q = queue.Queue(maxsize=10000)
-        dn = datanog.daq()
+        
         self.pushButton.clicked.connect(self.pulldata)
 
     def pulldata(self):
