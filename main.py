@@ -12,7 +12,7 @@ from PyQt5.QtCore import pyqtSlot
 import datanog
 import time
 
-dn = datanog.daq()
+
 class MplCanvas(FigureCanvas):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
@@ -44,6 +44,7 @@ class datanogAPP(QtWidgets.QMainWindow):
 
 
 app = QtWidgets.QApplication(sys.argv)
+dn = datanog.daq()
 mainWindow = datanogAPP()
 mainWindow.show()
 sys.exit(app.exec_())
