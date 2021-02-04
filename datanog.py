@@ -27,7 +27,6 @@ class daq:
 
         self.odr = 9  #8=1660Hz 9=3330Hz 10=6660Hz
         self.range = [1, 3]     #[16G, 2000DPS]
-        
         for device in range(128):
             try:
                 self.bus.read_byte(device)
@@ -50,10 +49,9 @@ class daq:
                     self.bus.write_byte_data(_device, _set[0], _set[1])
                 except Exception as e:
                     print("ERROR: ",e)
-            
 
     def pull(self, _device):
-        return unpack('<hhhhhh', self.bus.read_i2c_block_data(_device[0],_device[1], _device[2]))
+        return unpack('<hhhhhh',bytearray( self.bus.read_i2c_block_data(_device[0],_device[1], _device[2])))
 
 
 

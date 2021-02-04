@@ -26,7 +26,6 @@ class datanogAPP(QtWidgets.QMainWindow):
         self.ui = uic.loadUi('main.ui',self)
         self.resize(800, 480)
         self.q = queue.Queue(maxsize=10000)
-        
         self.pushButton.clicked.connect(self.pulldata)
 
     def pulldata(self):
@@ -37,8 +36,7 @@ class datanogAPP(QtWidgets.QMainWindow):
             if ti-tf>=dn.dt:
                 tf = ti
                 i+=1
-                self.q.put(dn.pull())
-                    
+                self.q.put(dn.pull(dn.devices[0]))
         t1 = time.perf_counter()
         print(t1-t0)
 
