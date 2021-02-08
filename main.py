@@ -29,7 +29,7 @@ class datanogAPP(QtWidgets.QMainWindow):
         self.q = queue.Queue(maxsize=10000)
         self.pushButton.clicked.connect(self.pulldata)
 
-    async def pulldata(self):
+    def pulldata(self):
         i=0
         t0=tf = time.perf_counter()
         while i<10000:
@@ -40,8 +40,9 @@ class datanogAPP(QtWidgets.QMainWindow):
                 self.q.put(dn.pull(dn.devices[0]))
         t1 = time.perf_counter()
         print(t1-t0)
-        data = np.array(self.q)
-        np.save('test.npy', self.data)
+        print(self.q)
+        #self.data = np.array(self.q)
+        #np.save('test.npy', self.data)
 
 
 app = QtWidgets.QApplication(sys.argv)
