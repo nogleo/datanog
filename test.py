@@ -17,7 +17,7 @@ def pulldata(_size = 1):
             if ti-tf>=dn.dt:
                 tf = ti
                 i+=1
-                self.q.put(dn.pull(dn.devices[0]))
+                q.put(dn.pull(dn.devices[0]))
         t1 = time.perf_counter()
         print(t1-t0)
 
