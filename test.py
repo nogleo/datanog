@@ -29,5 +29,5 @@ def savedata():
         data.append(q.get())
     arr = np.array(data)
     os.chdir('DATA')
-    np.save('test{}.npy'.format(len(os.listdir('DATA'))), arr)
+    np.save('test{}.npy'.format(len(os.listdir())), arr)
     os.chdir('..')
