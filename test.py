@@ -31,3 +31,6 @@ def savedata():
     os.chdir('DATA')
     np.save('test{}.npy'.format(len(os.listdir())), arr)
     os.chdir('..')
+
+pulldata(2)
+savedata()
