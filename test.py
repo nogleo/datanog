@@ -7,7 +7,7 @@ dn = datanog.daq()
 
 q = queue.Queue(maxsize=10000)
 
-def pulldata(self):
+def pulldata():
         i=0
         t0=tf = time.perf_counter()
         while i<10000:
@@ -15,8 +15,6 @@ def pulldata(self):
             if ti-tf>=dn.dt:
                 tf = ti
                 i+=1
-                self.q.put(dn.pull(dn.devices[0]))
+                q.put(dn.pull(dn.devices[0]))
         t1 = time.perf_counter()
         print(t1-t0)
-        data = np.array(q)
-        np.save('test.npy', data)
