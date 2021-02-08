@@ -28,4 +28,4 @@ def savedata():
     while q.qsize()>0:
         data.append(q.get())
     arr = np.array(data)
-    np.save('test{}.npy'.format(len(os.listdir('DATA'))), arr)
+    np.save('/DATA/test{}.npy'.format(len(os.listdir('DATA'))), arr)
