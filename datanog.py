@@ -36,7 +36,8 @@ class daq:
                 print("Device Config: ", device)
 
             except Exception as e:
-                print("ERROR ", e)
+                #print("ERROR ", e)
+                pass
 
     def config(self, _device):
         if _device == 0x6a or _device == 0x6b:
