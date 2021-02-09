@@ -28,9 +28,11 @@ class datanogAPP(QtWidgets.QMainWindow):
         self.resize(800, 480)
         self.q = queue.Queue()
         self.pushButton.clicked.connect(self.pulldata)
-        q = queue.Queue()
+        
 
     def pulldata(self, _size = 1):
+        self.pushButton.setText('Stop')
+        q = queue.Queue()
         i=0
         t0=tf = time.perf_counter()
         while i< _size//dn.dt:
@@ -41,12 +43,13 @@ class datanogAPP(QtWidgets.QMainWindow):
                 q.put(dn.pull(dn.devices[0]))
         t1 = time.perf_counter()
         print(t1-t0)
+        self.savedata(q)
 
-    def savedata(self):
+    def savedata(self, _q):
         if 'DATA' not in os.listdir():
             os.mkdir('DATA')
         data = []
-        while q.qsize()>0:
+        while _q.qsize()>0:
             data.append(q.get())
         arr = np.array(data)
         os.chdir('DATA')
