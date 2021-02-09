@@ -27,36 +27,14 @@ class datanogAPP(QtWidgets.QMainWindow):
         self.ui = uic.loadUi('main.ui',self)
         self.resize(800, 480)
         self.q = queue.Queue()
-        self.pushButton.clicked.connect(self.pulldata)
+        self.pushButton.clicked.connect(self.collect)
+    
+    def collect(self):
+        dn.pulldata(dn.devices[0])
+        
         
 
-    def pulldata(self, _size = 1):
-        self.pushButton.setText('Collecting')
-        self.q = queue.Queue()
-        i=0
-        t0=tf = time.perf_counter()
-        while i< _size//dn.dt:
-            ti=time.perf_counter()
-            if ti-tf>=dn.dt:
-                tf = ti
-                i+=1
-                self.q.put(dn.pull(dn.devices[0]))
-        t1 = time.perf_counter()
-        print(t1-t0)
-        self.savedata(self.q)
 
-    def savedata(self, _q):
-        if 'DATA' not in os.listdir():
-            os.mkdir('DATA')
-        data = []
-        while _q.qsize()>0:
-            data.append(_q.get())
-        arr = np.array(data)
-        os.chdir('DATA')
-        np.save('test{}.npy'.format(len(os.listdir())), arr)
-        print('file saved')
-        os.chdir('..')
-        self.pushButton.setText('Start')
 
 
 app = QtWidgets.QApplication(sys.argv)

@@ -54,5 +54,29 @@ class daq:
     def pull(self, _device):
         return unpack('<hhhhhh',bytearray( self.bus.read_i2c_block_data(_device[0],_device[1], _device[2])))
 
+    def pulldata(self, _size = 3):
+        self.q = queue.Queue()
+        i=0
+        t0=tf = time.perf_counter()
+        while i< _size//self.dt:
+            ti=time.perf_counter()
+            if ti-tf>=self.dt:
+                tf = ti
+                i+=1
+                self.q.put(self.pull(self.devices[0]))
+        t1 = time.perf_counter()
+        print(t1-t0)
+        self.savedata(self.q)
 
+    def savedata(self, _q):
+        if 'DATA' not in os.listdir():
+            os.mkdir('DATA')
+        data = []
+        while _q.qsize()>0:
+            data.append(_q.get())
+        arr = np.array(data)
+        os.chdir('DATA')
+        np.save('test{}.npy'.format(len(os.listdir())), arr)
+        print('file saved')
+        os.chdir('..')
 
