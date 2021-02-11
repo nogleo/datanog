@@ -63,7 +63,7 @@ class daq:
             if ti-tf>=self.dt:
                 tf = ti
                 i+=1
-                self.q.put(self.pull(self.devices[0]))
+                self.q.put(list(map(lambda _dev: self.pull(_dev), self.devices)))
         t1 = time.perf_counter()
         print(t1-t0)
         self.savedata(self.q)
