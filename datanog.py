@@ -52,10 +52,10 @@ class daq:
                     print("ERROR: ",e)
 
     def pull(self):
-        return unpack(self.devices[0][3],bytearray( self.bus.read_i2c_blockself.devices[0]ata(self.devices[0][0],self.devices[0][1], self.devices[0][2]))) + /\
-            unpack(self.devices[1][3],bytearray( self.bus.read_i2c_blockself.devices[1]ata(self.devices[1][0],self.devices[1][1], self.devices[1][2])))
+        return unpack(self.devices[0][3],bytearray( self.bus.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]))) + /\
+            unpack(self.devices[1][3],bytearray( self.bus.read_i2c_block_data(self.devices[1][0],self.devices[1][1], self.devices[1][2])))
 
-        
+        return _p
 
     def pulldata(self, _size = 3):
         self.q = queue.Queue()
