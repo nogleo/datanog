@@ -22,10 +22,10 @@ class daq:
             print("ERROR ", e)
 
         self.devices = []
-        self.fs = 3330
+        self.fs = 1660
         self.dt = 1/self.fs
 
-        self.odr = 9  #8=1660Hz 9=3330Hz 10=6660Hz
+        self.odr = 8  #8=1660Hz 9=3330Hz 10=6660Hz
         self.range = [1, 3]     #[16G, 2000DPS]
         for device in range(128):
             try:
@@ -55,6 +55,7 @@ class daq:
         return self.bus.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]) + self.bus.read_i2c_block_data(self.devices[1][0],self.devices[1][1], self.devices[1][2])
         
     def pulldata(self, _size = 3):
+        gc.collect()
         self.q = queue.Queue()
         i=0
         t0=tf = time.perf_counter()
