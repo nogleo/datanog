@@ -31,7 +31,7 @@ class daq:
             try:
                 self.bus.read_byte(device)
                 if device == 0x6b or device == 0x6a:
-                    self.devices.append([device, 0x22, 12])
+                    self.devices.append([device, 0x22, 12, '<hhhhhh'])
                 self.config(device)
                 print("Device Config: ", device)
 
@@ -51,8 +51,11 @@ class daq:
                 except Exception as e:
                     print("ERROR: ",e)
 
-    def pull(self, _device):
-        return unpack('<hhhhhh',bytearray( self.bus.read_i2c_block_data(_device[0],_device[1], _device[2])))
+    def pull(self):
+        _p = []
+        for _d in self.devices:
+            _p=+unpack(_d[3],bytearray( self.bus.read_i2c_block_data(_d[0],_d[1], _d[2])))
+        return _p
 
     def pulldata(self, _size = 3):
         self.q = queue.Queue()
@@ -63,7 +66,7 @@ class daq:
             if ti-tf>=self.dt:
                 tf = ti
                 i+=1
-                self.q.put(list(map(lambda _dev: self.pull(_dev), self.devices)))
+                self.q.put(self.pull())
         t1 = time.perf_counter()
         print(t1-t0)
         self.savedata(self.q)
