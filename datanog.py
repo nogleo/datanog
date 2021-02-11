@@ -75,7 +75,7 @@ class daq:
         data = []
         while _q.qsize()>0:
             _d = _q.get()
-            data.append(unpack(self.devices[0][3],bytearray(_d[0:6])) + unpack(self.devices[0][3],bytearray(_d[6:12])))
+            data.append(unpack(self.devices[0][3],bytearray(_d[0:12])) + unpack(self.devices[0][3],bytearray(_d[12:24])))
         arr = np.array(data)
         os.chdir('DATA')
         np.save('test{}.npy'.format(len(os.listdir())), arr)
