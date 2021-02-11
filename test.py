@@ -9,6 +9,9 @@ dn = datanog.daq()
 
 q = queue.Queue()
 
+dn.pulldata()
+
+
 def pulldata(_size = 1):
         i=0
         t0=tf = time.perf_counter()
@@ -29,7 +32,7 @@ def savedata():
         data.append(q.get())
     arr = np.array(data)
     os.chdir('DATA')
-    np.save('test{}.npy'.format(len(os.listdir())), arr)
+    np.save('data{}.npy'.format(len(os.listdir())), arr)
     os.chdir('..')
 
 pulldata(2)

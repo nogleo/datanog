@@ -22,7 +22,7 @@ class daq:
             print("ERROR ", e)
 
         self.devices = []
-        self.fs = 1660
+        self.fs = 1666
         self.dt = 1/self.fs
 
         self.odr = 8  #8=1660Hz 9=3330Hz 10=6660Hz
@@ -74,7 +74,8 @@ class daq:
             os.mkdir('DATA')
         data = []
         while _q.qsize()>0:
-            data.append(_q.get())
+            _d = _q.get()
+            data.append(unpack(self.devices[0][0],bytearray(_d[0:6])) + unpack(self.devices[0][0],bytearray(_d[6:12])))
         arr = np.array(data)
         os.chdir('DATA')
         np.save('test{}.npy'.format(len(os.listdir())), arr)

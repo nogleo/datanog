@@ -30,7 +30,7 @@ class datanogAPP(QtWidgets.QMainWindow):
         self.pushButton.clicked.connect(self.collect)
     
     def collect(self):
-        dn.pulldata(dn.devices[0])
+        dn.pulldata()
         
         
 
