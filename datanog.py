@@ -22,10 +22,10 @@ class daq:
             print("ERROR ", e)
 
         self.devices = []
-        self.fs = 1666
+        self.fs = 3333
         self.dt = 1/self.fs
 
-        self.odr = 8  #8=1660Hz 9=3330Hz 10=6660Hz
+        self.odr = 9  #8=1660Hz 9=3330Hz 10=6660Hz
         self.range = [1, 3]     #[16G, 2000DPS]
         for device in range(128):
             try:
