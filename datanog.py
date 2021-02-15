@@ -68,7 +68,7 @@ class daq:
 
     def pulldata(self, _size = 3):
         self.q1 = queue.Queue()
-        
+        self.q2 = queue.Queue()
         i=0
         t0=tf = time.perf_counter()
         while i < _size//self.dt:
@@ -76,7 +76,8 @@ class daq:
             if ti-tf>=self.dt:
                 tf = ti
                 i+=1
-                self.q1.put(self.bus1.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]) + self.bus1.read_i2c_block_data(self.devices[1][0],self.devices[1][1], self.devices[1][2]))
+                self.q1.put(self.bus1.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]))
+                self.q2.put(self.bus1.read_i2c_block_data(self.devices[1][0],self.devices[1][1], self.devices[1][2]))
         t1 = time.perf_counter()
         print("time elapsed(s): ", t1-t0)
 
