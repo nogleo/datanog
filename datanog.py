@@ -51,9 +51,7 @@ class daq:
                 except Exception as e:
                     print("ERROR: ",e)
 
-    def pull(self):
-        return self.bus.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]) + self.bus.read_i2c_block_data(self.devices[1][0],self.devices[1][1], self.devices[1][2])
-        
+    
     def pulldata(self, _size = 3):
         gc.collect()
         self.q = queue.Queue()
@@ -64,7 +62,7 @@ class daq:
             if ti-tf>=self.dt:
                 tf = ti
                 i+=1
-                self.q.put(self.pull())
+                self.q.put(self.bus.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]) + self.bus.read_i2c_block_data(self.devices[1][0],self.devices[1][1], self.devices[1][2]))
         t1 = time.perf_counter()
         print(t1-t0)
         self.savedata(self.q)
