@@ -34,12 +34,18 @@ class daq:
                 self.bus1.read_byte(device)
                 if device == 0x6b or device == 0x6a:
                     self.devices.append([device, 0x22, 12, '<hhhhhh', 1])
+                self.config(device)
+                print("Device Config: ", device)
+            except Exception as e:
+                #print("ERROR ", e)
+                pass
+
+            try:
                 self.bus2.read_byte(device)
                 if device == 0x6b or device == 0x6a:
                     self.devices.append([device, 0x22, 12, '<hhhhhh', 2])
                 self.config(device)
                 print("Device Config: ", device)
-
             except Exception as e:
                 #print("ERROR ", e)
                 pass
@@ -97,8 +103,8 @@ class daq:
             os.mkdir('DATA')
         data = []
         while self.q1.qsize()>0:
-            _d = self.q1.get()
-            data.append(unpack(self.devices[0][3],bytearray(_d[0:12])) + unpack(self.devices[0][3],bytearray(_d[12:24])))
+            _d1 = self.q1.get()
+            data.append(unpack(self.devices[0][3],bytearray(_d1[0:12])))
         arr = np.array(data)
         os.chdir('DATA')
         np.save('bus1_{}.npy'.format(len(os.listdir())), arr)
@@ -122,8 +128,8 @@ class daq:
             os.mkdir('DATA')
         data = []
         while self.q2.qsize()>0:
-            _d = self.q2.get()
-            data.append(unpack(self.devices[0][3],bytearray(_d[0:12])) + unpack(self.devices[0][3],bytearray(_d[12:24])))
+            _d2 = self.q2.get()
+            data.append(unpack(self.devices[0][3],bytearray(_d2[0:12])))
         arr = np.array(data)
         os.chdir('DATA')
         np.save('bus2_{}.npy'.format(len(os.listdir())), arr)
