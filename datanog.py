@@ -9,6 +9,7 @@ import scipy.integrate as intg
 import autograd
 from numpy.linalg import norm, inv
 import smbus
+import asyncio
 
 
 
@@ -16,8 +17,9 @@ class daq:
     def __init__(self):
         self.__name__ = "daq"
         try:
-            self.bus = smbus.SMBus(1)
-            print("bus connected")
+            self.bus1 = smbus.SMBus(1)
+            self.bus2 = smbus.SMBus(6)
+            print("buses connected")
         except Exception as e:
             print("ERROR ", e)
 
@@ -29,12 +31,21 @@ class daq:
         self.range = [1, 3]     #[16G, 2000DPS]
         for device in range(128):
             try:
-                self.bus.read_byte(device)
+                self.bus1.read_byte(device)
                 if device == 0x6b or device == 0x6a:
-                    self.devices.append([device, 0x22, 12, '<hhhhhh'])
+                    self.devices.append([device, 0x22, 12, '<hhhhhh', 1])
                 self.config(device)
                 print("Device Config: ", device)
+            except Exception as e:
+                #print("ERROR ", e)
+                pass
 
+            try:
+                self.bus2.read_byte(device)
+                if device == 0x6b or device == 0x6a:
+                    self.devices.append([device, 0x22, 12, '<hhhhhh', 2])
+                self.config(device)
+                print("Device Config: ", device)
             except Exception as e:
                 #print("ERROR ", e)
                 pass
@@ -47,7 +58,11 @@ class daq:
 
             for _set in _settings:
                 try:
-                    self.bus.write_byte_data(_device, _set[0], _set[1])
+                    if _device[4] == 1:
+                        self.bus1.write_byte_data(_device, _set[0], _set[1])
+                    elif _device[4] == 2:
+                        self.bus2.write_byte_data(_device, _set[0], _set[1])
+
                 except Exception as e:
                     print("ERROR: ",e)
 
@@ -73,10 +88,13 @@ class daq:
         data = []
         while _q.qsize()>0:
             _d = _q.get()
-            data.append(unpack(self.devices[0][3],bytearray(_d[0:12])) + unpack(self.devices[0][3],bytearray(_d[12:24])))
+            data.append(unpack('<hhhhhh',bytearray(_d[0:12])) + unpack('<hhhhhh',bytearray(_d[12:24])))
         arr = np.array(data)
         os.chdir('DATA')
-        np.save('test{}.npy'.format(len(os.listdir())), arr)
+        np.save('{}_{}.npy'.format(_device[0], len(os.listdir())), arr)
         print('file saved')
         os.chdir('..')
+
+    
+
 
