@@ -96,7 +96,7 @@ class daq:
         arr = np.array(data)
         os.chdir('DATA')
         _filename = 'raw_{}.npy'.format(len(os.listdir()))
-        np.save(_filenam, arr)
+        np.save(_filename, arr)
         print('{} saved'.format(_filename))
         os.chdir('..')
 
