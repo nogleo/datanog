@@ -62,6 +62,7 @@ class daq:
         gc.collect()
         self.q = queue.Queue()
         if _size ==0:
+            i=0
             self.state = True
             tf = time.perf_counter()
             while self.state:
@@ -82,7 +83,7 @@ class daq:
             t1 = time.perf_counter()
             print(t1-t0)
         
-        
+
         self.savedata(self.q)
 
     def savedata(self, _q):
