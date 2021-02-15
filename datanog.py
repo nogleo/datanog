@@ -79,17 +79,7 @@ class daq:
         t1 = time.perf_counter()
         print(t1-t0)
         
-        if 'DATA' not in os.listdir():
-            os.mkdir('DATA')
-        data = []
-        while self.q1.qsize()>0:
-            _d1 = self.q1.get()
-            data.append(unpack(self.devices[0][3],bytearray(_d1[0:12])))
-        arr = np.array(data)
-        os.chdir('DATA')
-        np.save('bus1_{}.npy'.format(len(os.listdir())), arr)
-        print('file saved')
-        os.chdir('..')
+
 
     async def pulldata2(self, _size = 3):
         self.q2 = queue.Queue()
@@ -104,24 +94,12 @@ class daq:
         t1 = time.perf_counter()
         print(t1-t0)
         
-        if 'DATA' not in os.listdir():
-            os.mkdir('DATA')
-        data = []
-        while self.q2.qsize()>0:
-            _d2 = self.q2.get()
-            data.append(unpack(self.devices[0][3],bytearray(_d2[0:12])))
-        arr = np.array(data)
-        os.chdir('DATA')
-        np.save('bus2_{}.npy'.format(len(os.listdir())), arr)
-        print('file saved')
-        os.chdir('..')
+      
 
 
     async def dualcollect(self):
-        await asyncio.gather(
-            self.pulldata1(),
-            self.pulldata2()
-        )
+        await self.pulldata1()
+        await self.pulldata2()
         
 
     async def runn(self):
@@ -134,7 +112,8 @@ class daq:
         
     def pulldata(self, _size = 3):
         gc.collect()
-        self.q = queue.Queue()
+        self.q1 = queue.Queue()
+        self.q2 = queue.Queue()
         i=0
         t0=tf = time.perf_counter()
         while i< _size//self.dt:
@@ -142,22 +121,23 @@ class daq:
             if ti-tf>=self.dt:
                 tf = ti
                 i+=1
-                self.q.put(self.pull())
+                self.q2.put(self.pull())
         t1 = time.perf_counter()
         print(t1-t0)
-        self.savedata(self.q)
-    def savedata(self, _q):
+        self.savedata(self.q)'''
+
+    def savedata(self, _q, _device):
         if 'DATA' not in os.listdir():
             os.mkdir('DATA')
         data = []
         while _q.qsize()>0:
             _d = _q.get()
-            data.append(unpack(self.devices[0][3],bytearray(_d[0:12])) + unpack(self.devices[0][3],bytearray(_d[12:24])))
+            data.append(unpack(_device[3],bytearray(_d[0:12])))
         arr = np.array(data)
         os.chdir('DATA')
-        np.save('test{}.npy'.format(len(os.listdir())), arr)
+        np.save('{}_{}.npy'.format(_device[0], len(os.listdir())), arr)
         print('file saved')
-        os.chdir('..')'''
+        os.chdir('..')
 
     
 
