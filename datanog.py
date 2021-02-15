@@ -9,6 +9,7 @@ import scipy.integrate as intg
 import autograd
 from numpy.linalg import norm, inv
 import smbus
+import asyncio
 
 
 
@@ -16,8 +17,9 @@ class daq:
     def __init__(self):
         self.__name__ = "daq"
         try:
-            self.bus = smbus.SMBus(1)
-            print("bus connected")
+            self.bus1 = smbus.SMBus(1)
+            self.bus2 = smbus.SMBus(6)
+            print("buses connected")
         except Exception as e:
             print("ERROR ", e)
 
@@ -29,9 +31,12 @@ class daq:
         self.range = [1, 3]     #[16G, 2000DPS]
         for device in range(128):
             try:
-                self.bus.read_byte(device)
+                self.bus1.read_byte(device)
                 if device == 0x6b or device == 0x6a:
-                    self.devices.append([device, 0x22, 12, '<hhhhhh'])
+                    self.devices.append([device, 0x22, 12, '<hhhhhh', 1])
+                self.bus2.read_byte(device)
+                if device == 0x6b or device == 0x6a:
+                    self.devices.append([device, 0x22, 12, '<hhhhhh', 2])
                 self.config(device)
                 print("Device Config: ", device)
 
@@ -68,6 +73,58 @@ class daq:
         t1 = time.perf_counter()
         print(t1-t0)
         self.savedata(self.q)
+
+
+
+    async def pulldata1(self, _size = 3):
+        self.q1 = queue.Queue()
+        i=0
+        t0=tf = time.perf_counter()
+        while i < _size//self.dt:
+            ti=time.perf_counter()
+            if ti-tf>=self.dt:
+                tf = ti
+                i+=1
+                self.q1.put(self.bus1.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]))
+        t1 = time.perf_counter()
+        print(t1-t0)
+        self.savedata(self.q1)
+        if 'DATA' not in os.listdir():
+            os.mkdir('DATA')
+        data = []
+        while self.q1.qsize()>0:
+            _d = self.q1.get()
+            data.append(unpack(self.devices[0][3],bytearray(_d[0:12])) + unpack(self.devices[0][3],bytearray(_d[12:24])))
+        arr = np.array(data)
+        os.chdir('DATA')
+        np.save('bus1_{}.npy'.format(len(os.listdir())), arr)
+        print('file saved')
+        os.chdir('..')
+
+    async def pulldata2(self, _size = 3):
+        self.q2 = queue.Queue()
+        i=0
+        t0=tf = time.perf_counter()
+        while i < _size//self.dt:
+            ti=time.perf_counter()
+            if ti-tf>=self.dt:
+                tf = ti
+                i+=1
+                self.q2.put(self.bus.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]))
+        t1 = time.perf_counter()
+        print(t1-t0)
+        self.savedata(self.q2)
+        if 'DATA' not in os.listdir():
+            os.mkdir('DATA')
+        data = []
+        while self.q2.qsize()>0:
+            _d = _self.q2.get()
+            data.append(unpack(self.devices[0][3],bytearray(_d[0:12])) + unpack(self.devices[0][3],bytearray(_d[12:24])))
+        arr = np.array(data)
+        os.chdir('DATA')
+        np.save('bus2_{}.npy'.format(len(os.listdir())), arr)
+        print('file saved')
+        os.chdir('..')
 
     def savedata(self, _q):
         if 'DATA' not in os.listdir():

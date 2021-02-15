@@ -31,7 +31,14 @@ class datanogAPP(QtWidgets.QMainWindow):
     
     def collect(self):
         dn.pulldata()
-        
+
+    async def dualcollect(self):
+        await dn.pulldata1()
+        await dn.pulldata2()
+
+    async def runn(self):
+        asyncio.run(self.dualcollect())
+    
         
 
 
