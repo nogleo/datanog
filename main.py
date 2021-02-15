@@ -39,5 +39,5 @@ class datanogAPP(QtWidgets.QMainWindow):
 app = QtWidgets.QApplication(sys.argv)
 dn = datanog.daq()
 mainWindow = datanogAPP()
-mainWindow.show()
-sys.exit(app.exec_())
+#mainWindow.show()
+#sys.exit(app.exec_())

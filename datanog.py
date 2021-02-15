@@ -26,6 +26,7 @@ class daq:
         self.devices = []
         self.fs = 3333
         self.dt = 1/self.fs
+        self.state = True
 
         self.odr = 9  #8=1660Hz 9=3330Hz 10=6660Hz
         self.range = [1, 3]     #[16G, 2000DPS]
@@ -60,16 +61,28 @@ class daq:
     def pulldata(self, _size = 3):
         gc.collect()
         self.q = queue.Queue()
-        i=0
-        t0=tf = time.perf_counter()
-        while i< _size//self.dt:
-            ti=time.perf_counter()
-            if ti-tf>=self.dt:
-                tf = ti
-                i+=1
-                self.q.put(self.bus.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]) + self.bus.read_i2c_block_data(self.devices[1][0],self.devices[1][1], self.devices[1][2]))
-        t1 = time.perf_counter()
-        print(t1-t0)
+        if _size ==0:
+            self.state = True
+            tf = time.perf_counter()
+            while self.state:
+                ti=time.perf_counter()
+                if ti-tf>=self.dt:
+                    tf = ti
+                    i+=1
+                    self.q.put(self.bus.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]) + self.bus.read_i2c_block_data(self.devices[1][0],self.devices[1][1], self.devices[1][2]))
+        else:
+            i=0
+            t0=tf = time.perf_counter()
+            while i< _size//self.dt:
+                ti=time.perf_counter()
+                if ti-tf>=self.dt:
+                    tf = ti
+                    i+=1
+                    self.q.put(self.bus.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]) + self.bus.read_i2c_block_data(self.devices[1][0],self.devices[1][1], self.devices[1][2]))
+            t1 = time.perf_counter()
+            print(t1-t0)
+        
+        
         self.savedata(self.q)
 
     def savedata(self, _q):
