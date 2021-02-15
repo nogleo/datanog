@@ -77,7 +77,7 @@ class daq:
                 tf = ti
                 i+=1
                 self.q1.put(self.bus1.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]))
-                self.q2.put(self.bu1.read_i2c_block_data(self.devices[1][0],self.devices[1][1], self.devices[1][2]))
+                self.q2.put(self.bus1.read_i2c_block_data(self.devices[1][0],self.devices[1][1], self.devices[1][2]))
         t1 = time.perf_counter()
         print("time elapsed(s): ", t1-t0)
 
