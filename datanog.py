@@ -95,8 +95,9 @@ class daq:
             data.append(unpack('<hhhhhh',bytearray(_d[0:12])) + unpack('<hhhhhh',bytearray(_d[12:24])))
         arr = np.array(data)
         os.chdir('DATA')
-        np.save('raw_{}.npy'.format(len(os.listdir())), arr)
-        print('file saved')
+        _filename = 'raw_{}.npy'.format(len(os.listdir()))
+        np.save(_filenam, arr)
+        print('{} saved'.format(_filename))
         os.chdir('..')
 
     
