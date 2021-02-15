@@ -26,6 +26,8 @@ class datanogAPP(QtWidgets.QMainWindow):
         QtWidgets.QMainWindow.__init__(self)
         self.ui = uic.loadUi('main.ui',self)
         self.resize(800, 480)
+        self.startbutton.clicked.connect(self.startt)
+        self.stopbutton.clicked.connect(self.stopp)
     
     def stopp(self):
         dn.state=False
