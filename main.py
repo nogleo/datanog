@@ -26,18 +26,10 @@ class datanogAPP(QtWidgets.QMainWindow):
         QtWidgets.QMainWindow.__init__(self)
         self.ui = uic.loadUi('main.ui',self)
         self.resize(800, 480)
-        self.q = queue.Queue()
-        self.pushButton.clicked.connect(self.runn)
     
-    def collect(self):
-        dn.pulldata()
 
-    async def dualcollect(self):
-        await dn.pulldata1()
-        await dn.pulldata2()
 
-    async def runn(self):
-        asyncio.run(self.dualcollect())
+
     
         
 

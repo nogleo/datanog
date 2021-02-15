@@ -126,6 +126,19 @@ class daq:
         print('file saved')
         os.chdir('..')
 
+
+    async def dualcollect(self):
+        await asyncio.gather(
+            dn.pulldata1(),
+            dn.pulldata2()
+        )
+        
+
+    async def runn(self):
+        asyncio.run(self.dualcollect())
+
+
+
     def savedata(self, _q):
         if 'DATA' not in os.listdir():
             os.mkdir('DATA')
