@@ -66,26 +66,6 @@ class daq:
                 except Exception as e:
                     print("ERROR: ",e)
 
-    def pull(self):
-        return self.bus.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]) + self.bus.read_i2c_block_data(self.devices[1][0],self.devices[1][1], self.devices[1][2])
-        
-    def pulldata(self, _size = 3):
-        gc.collect()
-        self.q = queue.Queue()
-        i=0
-        t0=tf = time.perf_counter()
-        while i< _size//self.dt:
-            ti=time.perf_counter()
-            if ti-tf>=self.dt:
-                tf = ti
-                i+=1
-                self.q.put(self.pull())
-        t1 = time.perf_counter()
-        print(t1-t0)
-        self.savedata(self.q)
-
-
-
     async def pulldata1(self, _size = 3):
         self.q1 = queue.Queue()
         i=0
@@ -98,7 +78,7 @@ class daq:
                 self.q1.put(self.bus1.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]))
         t1 = time.perf_counter()
         print(t1-t0)
-        self.savedata(self.q1)
+        
         if 'DATA' not in os.listdir():
             os.mkdir('DATA')
         data = []
@@ -123,7 +103,7 @@ class daq:
                 self.q2.put(self.bus2.read_i2c_block_data(self.devices[1][0],self.devices[1][1], self.devices[1][2]))
         t1 = time.perf_counter()
         print(t1-t0)
-        self.savedata(self.q2)
+        
         if 'DATA' not in os.listdir():
             os.mkdir('DATA')
         data = []
@@ -148,7 +128,24 @@ class daq:
         asyncio.run(self.dualcollect())
 
 
-
+    '''
+    def pull(self):
+        return self.bus.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]) + self.bus.read_i2c_block_data(self.devices[1][0],self.devices[1][1], self.devices[1][2])
+        
+    def pulldata(self, _size = 3):
+        gc.collect()
+        self.q = queue.Queue()
+        i=0
+        t0=tf = time.perf_counter()
+        while i< _size//self.dt:
+            ti=time.perf_counter()
+            if ti-tf>=self.dt:
+                tf = ti
+                i+=1
+                self.q.put(self.pull())
+        t1 = time.perf_counter()
+        print(t1-t0)
+        self.savedata(self.q)
     def savedata(self, _q):
         if 'DATA' not in os.listdir():
             os.mkdir('DATA')
@@ -160,5 +157,8 @@ class daq:
         os.chdir('DATA')
         np.save('test{}.npy'.format(len(os.listdir())), arr)
         print('file saved')
-        os.chdir('..')
+        os.chdir('..')'''
+
+    
+
 
