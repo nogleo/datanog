@@ -52,7 +52,11 @@ class daq:
 
             for _set in _settings:
                 try:
-                    self.bus.write_byte_data(_device, _set[0], _set[1])
+                    if _device[4] == 1:
+                        self.bus1.write_byte_data(_device, _set[0], _set[1])
+                    elif _device[4] == 2:
+                        self.bus2.write_byte_data(_device, _set[0], _set[1])
+
                 except Exception as e:
                     print("ERROR: ",e)
 
@@ -110,7 +114,7 @@ class daq:
             if ti-tf>=self.dt:
                 tf = ti
                 i+=1
-                self.q2.put(self.bus.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]))
+                self.q2.put(self.bus2.read_i2c_block_data(self.devices[1][0],self.devices[1][1], self.devices[1][2]))
         t1 = time.perf_counter()
         print(t1-t0)
         self.savedata(self.q2)
@@ -118,7 +122,7 @@ class daq:
             os.mkdir('DATA')
         data = []
         while self.q2.qsize()>0:
-            _d = _self.q2.get()
+            _d = self.q2.get()
             data.append(unpack(self.devices[0][3],bytearray(_d[0:12])) + unpack(self.devices[0][3],bytearray(_d[12:24])))
         arr = np.array(data)
         os.chdir('DATA')
@@ -129,8 +133,8 @@ class daq:
 
     async def dualcollect(self):
         await asyncio.gather(
-            dn.pulldata1(),
-            dn.pulldata2()
+            self.pulldata1(),
+            self.pulldata2()
         )
         
 
