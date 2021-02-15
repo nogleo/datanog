@@ -78,7 +78,7 @@
      <attribute name="title">
       <string>DAq</string>
      </attribute>
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="startbutton">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -101,7 +101,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QPushButton" name="stopbutton">
       <property name="geometry">
        <rect>
         <x>110</x>
@@ -152,9 +152,9 @@
  <resources/>
  <connections>
   <connection>
-   <sender>pushButton</sender>
+   <sender>startbutton</sender>
    <signal>clicked()</signal>
-   <receiver>pushButton</receiver>
+   <receiver>startbutton</receiver>
    <slot>toggle()</slot>
    <hints>
     <hint type="sourcelabel">

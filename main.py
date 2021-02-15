@@ -27,7 +27,11 @@ class datanogAPP(QtWidgets.QMainWindow):
         self.ui = uic.loadUi('main.ui',self)
         self.resize(800, 480)
     
-
+    def stopp(self):
+        dn.state=False
+    
+    def startt(self):
+        dn.pulldata(int(self.lineEdit.text()))
 
 
     
