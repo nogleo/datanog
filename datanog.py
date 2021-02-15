@@ -77,7 +77,7 @@ class daq:
                 i+=1
                 self.q1.put(self.bus1.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]))
         t1 = time.perf_counter()
-        print(t1-t0)
+        print("pul 1 ", t1-t0)
         
 
 
@@ -98,12 +98,11 @@ class daq:
 
 
     async def dualcollect(self):
+        gc.collect()
         await self.pulldata1()
         await self.pulldata2()
         
 
-    async def runn(self):
-        asyncio.run(self.dualcollect())
 
 
     '''
