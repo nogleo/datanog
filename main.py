@@ -27,7 +27,7 @@ class datanogAPP(QtWidgets.QMainWindow):
         self.ui = uic.loadUi('main.ui',self)
         self.resize(800, 480)
         self.q = queue.Queue()
-        self.pushButton.clicked.connect(self.collect)
+        self.pushButton.clicked.connect(self.runn)
     
     def collect(self):
         dn.pulldata()
