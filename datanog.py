@@ -74,8 +74,8 @@ class daq:
             _aux.append(unpack('<hhhhhh',bytearray(_d[0:12])))
         _data = np.array(_aux)
         _sensor = {'raw': _data}
-        _araw = _data[0:6*_samp1,3:6]
         _graw = _data[:,0:3]
+        _araw = _data[0:6*_samp1,3:6]
 
         _acc_m = np.zeros((6, 3))
         for _i in range(6):
