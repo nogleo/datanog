@@ -73,9 +73,10 @@ class daq:
             _d = qc.get()
             _aux.append(unpack('<hhhhhh',bytearray(_d[0:12])))
         _data = np.array(_aux)
+        np.save(_sensname+'.npy', _data)
         _sensor = {'raw': _data}
         _graw = _data[:,0:3]
-        _araw = _data[0:6*_samp1,3:6]
+        _araw = _data[:_samp1*6, 3:6]
 
         _acc_m = np.zeros((6, 3))
         for _i in range(6):
