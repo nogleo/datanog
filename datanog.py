@@ -134,7 +134,7 @@ class daq:
         _B = np.array(Y[9:])
         _sum = 0
         for u in self.acc:
-            _sum += (1 - nap.linalg.norm(nap.matmul(_S,(u-_B).T))**2
+            _sum += (1 - nap.linalg.norm(nap.matmul(_S,(u-_B).T)))**2
 
         return _sum
 
