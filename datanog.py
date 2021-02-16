@@ -78,7 +78,7 @@ class daq:
         _acc_m = np.zeros((6, 3))
         for _i in range(6):
             for _j in range(3):
-                _acc_m[_i, _j] = np.mean(_accdata[_i*_samp1:(_i+1)*|_samp1, _j])
+                _acc_m[_i, _j] = np.mean(_accdata[_i*_samp1:(_i+1)*_samp1, _j])
         
         _k = np.zeros((3, 3))
         _b = np.zeros((3))
