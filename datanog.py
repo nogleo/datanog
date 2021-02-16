@@ -24,7 +24,7 @@ class daq:
             print("ERROR ", e)
 
         self.devices = []
-        self.fs = 3333
+        self.fs = 3330
         self.dt = 1/self.fs
         self.state = True
 
@@ -131,19 +131,19 @@ class daq:
 
     def funobj_acc(self, Y):
         _S = np.array(Y[0:9]).reshape((3,3))
-        _B = np.array(Y[9:]).reshape((3,1))
+        _B = np.array(Y[9:])
         _sum = 0
         for u in self.acc:
-            _sum += (1 - norm(_S@(u-_B).T))**2
+            _sum += (1 - nap.linalg.norm(nap.matmul(_S,(u-_B).T))**2
 
         return _sum
 
     def funobj_gyr(self, Y):
         _S = np.array(Y[0:9]).reshape((3,3))
-        _B = np.array(Y[9:]).reshape((3,1))
+        _B = np.array(Y[9:])
         _sum = 0
         for u in self.gyr:
-            _sum += (_S@(u-_B).T)*self.dt
+            _sum += (nap.matmul(_S,(u-_B).T))*self.dt
 
         return (90 - _sum)**2
 
