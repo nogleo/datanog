@@ -114,6 +114,8 @@ class daq:
         _kT = np.diag([90,90,90])@inv(_k)
         _param_g = list(_kT.flatten()) + list(_b.flatten())
 
+        self.acc = _araw
+        self.gyr = _graw[6*_samp1:,:]
 
         _res_a = op.minimize(self.funobj_acc, _param_a, method='trust-ncg', jac=jacobian(self.funobj_acc), hess=hessian(self.funobj_acc))
         _res_g = op.minimize(self.funobj_gyr, _param_g, method='trust-ncg', jac=jacobian(self.funobj_gyr), hess=hessian(self.funobj_gyr))
@@ -121,8 +123,6 @@ class daq:
         _sensor['param_a'] = _res_a.x
         _sensor['param_b'] = _res_g.x
 
-        self.acc = _araw
-        self.gyr = _graw[6*_samp1:,:]
 
 
         np.savez('./sensor/{}.npz', _sensor)
