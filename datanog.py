@@ -60,12 +60,14 @@ class daq:
         print('6 pos calibration')
         for _n in range(6):
             input('Position {}'.format(_n+1))
-            _samp1 = self.pull(_device, qc, 5)
+            self.pull(_device, qc, 3)
         print('3 axis rotation')
         for _n in range(0,6,2):
             input('Rotate 90 deg around axis {}-{}'.format(_n+1,_n+2))
-            _samp2 = self.pull(_device, qc, 1)
+            self.pull(_device, qc, 1)
         _aux = []
+        _samp1 = 3//self.dt
+        _samp2 = 1//self.dt
         print('Data collection done...') 
         while qc.qsize()>0:
             _d = qc.get()
@@ -154,7 +156,6 @@ class daq:
                 tf = ti
                 i+=1
                 _q.put(self.bus.read_i2c_block_data(_device[0],_device[1], _device[2]))
-        return _size//self.dt
 
         
 
