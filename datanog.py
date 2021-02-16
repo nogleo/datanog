@@ -67,8 +67,8 @@ class daq:
             _samp2 = self.pull(_device, qc, 1)
         _aux = []
         print('Data collection done...') 
-        while _q.qsize()>0:
-            _d = _q.get()
+        while qc.qsize()>0:
+            _d = qc.get()
             _aux.append(unpack('<hhhhhh',bytearray(_d[0:12])))
         _data = np.array(_aux)
         _sensor = {'raw': _data}
@@ -78,7 +78,7 @@ class daq:
         _acc_m = np.zeros((6, 3))
         for _i in range(6):
             for _j in range(3):
-                _acc_m[_i, _j] = np.mean(_accdata[_i*_samp1:(_i+1)*_samp1, _j])
+                _acc_m[_i, _j] = np.mean(_araw[_i*_samp1:(_i+1)*_samp1, _j])
         
         _k = np.zeros((3, 3))
         _b = np.zeros((3))
@@ -89,8 +89,8 @@ class daq:
             _min = _acc_m[:,_i].min(0)
             _k[_i, _i] = (_max - _min)/ (2)
             _b[_i] = (_max + _min)/2    
-            _Ti[_i, _i-2] = np.arctan(self.acc_m[self.acc_m[:,_i].argmax(0),_i-2] / _max)
-            _Ti[_i, _i-1] = np.arctan(self.acc_m[self.acc_m[:,_i].argmax(0),_i-1] / _max)
+            _Ti[_i, _i-2] = np.arctan(_acc_m[_acc_m[:,_i].argmax(0),_i-2] / _max)
+            _Ti[_i, _i-1] = np.arctan(_acc_m[_acc_m[:,_i].argmax(0),_i-1] / _max)
         _kT = inv(_k.dot(inv(_Ti)))
 
         _param_a = list(_kT.flatten()) + list(_b.flatten())
@@ -112,11 +112,15 @@ class daq:
         _param_g = list(_kT.flatten()) + list(_b.flatten())
 
 
-        _res_a = op.minimize(self.funobj_acc, _param_a, method='trust-ncg', jac=jacobian(funobj_acc), hess=hessian(funobj_acc))
-        _res_g = op.minimize(self.funobj_gyr, _param_g, method='trust-ncg', jac=jacobian(funobj_gyr), hess=hessian(funobj_gyr))
+        _res_a = op.minimize(self.funobj_acc, _param_a, method='trust-ncg', jac=jacobian(self.funobj_acc), hess=hessian(self.funobj_acc))
+        _res_g = op.minimize(self.funobj_gyr, _param_g, method='trust-ncg', jac=jacobian(self.funobj_gyr), hess=hessian(self.funobj_gyr))
 
         _sensor['param_a'] = _res_a.x
-        _sensor['param_b'] = _res_b.x
+        _sensor['param_b'] = _res_g.x
+
+        self.acc = _araw
+        self.gyr = _graw[6*_samp1:,:]
+
 
         np.savez('./sensor/{}.npz', _sensor)
         
@@ -126,8 +130,8 @@ class daq:
         _S = np.array(Y[0:9]).reshape((3,3))
         _B = np.array(Y[9:]).reshape((3,1))
         _sum = 0
-        for u in _araw:
-            _sum += (1 - nap.linalg.norm(_S@(u-_B).T))**2
+        for u in self.acc:
+            _sum += (1 - norm(_S@(u-_B).T))**2
 
         return _sum
 
@@ -135,7 +139,7 @@ class daq:
         _S = np.array(Y[0:9]).reshape((3,3))
         _B = np.array(Y[9:]).reshape((3,1))
         _sum = 0
-        for u in _araw:
+        for u in self.gyr:
             _sum += (_S@(u-_B).T)*self.dt
 
         return (90 - _sum)**2
@@ -143,14 +147,13 @@ class daq:
 
     def pull(self, _device, _q, _size):
         i=0
-        t0=tf = time.perf_counter()
+        tf = time.perf_counter()
         while i < _size//self.dt:
             ti=time.perf_counter()
             if ti-tf>=self.dt:
                 tf = ti
                 i+=1
                 _q.put(self.bus.read_i2c_block_data(_device[0],_device[1], _device[2]))
-        t1 = time.perf_counter()
         return _size//self.dt
 
         
