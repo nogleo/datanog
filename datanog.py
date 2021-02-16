@@ -27,6 +27,7 @@ class daq:
         self.fs = 3330
         self.dt = 1/self.fs
         self.state = True
+        self.G = 1
 
         self.odr = 9  #8=1660Hz 9=3330Hz 10=6660Hz
         self.range = [1, 3]     #[16G, 2000DPS]
@@ -56,55 +57,103 @@ class daq:
 
     def calibrate(self, _device):
         _sensname = input('Connnect sensor and name it: ')
-        qc = queue.Queue()
-        print('6 pos calibration')
+        _sensor = {'name': _sensname}
+        self._caldata = []
+        print('Iniciando 6 pos calibration')
+        self._nsamp = int(input('Number of Samples/Position: ') or 3/self.dt)
+
         for _n in range(6):
             input('Position {}'.format(_n+1))
-            self.pull(_device, qc, 3)
-        print('3 axis rotation')
+            i=0
+            tf = time.perf_counter()
+            while i<self._nsamp:
+                ti=time.perf_counter()
+                if ti-tf>=self.dt:
+                    tf = ti
+                    i+=1
+                    self._caldata.append(self.pull(_device))
+        self._gsamps = int(input('Number of Samples/Rotation: ') or 1/self.dt)
         for _n in range(0,6,2):
             input('Rotate 90 deg around axis {}-{}'.format(_n+1,_n+2))
-            self.pull(_device, qc, 1)
-        _aux = []
-        _samp1 = int(3//self.dt)
-        _samp2 = int(1//self.dt)
-        print('Data collection done...') 
-        while qc.qsize()>0:
-            _d = qc.get()
-            _aux.append(unpack('<hhhhhh',bytearray(_d[0:12])))
-        _data = np.array(_aux)
-        np.save(_sensname+'.npy', _data)
-        _sensor = {'raw': _data}
-        _graw = _data[:,0:3]
-        _araw = _data[:_samp1*6, 3:6]
-
-        _acc_m = np.zeros((6, 3))
-        for _i in range(6):
-            for _j in range(3):
-                _acc_m[_i, _j] = np.mean(_araw[_i*_samp1:(_i+1)*_samp1, _j])
+            i=0
+            tf = time.perf_counter()
+            while i<self._gsamps:
+                ti=time.perf_counter()
+                if ti-tf>=self.dt:
+                    tf = ti
+                    i+=1
+                    self._caldata.append(self.pull(_device))
         
+        self._aux = []
+        print('Data collection done...')
+        for _d in self._caldata:
+            self._aux.append(unpack('<hhhhhh',bytearray(_d)))
+        _data = np.array(self._aux)
+        self.acc_raw = _data[0:6*self._nsamp,3:6]
+        self.gyr_raw = _data[:,0:3]
+        np.save('./sensors/'+_sensor['name']+'rawdata.npy', _data)
+        print(_sensor['name']+'rawdata saved')
+        print('Calculating calibration parameters. Wait...')
+        gc.collect()
+        _sensor['acc_p'] = self.calibacc(self.acc_raw)
+        gc.collect()
+        _sensor['gyr_p'] = self.calibgyr(self.gyr_raw)        
+        np.savez('./sensors/'+_sensor['name'], _sensor['gyr_p'], _sensor['acc_p'])
+       
+        os.chdir('..')
+        gc.collect()
+        return _sensor
+    
+    def calibacc(self, _accdata):
         _k = np.zeros((3, 3))
         _b = np.zeros((3))
         _Ti = np.ones((3, 3))
+        
+        self.acc_m = np.zeros((6, 3))
+        for _i in range(6):
+            for _j in range(3):
+                self.acc_m[_i, _j] = np.mean(_accdata[_i*self._nsamp:(_i+1)*self._nsamp, _j])
 
+        
         for _i in range(3):
-            _max = _acc_m[:,_i].max(0)
-            _min = _acc_m[:,_i].min(0)
-            _k[_i, _i] = (_max - _min)/ (2)
+            _max = self.acc_m[:,_i].max(0)
+            _min = self.acc_m[:,_i].min(0)
+            _k[_i, _i] = (_max - _min)/ (2*self.G)
             _b[_i] = (_max + _min)/2    
-            _Ti[_i, _i-2] = np.arctan(_acc_m[_acc_m[:,_i].argmax(0),_i-2] / _max)
-            _Ti[_i, _i-1] = np.arctan(_acc_m[_acc_m[:,_i].argmax(0),_i-1] / _max)
+            _Ti[_i, _i-2] = np.arctan(self.acc_m[self.acc_m[:,_i].argmax(0),_i-2] / _max)
+            _Ti[_i, _i-1] = np.arctan(self.acc_m[self.acc_m[:,_i].argmax(0),_i-1] / _max)
         _kT = inv(_k.dot(inv(_Ti)))
+        _param = np.append(np.append(np.append(_kT.diagonal(), _b.T), _kT[np.tril(_kT, -1) != 0]), _kT[np.triu(_kT, 1) != 0])
+        _jac = jacobian(self.accObj)
+        _hes = hessian(self.accObj)
+        _res = op.minimize(self.accObj, _param, method='trust-ncg', jac=_jac, hess=_hes)
+        return _res.x
+  
+    
+    def accObj(self, X):
+        _NS = nap.array([[X[0], X[6], X[7]], [X[8], X[1], X[9]], [X[10], X[11], X[2]]])
+        _b = nap.array([X[3], X[4], X[5]])
+        _sum = 0
+        for u in self.acc_m:
+            _sum += (self.G - nap.linalg.norm(_NS@(u-_b).T))**2
 
-        _param_a = list(_kT.flatten()) + list(_b.flatten())
-
-
-        _b = np.mean(_graw[0:6*_samp1,:], axis=0).T
-        _gyr_r = _graw[6*_samp1:,:] - _b
+        return _sum
+        
+    def calibgyr(self, _gyrdata):
+        _gyr_s = _gyrdata[0:6*self._nsamp,:]
+        _b = np.mean(_gyr_s, axis=0).T
+        _gyr_d = _gyrdata[6*self._nsamp:,:] 
+        _gyr_r = _gyr_d - _b
         _ang = np.zeros((3, 3))
         for i in range(3):
             for j in range(3):
-                _ang[i, j] = np.abs(intg.trapz(_gyr_r[_samp2*i:_samp2*(i+1), j], dx=self.dt))
+                _ang[i, j] = np.abs(intg.trapz(_gyr_r[self._gsamps*i:self._gsamps*(i+1), j], dx=self.dt))
+
+        _n = _ang.argmax(axis=0)
+
+        self.rates = np.zeros((self._gsamps,3))
+        for i in range(3):
+            self.rates[:,i] = _gyr_d[self._gsamps*_n[i]:self._gsamps*(_n[i]+1), i]
 
         _k = np.zeros((3,3))
         _k[:,0] = _ang[:,_ang[0].argmax()]
@@ -112,51 +161,26 @@ class daq:
         _k[:,2] = _ang[:,_ang[2].argmax()]
 
         _kT = np.diag([90,90,90])@inv(_k)
-        _param_g = list(_kT.flatten()) + list(_b.flatten())
-
-        self.acc = _araw
-        self.gyr = _graw[6*_samp1:,:]
-
-        _res_g = op.minimize(self.funobj_gyr, _param_g, method='trust-ncg', jac=jacobian(self.funobj_gyr), hess=hessian(self.funobj_gyr))
-        _res_a = op.minimize(self.funobj_acc, _param_a, method='trust-ncg', jac=jacobian(self.funobj_acc), hess=hessian(self.funobj_acc))
-
-        _sensor['param_a'] = _res_a.x
-        _sensor['param_b'] = _res_g.x
-
-
-
-        np.savez('./sensor/{}.npz', _sensor)
         
+        _param = np.append(np.append(np.append(_kT.diagonal(), _b.T), _kT[np.tril(_kT, -1) != 0]), _kT[np.triu(_kT, 1) != 0])
+        _jac = jacobian(self.gyrObj)
+        _hes = hessian(self.gyrObj)
+        _res = op.minimize(self.gyrObj, _param, method='trust-ncg', jac=_jac, hess=_hes)
+        return _res.x
+    
+    def gyrObj(self,Y):
+        _NS = nap.array([[Y[0], Y[6], Y[7]], [Y[8], Y[1], Y[9]], [Y[10], Y[11], Y[2]]])
+        _b = nap.array([Y[3], Y[4], Y[5]])
+        sum = 0
+        for u in self.rates:
+            sum += _NS@(u-_b).T*self.dt
+       
+    
+        return (90 - nap.abs(sum)).sum()**2
 
 
-    def funobj_acc(self, Y):
-        _S = np.array(Y[0:9]).reshape((3,3))
-        _B = np.array(Y[9:])
-        _sum = 0
-        for u in self.acc:
-            _sum += (1 - nap.linalg.norm(nap.matmul(_S,(u-_B))))**2
-
-        return _sum
-
-    def funobj_gyr(self, Y):
-        _S = np.array(Y[0:9]).reshape((3,3))
-        _B = np.array(Y[9:])
-        _sum = 0
-        for u in self.gyr:
-            _sum += (nap.matmul(_S,(u-_B)))*self.dt
-
-        return (90 - _sum)**2
-
-
-    def pull(self, _device, _q, _size):
-        i=0
-        tf = time.perf_counter()
-        while i < _size//self.dt:
-            ti=time.perf_counter()
-            if ti-tf>=self.dt:
-                tf = ti
-                i+=1
-                _q.put(self.bus.read_i2c_block_data(_device[0],_device[1], _device[2]))
+    def pull(self, _device):
+       return self.bus.read_i2c_block_data(_device[0],_device[1], _device[2])
 
         
 
