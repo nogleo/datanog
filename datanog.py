@@ -66,8 +66,8 @@ class daq:
             input('Rotate 90 deg around axis {}-{}'.format(_n+1,_n+2))
             self.pull(_device, qc, 1)
         _aux = []
-        _samp1 = 3//self.dt
-        _samp2 = 1//self.dt
+        _samp1 = int(3//self.dt)
+        _samp2 = int(1//self.dt)
         print('Data collection done...') 
         while qc.qsize()>0:
             _d = qc.get()
