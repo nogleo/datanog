@@ -212,6 +212,34 @@ class daq:
 
         self.savedata(self.q)
 
+    def pulldata2(self, _size = 3):
+        gc.collect()
+        self.q = queue.Queue()
+        if _size ==0:
+            i=0
+            self.state = True
+            tf = time.perf_counter()
+            while self.state:
+                ti=time.perf_counter()
+                if ti-tf>=self.dt:
+                    tf = ti
+                    i+=1
+                    self.q.put(self.pull(self.devices[0])+self.pull(self.devices[1]))
+        else:
+            i=0
+            t0=tf = time.perf_counter()
+            while i< _size//self.dt:
+                ti=time.perf_counter()
+                if ti-tf>=self.dt:
+                    tf = ti
+                    i+=1
+                    self.q.put(self.bus.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]) + self.bus.read_i2c_block_data(self.devices[1][0],self.devices[1][1], self.devices[1][2]))
+            t1 = time.perf_counter()
+            print(t1-t0)
+        
+
+        self.savedata(self.q)
+
     def savedata(self, _q):
         if 'DATA' not in os.listdir():
             os.mkdir('DATA')
