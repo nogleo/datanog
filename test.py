@@ -8,6 +8,6 @@ import os
 dn = datanog.daq()
 
 
-dn.pulldata(1)
 
-dn.pulldata2(1)
+
+dn.pulldata2(5)
