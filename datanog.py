@@ -35,12 +35,24 @@ class daq:
             try:
                 self.bus.read_byte(device)
                 if device == 0x6b or device == 0x6a:
-                    self.devices.append([device, 0x22, 12, '<hhhhhh', 1])
+                    self.devices.append([device, 0x22, 12, '<hhhhhh'])
+                if device == 0x36:
+                    self.devices.append([device, 0x0C, 2, '>H'])
                 self.config(device)
                 print("Device Config: ", device)
             except Exception as e:
                 #print("ERROR ", e)
                 pass
+        if len(self.devices)==1:
+            def pull0(self):
+                return self.bus.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2])
+        elif len(self.devices)==2:
+            def pull0(self):
+                return self.bus.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]) + self.bus.read_i2c_block_data(self.devices[1][0],self.devices[1][1], self.devices[1][2])
+        elif len(self.devices)==3:
+            def pull0(self):
+                return self.bus.read_i2c_block_data(self.devices[0][0],self.devices[0][1], self.devices[0][2]) + self.bus.read_i2c_block_data(self.devices[1][0],self.devices[1][1], self.devices[1][2]) + self.bus.read_i2c_block_data(self.devices[2][0],self.devices[2][1], self.devices[2][2]) 
+        
 
     def config(self, _device):
         if _device == 0x6a or _device == 0x6b:
