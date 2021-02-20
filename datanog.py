@@ -229,7 +229,7 @@ class daq:
                     i+=1
                     for _j in range(self.N):
                         self.q.put(self.pull(self.devices[_j]))
-            else:
+        else:
             i=0
             t0=tf = time.perf_counter()
             while i< _size//self.dt:
