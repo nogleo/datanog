@@ -243,7 +243,7 @@ class daq:
             print(t1-t0)
         
 
-        self.savedata(self.q)
+        self.savedata2(self.q)
 
     def savedata(self, _q):
         if 'DATA' not in os.listdir():
@@ -256,6 +256,23 @@ class daq:
         os.chdir('DATA')
         _filename = 'raw_{}.npy'.format(len(os.listdir()))
         np.save(_filename, arr)
+        print('{} saved'.format(_filename))
+        os.chdir('..')
+
+    def savedata2(self, _q):
+        if 'DATA' not in os.listdir():
+            os.mkdir('DATA')
+        for _j in range(self.N):
+            data = {str(self.devices[_j][0]):[]}
+        
+        while _q.qsize()>0:
+            for _j in range(self.N):
+                data[str(self.devices[_j][0])].append(unpack(self.devices[_j][-1], bytearray(_q.get())))
+            
+        arr = np.array(data)
+        os.chdir('DATA')
+        _filename = 'raw_{}.npz'.format(len(os.listdir()))
+        np.savez(_filename, arr)
         print('{} saved'.format(_filename))
         os.chdir('..')
 
