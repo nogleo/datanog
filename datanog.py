@@ -262,7 +262,7 @@ class daq:
     def savedata2(self, _q):
         if 'DATA' not in os.listdir():
             os.mkdir('DATA')
-        data={}
+    data={}
 	for _j in range(self.N):
             data = {str(self.devices[_j][0]):[]}
         
