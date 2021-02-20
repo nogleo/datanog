@@ -264,7 +264,7 @@ class daq:
             os.mkdir('DATA')
         data={}
 	    for _j in range(self.N):
-            data = {str(self.devices[_j][0]):[]}
+            data[str(self.devices[_j][0])] = []
         
         while _q.qsize()>0:
             for _j in range(self.N):
