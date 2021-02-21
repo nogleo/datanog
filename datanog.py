@@ -228,7 +228,7 @@ class daq:
                     tf = ti
                     i+=1
                     for _j in range(self.N):
-                        self.q.put(self.pull(self.devices[_j]))
+                        self.q.put(self.bus.read_i2c_block_data(self.devices[_j][0],self.devices[_j][1], self.devices[_j][2]))
         else:
             i=0
             t0=tf = time.perf_counter()
