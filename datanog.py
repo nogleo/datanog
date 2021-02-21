@@ -8,7 +8,11 @@ import scipy.optimize as op
 import scipy.integrate as intg
 from autograd import jacobian, hessian
 from numpy.linalg import norm, inv
+<<<<<<< HEAD
 from smbus import SMBus
+=======
+import smbus2
+>>>>>>> 2356cab0763310abb9fe11e6a33207db79aee7ce
 
 
 
@@ -17,7 +21,11 @@ class daq:
     def __init__(self):
         self.__name__ = "daq"
         try:
+<<<<<<< HEAD
             self.bus = SMBus(1)
+=======
+            self.bus = smbus2.SMBus(1)
+>>>>>>> 2356cab0763310abb9fe11e6a33207db79aee7ce
             
             print("bus connected")
         except Exception as e:
