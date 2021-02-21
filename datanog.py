@@ -17,7 +17,7 @@ class daq:
     def __init__(self):
         self.__name__ = "daq"
         try:
-            self.bus = smbus.SMBus(1)
+            self.bus = smbus2.SMBus(1)
             
             print("bus connected")
         except Exception as e:
