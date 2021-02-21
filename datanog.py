@@ -24,7 +24,7 @@ class daq:
             print("ERROR ", e)
 
         self.devices = []
-        self.fs = 3330
+        self.fs = 3350
         self.dt = 1/self.fs
         self.state = True
         self.G = 1
