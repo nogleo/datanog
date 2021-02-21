@@ -1,7 +1,6 @@
 import os, gc, queue
 from struct import unpack
 import time
-from collections import deque
 import numpy as np
 import autograd.numpy as nap
 import scipy.optimize as op
@@ -216,6 +215,7 @@ class daq:
         self.savedata(self.q)
 
     def pulldata2(self, _size = 3):
+        dev = self.devices
         gc.collect()
         self.q = queue.Queue()
         if _size ==0:
@@ -228,7 +228,7 @@ class daq:
                     tf = ti
                     i+=1
                     for _j in range(self.N):
-                        self.q.put_nowait(self.bus.read_i2c_block_data(self.devices[_j][0],self.devices[_j][1], self.devices[_j][2]))
+                        self.q.put(self.bus.read_i2c_block_data(self.devices[_j][0],self.devices[_j][1], self.devices[_j][2]))
         else:
             i=0
             t0=tf = time.perf_counter()
@@ -238,7 +238,7 @@ class daq:
                     tf = ti
                     i+=1
                     for _j in range(self.N):
-                        self.q.put(self.pull(self.devices[_j]))
+                        self.q.put(self.bus.read_i2c_block_data(dev[_j][0],dev[_j][2],dev[_j][2]))
             t1 = time.perf_counter()
             print(t1-t0)
         
