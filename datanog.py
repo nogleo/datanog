@@ -8,7 +8,7 @@ import scipy.optimize as op
 import scipy.integrate as intg
 from autograd import jacobian, hessian
 from numpy.linalg import norm, inv
-from smbus import SMBus
+from smbus2 import SMBus
 
 
 
