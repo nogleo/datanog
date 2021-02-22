@@ -9,10 +9,6 @@ from autograd import jacobian, hessian
 from numpy.linalg import norm, inv
 from smbus import SMBus
 
-
-
-
-
 class daq:
     def __init__(self):
         self.__name__ = "daq"
@@ -244,14 +240,20 @@ class daq:
             print(t1-t0)
         
 
-        self.savedata2(self.q)
+        self.savedata(self.q)
 
     def savedata(self, _q):
         if 'DATA' not in os.listdir():
             os.mkdir('DATA')
         data = []
+        dev = self.devices
         while _q.qsize()>0:
             _d = _q.get()
+            _aux = []
+            i=0
+            for j in range(self.N):
+                _aux+=unpack(dev[j][3], bytearray(_d[i:i+int(dev[j][2]]))
+                i += int(dev[j][2]) 
             data.append(unpack('<hhhhhh',bytearray(_d[0:12])) + unpack('<hhhhhh',bytearray(_d[12:24])))
         arr = np.array(data)
         os.chdir('DATA')
