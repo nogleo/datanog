@@ -19,7 +19,8 @@ class daq:
         global dev, fs, dt
         self.__name__ = "daq"
         try:
-            self.bus = SMBus(1)
+            #self.bus = SMBus(1)
+            self.pi = pigpio.pi()
             print("bus connected")
         except Exception as e:
             print("ERROR ", e)
@@ -34,7 +35,7 @@ class daq:
         self.range = [1, 3]     #[16G, 2000DPS]
         for device in range(128):
             try:
-                self.bus.read_byte(device)
+                self.pi.i2c_read_byte(device)
                 if device == 0x6b or device == 0x6a:
                     dev.append([device, 0x22, 12, '<hhhhhh'])
                 if device == 0x36:
@@ -54,7 +55,7 @@ class daq:
 
             for _set in _settings:
                 try:
-                    self.bus.write_byte_data(_device, _set[0], _set[1])
+                    self.pi.i2c_write_byte_data(_device, _set[0], _set[1])
                     
                 except Exception as e:
                     print("ERROR: ",e)
@@ -184,7 +185,7 @@ class daq:
 
 
     def pull(self, _device):
-       return self.bus.read_i2c_block_data(_device[0],_device[1], _device[2])
+       return self.pi.i2c_read_i2c_block_data(_device[0],_device[1], _device[2])
 
     def pulldata(self, _size = 3):
         self.q = queue.Queue()
@@ -199,7 +200,7 @@ class daq:
                     i+=1
                     _aux = []
                     for _j in range(self.N):
-                       _aux += self.bus.read_i2c_block_data(dev[_j][0],dev[_j][1],dev[_j][2])
+                       _aux += self.pi.i2c_read_i2c_block_data(dev[_j][0],dev[_j][1],dev[_j][2])
                     self.q.put(_aux)
             t1 = time.perf_counter()
             print(t1-t0)
@@ -220,7 +221,7 @@ class daq:
                         i+=1
                         
                         for _j in range(self.N):
-                            self.q.put(self.bus.read_i2c_block_data(dev[_j][0],dev[_j][1],dev[_j][2]))
+                            self.q.put(self.pi.i2c_read_i2c_block_data(dev[_j][0],dev[_j][1],dev[_j][2]))
                     t1 = time.perf_counter()
                 print(t1-t0)
             except Exception as e:
@@ -236,7 +237,7 @@ class daq:
                         i+=1
                         
                         for _j in range(self.N):
-                            self.q.put(self.bus.read_i2c_block_data(dev[_j][0],dev[_j][1],dev[_j][2]))
+                            self.q.put(self.pi.i2c_read_i2c_block_data(dev[_j][0],dev[_j][1],dev[_j][2]))
                     t1 = time.perf_counter()
                 print(t1-t0)
             except Exception as e:
