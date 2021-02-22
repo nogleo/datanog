@@ -8,7 +8,7 @@ import scipy.integrate as intg
 from autograd import jacobian, hessian
 from numpy.linalg import norm, inv
 from smbus import SMBus
-
+dev = []
 class daq:
     def __init__(self):
         self.__name__ = "daq"
@@ -233,14 +233,16 @@ class daq:
                 if ti-tf>=self.dt:
                     tf = ti
                     i+=1
+                    _aux = []
                     for _j in range(self.N):
-                       _aux = self.bus.read_i2c_block_data(dev[_j][0],dev[_j][2],dev[_j][2])
+                       _aux += self.bus.read_i2c_block_data(dev[_j][0],dev[_j][2],dev[_j][2])
                     self.q.put(_aux)
             t1 = time.perf_counter()
             print(t1-t0)
+
         
 
-        self.savedata(self.q)
+        
 
     def savedata(self, _q):
         if 'DATA' not in os.listdir():
