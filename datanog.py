@@ -235,11 +235,7 @@ class daq:
                     i+=1
                     _aux = []
                     for _j in range(self.N):
-<<<<<<< HEAD
                        _aux += self.bus.read_i2c_block_data(dev[_j][0],dev[_j][2],dev[_j][2])
-=======
-                       _aux = self.bus.read_i2c_block_data(dev[_j][0],dev[_j][1],dev[_j][2])
->>>>>>> 0780175d83c7f8db2df0cb287a7c4aff99eb7107
                     self.q.put(_aux)
             t1 = time.perf_counter()
             print(t1-t0)
