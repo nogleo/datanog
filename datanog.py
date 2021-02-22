@@ -35,7 +35,7 @@ class daq:
         self.range = [1, 3]     #[16G, 2000DPS]
         for device in range(128):
             try:
-                self.pi.i2c_read_byte(device)
+                self.pi.i2c_open(device)
                 if device == 0x6b or device == 0x6a:
                     dev.append([device, 0x22, 12, '<hhhhhh'])
                 if device == 0x36:
