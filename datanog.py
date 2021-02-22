@@ -252,7 +252,7 @@ class daq:
             _aux = []
             i=0
             for j in range(self.N):
-                _aux+=unpack(dev[j][3], bytearray(_d[i:i+int(dev[j][2]]))
+                _aux+=unpack(dev[j][3], bytearray(_d[i:i+int(dev[j][2]])))
                 i += int(dev[j][2]) 
             data.append(unpack('<hhhhhh',bytearray(_d[0:12])) + unpack('<hhhhhh',bytearray(_d[12:24])))
         arr = np.array(data)
