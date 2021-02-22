@@ -226,7 +226,7 @@ class daq:
         if 'DATA' not in os.listdir():
             os.mkdir('DATA')
         data = []
-        dev = self.devices
+        dev = dev
         while _q.qsize()>0:
             _d = _q.get()
             _aux = []
@@ -248,11 +248,11 @@ class daq:
             os.mkdir('DATA')
         data={}
         for _j in range(self.N):
-            data[str(self.devices[_j][0])] = []
+            data[str(dev[_j][0])] = []
         
         while _q.qsize()>0:
             for _j in range(self.N):
-                data[str(self.devices[_j][0])].append(unpack(self.devices[_j][-1], bytearray(_q.get())))
+                data[str(dev[_j][0])].append(unpack(dev[_j][-1], bytearray(_q.get())))
             
         arr = np.array(data)
         os.chdir('DATA')
