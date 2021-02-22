@@ -33,7 +33,7 @@ class daq:
 
         self.odr = 8  #8=1660Hz 9=3330Hz 10=6660Hz
         self.range = [1, 3]     #[16G, 2000DPS]
-        for device in range(128):
+        for device in [54, 106, 107]:
             try:
                 self.pi.i2c_open(1, device)
                 if device == 0x6b or device == 0x6a:
