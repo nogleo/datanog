@@ -211,6 +211,7 @@ class daq:
         self.savedata(self.q)
 
     def pulldata2(self, _size = 3):
+        self.q = queue.Queue()
         gc.collect()
         try:
             i=0
