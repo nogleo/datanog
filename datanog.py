@@ -8,7 +8,7 @@ import scipy.integrate as intg
 from autograd import jacobian, hessian
 from numpy.linalg import norm, inv
 from smbus import SMBus
-
+dev = []
 class daq:
     def __init__(self):
         self.__name__ = "daq"
@@ -19,7 +19,7 @@ class daq:
             print("ERROR ", e)
 
         self.devices = []
-        self.fs = 3350
+        self.fs = 3330
         self.dt = 1/self.fs
         self.state = True
         self.G = 1
@@ -30,15 +30,15 @@ class daq:
             try:
                 self.bus.read_byte(device)
                 if device == 0x6b or device == 0x6a:
-                    self.devices.append([device, 0x22, 12, '<hhhhhh'])
+                    dev.append([device, 0x22, 12, '<hhhhhh'])
                 if device == 0x36:
-                    self.devices.append([device, 0x0C, 2, '>H'])
+                    dev.append([device, 0x0C, 2, '>H'])
                 self.config(device)
                 print("Device Config: ", device)
             except Exception as e:
                 #print("ERROR ", e)
                 pass
-        self.N = len(self.devices)
+        self.N = len(dev)
 
     def config(self, _device):
         if _device == 0x6a or _device == 0x6b:
@@ -234,13 +234,13 @@ class daq:
                     tf = ti
                     i+=1
                     for _j in range(self.N):
-                       _aux = self.bus.read_i2c_block_data(dev[_j][0],dev[_j][2],dev[_j][2])
+                       _aux = self.bus.read_i2c_block_data(dev[_j][0],dev[_j][1],dev[_j][2])
                     self.q.put(_aux)
             t1 = time.perf_counter()
             print(t1-t0)
         
 
-        self.savedata(self.q)
+        
 
     def savedata(self, _q):
         if 'DATA' not in os.listdir():
@@ -252,9 +252,9 @@ class daq:
             _aux = []
             i=0
             for j in range(self.N):
-                _aux+=unpack(dev[j][3], bytearray(_d[i:i+int(dev[j][2]])))
+                _aux+=unpack(dev[j][3], bytearray(_d[i:i+int(dev[j][2])]))
                 i += int(dev[j][2]) 
-            data.append(unpack('<hhhhhh',bytearray(_d[0:12])) + unpack('<hhhhhh',bytearray(_d[12:24])))
+            data.append(_aux)
         arr = np.array(data)
         os.chdir('DATA')
         _filename = 'raw_{}.npy'.format(len(os.listdir()))
