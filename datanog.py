@@ -209,8 +209,8 @@ class daq:
             t0=tf = time.perf_counter()
             while i< _size//dt:
                 ti=time.perf_counter()
-                if ti-tf>=dt:
-                    tf = ti
+                if True: #ti-tf>=dt:
+                    #tf = ti
                     i+=1
                     
                     for _j in range(self.N):
