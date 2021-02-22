@@ -211,21 +211,8 @@ class daq:
         self.savedata(self.q)
 
     def pulldata2(self, _size = 3):
-        dev = self.devices
         gc.collect()
-        self.q = queue.Queue()
-        if _size ==0:
-            i=0
-            self.state = True
-            tf = time.perf_counter()
-            while self.state:
-                ti=time.perf_counter()
-                if ti-tf>=self.dt:
-                    tf = ti
-                    i+=1
-                    for _j in range(self.N):
-                        self.q.put(self.bus.read_i2c_block_data(self.devices[_j][0],self.devices[_j][1], self.devices[_j][2]))
-        else:
+        try:
             i=0
             t0=tf = time.perf_counter()
             while i< _size//self.dt:
@@ -235,10 +222,12 @@ class daq:
                     i+=1
                     _aux = []
                     for _j in range(self.N):
-                       _aux += self.bus.read_i2c_block_data(dev[_j][0],dev[_j][2],dev[_j][2])
+                       _aux += self.bus.read_i2c_block_data(dev[_j][0],dev[_j][1],dev[_j][2])
                     self.q.put(_aux)
             t1 = time.perf_counter()
             print(t1-t0)
+        except Exception as e:
+            print(e)
 
         
 
