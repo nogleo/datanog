@@ -244,8 +244,8 @@ class daq:
             _aux = []
             i=0
             for j in range(self.N):
-                _aux+=unpack(dev[j][3], bytearray(_d[i:i+int(dev[j][2])]))
-                i += int(dev[j][2]) 
+                _aux += unpack(dev[j][3], bytearray(_d[i:i+dev[j][2]]))
+                i += dev[j][2] 
                 print(i)
             data.append(_aux)
         arr = np.array(data)
