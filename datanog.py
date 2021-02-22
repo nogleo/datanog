@@ -11,6 +11,7 @@ from smbus import SMBus
 dev = []
 class daq:
     def __init__(self):
+        global dev, fs, dt
         self.__name__ = "daq"
         try:
             self.bus = SMBus(1)
@@ -18,9 +19,9 @@ class daq:
         except Exception as e:
             print("ERROR ", e)
 
-        self.devices = []
-        self.fs = 3330
-        self.dt = 1/self.fs
+        dev = []
+        fs = 3330
+        dt = 1/fs
         self.state = True
         self.G = 1
 
@@ -58,7 +59,7 @@ class daq:
         _sensor = {'name': _sensname}
         self._caldata = []
         print('Iniciando 6 pos calibration')
-        self._nsamp = int(input('Number of Samples/Position: ') or 3/self.dt)
+        self._nsamp = int(input('Number of Samples/Position: ') or 3/dt)
 
         for _n in range(6):
             input('Position {}'.format(_n+1))
@@ -66,18 +67,18 @@ class daq:
             tf = time.perf_counter()
             while i<self._nsamp:
                 ti=time.perf_counter()
-                if ti-tf>=self.dt:
+                if ti-tf>=dt:
                     tf = ti
                     i+=1
                     self._caldata.append(self.pull(_device))
-        self._gsamps = int(input('Number of Samples/Rotation: ') or 1/self.dt)
+        self._gsamps = int(input('Number of Samples/Rotation: ') or 1/dt)
         for _n in range(0,6,2):
             input('Rotate 90 deg around axis {}-{}'.format(_n+1,_n+2))
             i=0
             tf = time.perf_counter()
             while i<self._gsamps:
                 ti=time.perf_counter()
-                if ti-tf>=self.dt:
+                if ti-tf>=dt:
                     tf = ti
                     i+=1
                     self._caldata.append(self.pull(_device))
@@ -145,7 +146,7 @@ class daq:
         _ang = np.zeros((3, 3))
         for i in range(3):
             for j in range(3):
-                _ang[i, j] = np.abs(intg.trapz(_gyr_r[self._gsamps*i:self._gsamps*(i+1), j], dx=self.dt))
+                _ang[i, j] = np.abs(intg.trapz(_gyr_r[self._gsamps*i:self._gsamps*(i+1), j], dx=dt))
 
         _n = _ang.argmax(axis=0)
 
@@ -171,7 +172,7 @@ class daq:
         _b = nap.array([Y[3], Y[4], Y[5]])
         sum = 0
         for u in self.rates:
-            sum += _NS@(u-_b).T*self.dt
+            sum += _NS@(u-_b).T*dt
        
     
         return (90 - nap.abs(sum)).sum()**2
@@ -186,9 +187,9 @@ class daq:
         try:
             i=0
             t0=tf = time.perf_counter()
-            while i< _size//self.dt:
+            while i< _size//dt:
                 ti=time.perf_counter()
-                if ti-tf>=self.dt:
+                if ti-tf>=dt:
                     tf = ti
                     i+=1
                     _aux = []
@@ -206,9 +207,9 @@ class daq:
         try:
             i=0
             t0=tf = time.perf_counter()
-            while i< _size//self.dt:
+            while i< _size//dt:
                 ti=time.perf_counter()
-                if ti-tf>=self.dt:
+                if ti-tf>=dt:
                     tf = ti
                     i+=1
                     
