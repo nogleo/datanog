@@ -243,9 +243,9 @@ class daq:
                 print(_j)    
 
    def pulldata3(self, _size = 3):
-        self.q = queue.Queue()
-        gc.collect()
-        if _size == 0:
+       self.q = queue.Queue()
+       gc.collect()
+       if _size == 0:
             try:
                 i=0
                 t0=tf = time.perf_counter()
