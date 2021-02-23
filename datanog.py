@@ -224,7 +224,7 @@ class daq:
                     t1 = time.perf_counter()
                 print(t1-t0)
             except Exception as e:
-                print(i)    
+                print(_j)    
         else:
             try:
                 i=0
@@ -240,7 +240,7 @@ class daq:
                     t1 = time.perf_counter()
                 print(t1-t0)
             except Exception as e:
-                print(i)    
+                print(_j)    
 
         
 
