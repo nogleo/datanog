@@ -242,7 +242,7 @@ class daq:
             except Exception as e:
                 print(_j)    
 
-   def pulldata3(self, _size = 3):
+    def pulldata3(self, _size = 3):
        self.q = queue.Queue()
        gc.collect()
        if _size == 0:
