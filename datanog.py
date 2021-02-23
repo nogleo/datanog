@@ -44,8 +44,8 @@ class daq:
                 self.config(device, hand)
                 print("Device Config: ", device)
             except Exception as e:
-                #print("ERROR ", e)
-                pass
+                print("ERROR ", e)
+                #pass
         self.N = len(dev)
 
     def config(self, _device, _hand):
