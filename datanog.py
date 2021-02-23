@@ -26,28 +26,29 @@ class daq:
             print("ERROR ", e)
 
         dev = []
-        fs = 1660
+        
+        fs = 3330
         dt = 1/fs
         self.state = True
         self.G = 1
 
-        self.odr = 8  #8=1660Hz 9=3330Hz 10=6660Hz
+        self.odr = 9  #8=1660Hz 9=3330Hz 10=6660Hz
         self.range = [1, 3]     #[16G, 2000DPS]
         for device in [54, 106, 107]:
             try:
-                self.pi.i2c_open(1, device)
+                hand = self.pi.i2c_open(1, device)
                 if device == 0x6b or device == 0x6a:
-                    dev.append([device, 0x22, 12, '<hhhhhh'])
+                    dev.append([hand, 0x22, 12, '<hhhhhh'])
                 if device == 0x36:
-                    dev.append([device, 0x0C, 2, '>H'])
-                self.config(device)
+                    dev.append([hand, 0x0C, 2, '>H'])
+                self.config(device, hand)
                 print("Device Config: ", device)
             except Exception as e:
                 #print("ERROR ", e)
                 pass
         self.N = len(dev)
 
-    def config(self, _device):
+    def config(self, _device, _hand):
         if _device == 0x6a or _device == 0x6b:
             _settings = [[0x10, (self.odr<<4 | self.range[0]<<2)],
                          [0x11, (self.odr<<4 | self.range[1]<<2)],
@@ -55,7 +56,7 @@ class daq:
 
             for _set in _settings:
                 try:
-                    self.pi.i2c_write_byte_data(_device, _set[0], _set[1])
+                    self.pi.i2c_write_byte_data(_hand, _set[0], _set[1])
                     
                 except Exception as e:
                     print("ERROR: ",e)
