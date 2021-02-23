@@ -261,7 +261,8 @@ class daq:
                 print(t1-t0)
             except Exception as e:
                 print(_j)    
-        else:
+        
+       else:
             try:
                 i=0
                 t0=tf = time.perf_counter()
