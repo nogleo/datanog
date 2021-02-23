@@ -242,7 +242,42 @@ class daq:
             except Exception as e:
                 print(_j)    
 
-        
+   def pulldata3(self, _size = 3):
+        self.q = queue.Queue()
+        gc.collect()
+        if _size == 0:
+            try:
+                i=0
+                t0=tf = time.perf_counter()
+                while True:
+                    ti=time.perf_counter()
+                    if ti-tf>=dt:
+                        tf = ti
+                        i+=1
+                        
+                        for _j in range(self.N):
+                            self.q.put_nowait(self.bus.read_i2c_block_data(dev[_j][0],dev[_j][1],dev[_j][2]))
+                    t1 = time.perf_counter()
+                print(t1-t0)
+            except Exception as e:
+                print(_j)    
+        else:
+            try:
+                i=0
+                t0=tf = time.perf_counter()
+                while i< _size//dt:
+                    ti=time.perf_counter()
+                    if ti-tf>=dt:
+                        tf = ti
+                        i+=1
+                        
+                        for _j in range(self.N):
+                            self.q.put_nowait(self.bus.read_i2c_block_data(dev[_j][0],dev[_j][1],dev[_j][2]))
+                    t1 = time.perf_counter()
+                print(t1-t0)
+            except Exception as e:
+                print(_j)    
+     
 
     def savedata(self, _q):
         if 'DATA' not in os.listdir():
