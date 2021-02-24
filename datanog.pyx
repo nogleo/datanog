@@ -206,8 +206,8 @@ class daq:
         except Exception as e:
             print(e)
 
-    def pulldata2(self, _size = 3):
-        cdef int i, j, self.N
+    def pulldata2(self, _size = 3, N=self.N):
+        cdef int i, j, N
         self.q = queue.Queue()
         gc.collect()
         if _size == 0:
@@ -220,7 +220,7 @@ class daq:
                         tf = ti
                         i+=1
                         
-                        for j in range(self.N):
+                        for j in range(N):
                             self.q.put(self.bus.read_i2c_block_data(dev[_j][0],dev[_j][1],dev[_j][2]))
                     t1 = time.perf_counter()
                 print(t1-t0)
@@ -236,7 +236,7 @@ class daq:
                         tf = ti
                         i+=1
                         
-                        for _j in range(self.N):
+                        for _j in range(N):
                             self.q.put(self.bus.read_i2c_block_data(dev[_j][0],dev[_j][1],dev[_j][2]))
                     t1 = time.perf_counter()
                 print(t1-t0)
@@ -247,7 +247,6 @@ class daq:
         if 'DATA' not in os.listdir():
             os.mkdir('DATA')
         data = []
-        dev = dev
         while _q.qsize()>0:
             _d = _q.get()
             _aux = []
