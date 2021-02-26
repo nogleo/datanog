@@ -25,12 +25,12 @@ class daq:
             print("ERROR ", e)
 
         dev = []
-        fs = 3330
+        fs = 1660
         dt = 1/fs
         self.state = True
         self.G = 1
 
-        self.odr = 9  #8=1660Hz 9=3330Hz 10=6660Hz
+        self.odr = 8  #8=1660Hz 9=3330Hz 10=6660Hz
         self.range = [1, 3]     #[16G, 2000DPS]
         for device in range(128):
             try:
@@ -184,7 +184,7 @@ class daq:
 
 
     def pull(self, _device):
-       return self.bus.read_i2c_block_data(_device[0],_device[1], _device[2])
+       return unpack(_device[3], bytearray(self.bus.read_i2c_block_data(_device[0],_device[1], _device[2])))
 
     def pulldata(self, _size = 3):
         self.q = queue.Queue()

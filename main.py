@@ -9,7 +9,6 @@ from PyQt5 import QtCore, QtWidgets,QtGui
 from PyQt5 import uic
 from PyQt5.QtCore import pyqtSlot
 import queue
-import asyncio
 import datanog
 import time
 
@@ -28,7 +27,7 @@ class datanogAPP(QtWidgets.QMainWindow):
         self.resize(800, 480)
         self.startbutton.clicked.connect(self.startt)
         self.stopbutton.clicked.connect(self.stopp)
-    
+        self.threadpool = QtCore.QThreadPool()
     def stopp(self):
         dn.state=False
     
