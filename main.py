@@ -95,7 +95,7 @@ class Ui_MainWindow(object):
         #plt.plot(np.linspace(0, self.horizontalSlider.value(), )_d)
         #plt.show()
         print(type(_d))
-        print(_d.shape)
+        print(_d[0])
 
 
 
