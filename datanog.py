@@ -187,6 +187,7 @@ class daq:
     def pulldata(self, _size = 1):
         self.q = queue.Queue()
         gc.collect()
+        Ns = int(_size)//self.dt
         if _size == 0:
             try:
                 i=0
@@ -207,7 +208,7 @@ class daq:
             try:
                 i=0
                 t0=tf = time.perf_counter()
-                while i < _size/self.dt:
+                while i < Ns:
                     ti=time.perf_counter()
                     if ti-tf>=self.dt:
                         tf = ti
