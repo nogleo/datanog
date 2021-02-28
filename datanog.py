@@ -227,7 +227,7 @@ class daq:
             try:
                 i=0
                 t0=tf = time.perf_counter()
-                while i < _size//self.dt:
+                while i < _size/self.dt:
                     ti=time.perf_counter()
                     if ti-tf>=self.dt:
                         tf = ti
