@@ -91,7 +91,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Process"))
 
     def plotdata(self):
-        _d = np.random.i2cderand(1660,13)
+        _d = np.random.rand(1660,13)
         self.canv = MatplotlibCanvas(self)
         self.canv.axes.cla()
         ax = self.canv.axes
