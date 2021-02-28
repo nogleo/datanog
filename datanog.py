@@ -34,7 +34,7 @@ class daq:
             try:
                 self.bus.read_byte(device)
                 if device == 0x6b or device == 0x6a:
-                    dev.append([device, 0x22, 12, '<hhhhhh'])
+                    self.dev.append([device, 0x22, 12, '<hhhhhh'])
                 if device == 0x36:
                     self.dev.append([device, 0x0C, 2, '>H'])
                 self.config(device)
@@ -324,7 +324,7 @@ class daq:
         while _q.qsize()>0:
             for _j in range(self.N):
                 _aux.append(unpack(self.dev[_j][-1], bytearray(_q.get())))
-            data.append(_aux)
+            _data.append(_aux)
         return _data
         
 

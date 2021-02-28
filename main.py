@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QFileDialog
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as Navi
 from matplotlib.figure import Figure
 import datanog
+import numpy as np
 
 class MatplotlibCanvas(FigureCanvasQTAgg):
 	def __init__(self,parent=None, dpi = 120):
@@ -90,7 +91,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Process"))
 
     def plotdata(self):
-        _d = dn.to_raw(dn.pulldata2(self.horizontalSlider.value))
+        _d = np.random.i2cderand(1660,13)
         self.canv = MatplotlibCanvas(self)
         self.canv.axes.cla()
         ax = self.canv.axes
