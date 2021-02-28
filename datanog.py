@@ -9,14 +9,12 @@ from autograd import jacobian, hessian
 from numpy.linalg import norm, inv
 from smbus import SMBus
 import pigpio
-dev = []
+
 
 
 
 class daq:
     def __init__(self):
-        
-        global dev, fs, dt
         self.__name__ = "daq"
         try:
             self.bus = SMBus(1)
@@ -24,9 +22,9 @@ class daq:
         except Exception as e:
             print("ERROR ", e)
 
-        dev = []
-        fs = 1660
-        dt = 1/fs
+        self.dev = []
+        self.fs = 1660
+        self.dt = 1/self.fs
         self.state = True
         self.G = 1
 
@@ -38,13 +36,13 @@ class daq:
                 if device == 0x6b or device == 0x6a:
                     dev.append([device, 0x22, 12, '<hhhhhh'])
                 if device == 0x36:
-                    dev.append([device, 0x0C, 2, '>H'])
+                    self.dev.append([device, 0x0C, 2, '>H'])
                 self.config(device)
                 print("Device Config: ", device)
             except Exception as e:
                 #print("ERROR ", e)
                 pass
-        self.N = len(dev)
+        self.N = len(self.dev)
 
     def config(self, _device):
         if _device == 0x6a or _device == 0x6b:
@@ -64,7 +62,7 @@ class daq:
         _sensor = {'name': _sensname}
         self._caldata = []
         print('Iniciando 6 pos calibration')
-        self._nsamp = int(input('Number of Samples/Position: ') or 3/dt)
+        self._nsamp = int(input('Number of Samples/Position: ') or 3/self.dt)
 
         for _n in range(6):
             input('Position {}'.format(_n+1))
@@ -72,18 +70,18 @@ class daq:
             tf = time.perf_counter()
             while i<self._nsamp:
                 ti=time.perf_counter()
-                if ti-tf>=dt:
+                if ti-tf>=self.dt:
                     tf = ti
                     i+=1
                     self._caldata.append(self.pull(_device))
-        self._gsamps = int(input('Number of Samples/Rotation: ') or 1/dt)
+        self._gsamps = int(input('Number of Samples/Rotation: ') or 1/self.dt)
         for _n in range(0,6,2):
             input('Rotate 90 deg around axis {}-{}'.format(_n+1,_n+2))
             i=0
             tf = time.perf_counter()
             while i<self._gsamps:
                 ti=time.perf_counter()
-                if ti-tf>=dt:
+                if ti-tf>=self.dt:
                     tf = ti
                     i+=1
                     self._caldata.append(self.pull(_device))
@@ -151,7 +149,7 @@ class daq:
         _ang = np.zeros((3, 3))
         for i in range(3):
             for j in range(3):
-                _ang[i, j] = np.abs(intg.trapz(_gyr_r[self._gsamps*i:self._gsamps*(i+1), j], dx=dt))
+                _ang[i, j] = np.abs(intg.trapz(_gyr_r[self._gsamps*i:self._gsamps*(i+1), j], dx=self.dt))
 
         _n = _ang.argmax(axis=0)
 
@@ -177,7 +175,7 @@ class daq:
         _b = nap.array([Y[3], Y[4], Y[5]])
         sum = 0
         for u in self.rates:
-            sum += _NS@(u-_b).T*dt
+            sum += _NS@(u-_b).T*self.dt
        
     
         return (90 - nap.abs(sum)).sum()**2
@@ -192,21 +190,21 @@ class daq:
         try:
             i=0
             t0=tf = time.perf_counter()
-            while i< _size//dt:
+            while i< _size//self.dt:
                 ti=time.perf_counter()
-                if ti-tf>=dt:
+                if ti-tf>=self.dt:
                     tf = ti
                     i+=1
                     _aux = []
                     for _j in range(self.N):
-                       _aux += self.bus.read_i2c_block_data(dev[_j][0],dev[_j][1],dev[_j][2])
+                       _aux += self.bus.read_i2c_block_data(self.dev[_j][0],self.dev[_j][1],self.dev[_j][2])
                     self.q.put(_aux)
             t1 = time.perf_counter()
             print(t1-t0)
         except Exception as e:
             print(e)
 
-    def pulldata2(self, _size = 3):
+    def pulldata2(self, _size = 1):
         self.q = queue.Queue()
         gc.collect()
         if _size == 0:
@@ -215,12 +213,12 @@ class daq:
                 t0=tf = time.perf_counter()
                 while True:
                     ti=time.perf_counter()
-                    if ti-tf>=dt:
+                    if ti-tf>=self.dt:
                         tf = ti
                         i+=1
                         
                         for _j in range(self.N):
-                            self.q.put(self.bus.read_i2c_block_data(dev[_j][0],dev[_j][1],dev[_j][2]))
+                            self.q.put(self.bus.read_i2c_block_data(self.dev[_j][0],self.dev[_j][1],self.dev[_j][2]))
                     t1 = time.perf_counter()
                 print(t1-t0)
             except Exception as e:
@@ -229,18 +227,19 @@ class daq:
             try:
                 i=0
                 t0=tf = time.perf_counter()
-                while i< _size//dt:
+                while i< _size//self.dt:
                     ti=time.perf_counter()
-                    if ti-tf>=dt:
+                    if ti-tf>=self.dt:
                         tf = ti
                         i+=1
                         
                         for _j in range(self.N):
-                            self.q.put(self.bus.read_i2c_block_data(dev[_j][0],dev[_j][1],dev[_j][2]))
+                            self.q.put(self.bus.read_i2c_block_data(self.dev[_j][0],self.dev[_j][1],self.dev[_j][2]))
                     t1 = time.perf_counter()
                 print(t1-t0)
             except Exception as e:
-                print(_j)    
+                print(_j)
+        return self.q  
 
     def pulldata3(self, _size = 3):
        self.q = queue.Queue()
@@ -251,12 +250,12 @@ class daq:
                 t0=tf = time.perf_counter()
                 while True:
                     ti=time.perf_counter()
-                    if ti-tf>=dt:
+                    if ti-tf>=self.dt:
                         tf = ti
                         i+=1
                         
                         for _j in range(self.N):
-                            self.q.put_nowait(self.bus.read_i2c_block_data(dev[_j][0],dev[_j][1],dev[_j][2]))
+                            self.q.put_nowait(self.bus.read_i2c_block_data(self.dev[_j][0],self.dev[_j][1],self.dev[_j][2]))
                     t1 = time.perf_counter()
                 print(t1-t0)
             except Exception as e:
@@ -266,14 +265,14 @@ class daq:
             try:
                 i=0
                 t0=tf = time.perf_counter()
-                while i< _size//dt:
+                while i< _size//self.dt:
                     ti=time.perf_counter()
-                    if ti-tf>=dt:
+                    if ti-tf>=self.dt:
                         tf = ti
                         i+=1
                         
                         for _j in range(self.N):
-                            self.q.put_nowait(self.bus.read_i2c_block_data(dev[_j][0],dev[_j][1],dev[_j][2]))
+                            self.q.put_nowait(self.bus.read_i2c_block_data(self.dev[_j][0],self.dev[_j][1],self.dev[_j][2]))
                     t1 = time.perf_counter()
                 print(t1-t0)
             except Exception as e:
@@ -284,7 +283,7 @@ class daq:
         if 'DATA' not in os.listdir():
             os.mkdir('DATA')
         data = []
-        dev = dev
+        dev = self.dev
         while _q.qsize()>0:
             _d = _q.get()
             _aux = []
@@ -306,11 +305,11 @@ class daq:
             os.mkdir('DATA')
         data={}
         for _j in range(self.N):
-            data[str(dev[_j][0])] = []
+            data[str(self.dev[_j][0])] = []
         
         while _q.qsize()>0:
             for _j in range(self.N):
-                data[str(dev[_j][0])].append(unpack(dev[_j][-1], bytearray(_q.get())))
+                data[str(self.dev[_j][0])].append(unpack(self.dev[_j][-1], bytearray(_q.get())))
             
         arr = np.array(data)
         os.chdir('DATA')
@@ -319,6 +318,14 @@ class daq:
         print('{} saved'.format(_filename))
         os.chdir('..')
 
-    
+    def to_raw(self, _q):
+        _aux =[]
+        _data = []
+        while _q.qsize()>0:
+            for _j in range(self.N):
+                _aux.append(unpack(self.dev[_j][-1], bytearray(_q.get())))
+            data.append(_aux)
+        return _data
+        
 
 

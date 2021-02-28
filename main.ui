@@ -47,64 +47,26 @@
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>800</width>
-      <height>480</height>
+      <x>-4</x>
+      <y>-1</y>
+      <width>811</width>
+      <height>491</height>
      </rect>
-    </property>
-    <property name="sizePolicy">
-     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-      <horstretch>0</horstretch>
-      <verstretch>0</verstretch>
-     </sizepolicy>
-    </property>
-    <property name="minimumSize">
-     <size>
-      <width>800</width>
-      <height>480</height>
-     </size>
-    </property>
-    <property name="autoFillBackground">
-     <bool>true</bool>
-    </property>
-    <property name="tabPosition">
-     <enum>QTabWidget::North</enum>
     </property>
     <property name="currentIndex">
      <number>0</number>
     </property>
     <widget class="QWidget" name="tab_1">
      <attribute name="title">
-      <string>DAq</string>
+      <string>Collect</string>
      </attribute>
-     <widget class="QPushButton" name="startbutton">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>10</y>
-        <width>100</width>
-        <height>27</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Start</string>
-      </property>
-     </widget>
-     <widget class="QWidget" name="widget" native="true">
-      <property name="geometry">
-       <rect>
-        <x>219</x>
-        <y>0</y>
-        <width>571</width>
-        <height>440</height>
-       </rect>
-      </property>
-     </widget>
      <widget class="QPushButton" name="stopbutton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
-        <x>110</x>
+        <x>120</x>
         <y>10</y>
         <width>100</width>
         <height>27</height>
@@ -113,25 +75,31 @@
       <property name="text">
        <string>Stop</string>
       </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit">
+     <widget class="QPushButton" name="startbutton">
       <property name="geometry">
        <rect>
-        <x>90</x>
-        <y>56</y>
-        <width>113</width>
+        <x>10</x>
+        <y>10</y>
+        <width>100</width>
         <height>27</height>
        </rect>
       </property>
+      <property name="toolTip">
+       <string>'Start collecting data'</string>
+      </property>
       <property name="text">
-       <string/>
+       <string>Start</string>
       </property>
      </widget>
      <widget class="QLabel" name="label">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>60</y>
+        <x>230</x>
+        <y>10</y>
         <width>76</width>
         <height>19</height>
        </rect>
@@ -140,10 +108,52 @@
        <string>Duration</string>
       </property>
      </widget>
+     <widget class="QFrame" name="frame">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>781</width>
+        <height>401</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+     </widget>
+     <widget class="QSlider" name="horizontalSlider">
+      <property name="geometry">
+       <rect>
+        <x>310</x>
+        <y>-1</y>
+        <width>301</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox">
+      <property name="geometry">
+       <rect>
+        <x>640</x>
+        <y>10</y>
+        <width>104</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>LivePlot</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
-      <string>Config</string>
+      <string>Process</string>
      </attribute>
     </widget>
    </widget>
@@ -152,18 +162,18 @@
  <resources/>
  <connections>
   <connection>
-   <sender>startbutton</sender>
-   <signal>clicked()</signal>
-   <receiver>startbutton</receiver>
-   <slot>toggle()</slot>
+   <sender>horizontalSlider</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>label</receiver>
+   <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>47</x>
-     <y>51</y>
+     <x>436</x>
+     <y>48</y>
     </hint>
     <hint type="destinationlabel">
-     <x>100</x>
-     <y>59</y>
+     <x>259</x>
+     <y>52</y>
     </hint>
    </hints>
   </connection>
