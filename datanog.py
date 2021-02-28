@@ -184,27 +184,7 @@ class daq:
     def pull(self, _device):
        return unpack(_device[3], bytearray(self.bus.read_i2c_block_data(_device[0],_device[1], _device[2])))
 
-    def pulldata(self, _size = 3):
-        self.q = queue.Queue()
-        gc.collect()
-        try:
-            i=0
-            t0=tf = time.perf_counter()
-            while i< _size//self.dt:
-                ti=time.perf_counter()
-                if ti-tf>=self.dt:
-                    tf = ti
-                    i+=1
-                    _aux = []
-                    for _j in range(self.N):
-                       _aux += self.bus.read_i2c_block_data(self.dev[_j][0],self.dev[_j][1],self.dev[_j][2])
-                    self.q.put(_aux)
-            t1 = time.perf_counter()
-            print(t1-t0)
-        except Exception as e:
-            print(e)
-
-    def pulldata2(self, _size = 1):
+    def pulldata(self, _size = 1):
         self.q = queue.Queue()
         gc.collect()
         if _size == 0:
@@ -241,66 +221,7 @@ class daq:
                 print(e)
         return self.q  
 
-    def pulldata3(self, _size = 3):
-       self.q = queue.Queue()
-       gc.collect()
-       if _size == 0:
-            try:
-                i=0
-                t0=tf = time.perf_counter()
-                while True:
-                    ti=time.perf_counter()
-                    if ti-tf>=self.dt:
-                        tf = ti
-                        i+=1
-                        
-                        for _j in range(self.N):
-                            self.q.put_nowait(self.bus.read_i2c_block_data(self.dev[_j][0],self.dev[_j][1],self.dev[_j][2]))
-                    t1 = time.perf_counter()
-                print(t1-t0)
-            except Exception as e:
-                print(_j)    
-        
-       else:
-            try:
-                i=0
-                t0=tf = time.perf_counter()
-                while i< _size//self.dt:
-                    ti=time.perf_counter()
-                    if ti-tf>=self.dt:
-                        tf = ti
-                        i+=1
-                        
-                        for _j in range(self.N):
-                            self.q.put_nowait(self.bus.read_i2c_block_data(self.dev[_j][0],self.dev[_j][1],self.dev[_j][2]))
-                    t1 = time.perf_counter()
-                print(t1-t0)
-            except Exception as e:
-                print(_j)    
-     
-
     def savedata(self, _q):
-        if 'DATA' not in os.listdir():
-            os.mkdir('DATA')
-        data = []
-        dev = self.dev
-        while _q.qsize()>0:
-            _d = _q.get()
-            _aux = []
-            i=0
-            for j in range(self.N):
-                print(i)
-                _aux += unpack(dev[j][3], bytearray(_d[i:i+dev[j][2]]))
-                i += dev[j][2] 
-            data.append(_aux)
-        arr = np.array(data)
-        os.chdir('DATA')
-        _filename = 'raw_{}.npy'.format(len(os.listdir()))
-        np.save(_filename, arr)
-        print('{} saved'.format(_filename))
-        os.chdir('..')
-
-    def savedata2(self, _q):
         if 'DATA' not in os.listdir():
             os.mkdir('DATA')
         data={}
