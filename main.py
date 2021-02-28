@@ -94,7 +94,8 @@ class Ui_MainWindow(object):
         _d = dn.to_raw(dn.pulldata(self.horizontalSlider.value()))
         #plt.plot(np.linspace(0, self.horizontalSlider.value(), )_d)
         #plt.show()
-        print(_d)
+        print(type(_d))
+        print(_d.shape)
 
 
 

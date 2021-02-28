@@ -246,7 +246,7 @@ class daq:
         while _q.qsize()>0:
             for _j in range(self.N):
                 _aux.append(unpack(self.dev[_j][-1], bytearray(_q.get())))
-            _data.append(_aux)
+            _data.append(list(_aux))
         return _data
         
 
