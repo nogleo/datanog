@@ -91,7 +91,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Process"))
 
     def plotdata(self):
-        _d = dn.to_raw(dn.pulldata(self.horizontalSlider.value))
+        _d = dn.to_raw(dn.pulldata(self.horizontalSlider.value()))
         plt.plot(_d)
         plt.show()
 
