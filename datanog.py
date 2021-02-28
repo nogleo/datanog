@@ -222,12 +222,12 @@ class daq:
                     t1 = time.perf_counter()
                 print(t1-t0)
             except Exception as e:
-                print(_j)    
+                print(e)    
         else:
             try:
                 i=0
                 t0=tf = time.perf_counter()
-                while i< _size//self.dt:
+                while i < _size//self.dt:
                     ti=time.perf_counter()
                     if ti-tf>=self.dt:
                         tf = ti
@@ -238,7 +238,7 @@ class daq:
                     t1 = time.perf_counter()
                 print(t1-t0)
             except Exception as e:
-                print(_j)
+                print(e)
         return self.q  
 
     def pulldata3(self, _size = 3):
