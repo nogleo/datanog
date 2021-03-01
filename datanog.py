@@ -8,7 +8,7 @@ import scipy.integrate as intg
 from autograd import jacobian, hessian
 from numpy.linalg import norm, inv
 from smbus import SMBus
-import pigpio
+
 
 
 
@@ -241,12 +241,12 @@ class daq:
         os.chdir('..')
 
     def to_raw(self, _q):
-        _aux =[]
         _data = []
         while _q.qsize()>0:
+            _aux =[]
             for _j in range(self.N):
-                _aux.append(unpack(self.dev[_j][-1], bytearray(_q.get())))
-            _data.append(list(_aux))
+                _aux+=unpack(self.dev[_j][-1], bytearray(_q.get()))
+            _data.append(_aux)
         return _data
         
 

@@ -1,93 +1,299 @@
-from __future__ import annotations
-from typing import *
-import sys
-import os
-from matplotlib.backends.qt_compat import QtCore, QtWidgets
-# from PyQt5 import QtWidgets, QtCore
-from matplotlib.backends.backend_qt5agg import FigureCanvas
-# from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-import matplotlib as mpl
-import numpy as np
+# -*- coding: utf-8 -*-
 
-class ApplicationWindow(QtWidgets.QMainWindow):
-    '''
-    The PyQt5 main window.
+# Form implementation generated from reading ui file 'gui.ui'
+#
+# Created by: PyQt5 UI code generator 5.12.3
+#
+# WARNING! All changes made in this file will be lost!
 
-    '''
-    def __init__(self):
-        super().__init__()
-        # 1. Window settings
-        self.setGeometry(300, 300, 800, 400)
-        self.setWindowTitle("Matplotlib live plot in PyQt - example 1")
-        self.frm = QtWidgets.QFrame(self)
-        self.frm.setStyleSheet("QWidget { background-color: #eeeeec; }")
-        self.lyt = QtWidgets.QVBoxLayout()
-        self.frm.setLayout(self.lyt)
-        self.setCentralWidget(self.frm)
 
-        # 2. Place the matplotlib figure
-        self.myFig = MyFigureCanvas(x_len=200, y_range=[0, 100], interval=20)
-        self.lyt.addWidget(self.myFig)
+from PyQt5 import QtCore, QtGui, QtWidgets
 
-        # 3. Show
-        self.show()
-        return
 
-class MyFigureCanvas(FigureCanvas):
-    '''
-    This is the FigureCanvas in which the live plot is drawn.
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(800, 480)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
+        MainWindow.setSizePolicy(sizePolicy)
+        MainWindow.setMinimumSize(QtCore.QSize(800, 480))
+        MainWindow.setMaximumSize(QtCore.QSize(2500, 2000))
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
+        self.centralwidget.setSizePolicy(sizePolicy)
+        self.centralwidget.setMaximumSize(QtCore.QSize(800, 480))
+        self.centralwidget.setObjectName("centralwidget")
+        self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
+        self.tabWidget.setGeometry(QtCore.QRect(0, 0, 800, 480))
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(5)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
+        self.tabWidget.setSizePolicy(sizePolicy)
+        self.tabWidget.setMinimumSize(QtCore.QSize(800, 480))
+        self.tabWidget.setMaximumSize(QtCore.QSize(1600, 960))
+        self.tabWidget.setObjectName("tabWidget")
+        self.tab_1 = QtWidgets.QWidget()
+        self.tab_1.setObjectName("tab_1")
+        self.widget = QtWidgets.QWidget(self.tab_1)
+        self.widget.setGeometry(QtCore.QRect(-2, 2, 791, 441))
+        self.widget.setObjectName("widget")
+        self.gridLayout = QtWidgets.QGridLayout(self.widget)
+        self.gridLayout.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout.setObjectName("gridLayout")
+        self.stopbutton = QtWidgets.QPushButton(self.widget)
+        self.stopbutton.setEnabled(True)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(2)
+        sizePolicy.setVerticalStretch(2)
+        sizePolicy.setHeightForWidth(self.stopbutton.sizePolicy().hasHeightForWidth())
+        self.stopbutton.setSizePolicy(sizePolicy)
+        palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(204, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 51, 51))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Light, brush)
+        brush = QtGui.QBrush(QtGui.QColor(229, 25, 25))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Midlight, brush)
+        brush = QtGui.QBrush(QtGui.QColor(102, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Dark, brush)
+        brush = QtGui.QBrush(QtGui.QColor(136, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Mid, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.BrightText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ButtonText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(204, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Shadow, brush)
+        brush = QtGui.QBrush(QtGui.QColor(229, 127, 127))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.AlternateBase, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 220))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipBase, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.ToolTipText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0, 128))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.PlaceholderText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(204, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 51, 51))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Light, brush)
+        brush = QtGui.QBrush(QtGui.QColor(229, 25, 25))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Midlight, brush)
+        brush = QtGui.QBrush(QtGui.QColor(102, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Dark, brush)
+        brush = QtGui.QBrush(QtGui.QColor(136, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Mid, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.BrightText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ButtonText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(204, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Shadow, brush)
+        brush = QtGui.QBrush(QtGui.QColor(229, 127, 127))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.AlternateBase, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 220))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipBase, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.ToolTipText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0, 128))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.PlaceholderText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(102, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(204, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 51, 51))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Light, brush)
+        brush = QtGui.QBrush(QtGui.QColor(229, 25, 25))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Midlight, brush)
+        brush = QtGui.QBrush(QtGui.QColor(102, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Dark, brush)
+        brush = QtGui.QBrush(QtGui.QColor(136, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Mid, brush)
+        brush = QtGui.QBrush(QtGui.QColor(102, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Text, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.BrightText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(102, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(204, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Base, brush)
+        brush = QtGui.QBrush(QtGui.QColor(204, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Window, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Shadow, brush)
+        brush = QtGui.QBrush(QtGui.QColor(204, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.AlternateBase, brush)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 220))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipBase, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.ToolTipText, brush)
+        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0, 128))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
+        self.stopbutton.setPalette(palette)
+        font = QtGui.QFont()
+        font.setPointSize(40)
+        self.stopbutton.setFont(font)
+        self.stopbutton.setCheckable(False)
+        self.stopbutton.setObjectName("stopbutton")
+        self.gridLayout.addWidget(self.stopbutton, 2, 0, 1, 1)
+        self.horizontalSlider = QtWidgets.QSlider(self.widget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(5)
+        sizePolicy.setVerticalStretch(2)
+        sizePolicy.setHeightForWidth(self.horizontalSlider.sizePolicy().hasHeightForWidth())
+        self.horizontalSlider.setSizePolicy(sizePolicy)
+        self.horizontalSlider.setMinimumSize(QtCore.QSize(100, 55))
+        self.horizontalSlider.setSizeIncrement(QtCore.QSize(0, 0))
+        self.horizontalSlider.setBaseSize(QtCore.QSize(10, 10))
+        font = QtGui.QFont()
+        font.setPointSize(30)
+        self.horizontalSlider.setFont(font)
+        self.horizontalSlider.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.horizontalSlider.setPageStep(5)
+        self.horizontalSlider.setSliderPosition(1)
+        self.horizontalSlider.setOrientation(QtCore.Qt.Horizontal)
+        self.horizontalSlider.setInvertedAppearance(False)
+        self.horizontalSlider.setTickPosition(QtWidgets.QSlider.TicksBothSides)
+        self.horizontalSlider.setTickInterval(5)
+        self.horizontalSlider.setObjectName("horizontalSlider")
+        self.gridLayout.addWidget(self.horizontalSlider, 2, 1, 1, 1)
+        self.startbutton = QtWidgets.QPushButton(self.widget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(2)
+        sizePolicy.setVerticalStretch(2)
+        sizePolicy.setHeightForWidth(self.startbutton.sizePolicy().hasHeightForWidth())
+        self.startbutton.setSizePolicy(sizePolicy)
+        palette = QtGui.QPalette()
+        brush = QtGui.QBrush(QtGui.QColor(78, 154, 6))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(78, 154, 6))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Inactive, QtGui.QPalette.Button, brush)
+        brush = QtGui.QBrush(QtGui.QColor(78, 154, 6))
+        brush.setStyle(QtCore.Qt.SolidPattern)
+        palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.Button, brush)
+        self.startbutton.setPalette(palette)
+        font = QtGui.QFont()
+        font.setPointSize(40)
+        self.startbutton.setFont(font)
+        self.startbutton.setAutoFillBackground(False)
+        self.startbutton.setObjectName("startbutton")
+        self.gridLayout.addWidget(self.startbutton, 0, 0, 1, 1)
+        self.label = QtWidgets.QLabel(self.widget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sizePolicy.setHorizontalStretch(5)
+        sizePolicy.setVerticalStretch(2)
+        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy)
+        self.label.setMinimumSize(QtCore.QSize(100, 55))
+        font = QtGui.QFont()
+        font.setPointSize(60)
+        self.label.setFont(font)
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 0, 1, 1, 1)
+        self.tabWidget.addTab(self.tab_1, "")
+        self.tab_2 = QtWidgets.QWidget()
+        self.tab_2.setObjectName("tab_2")
+        self.tabWidget.addTab(self.tab_2, "")
+        MainWindow.setCentralWidget(self.centralwidget)
 
-    '''
-    def __init__(self, x_len:int, y_range:List, interval:int) -> None:
-        '''
-        :param x_len:       The nr of data points shown in one plot.
-        :param y_range:     Range on y-axis.
-        :param interval:    Get a new datapoint every .. milliseconds.
+        self.retranslateUi(MainWindow)
+        self.tabWidget.setCurrentIndex(0)
+        self.horizontalSlider.valueChanged['int'].connect(self.label.setNum)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        '''
-        super().__init__(mpl.figure.Figure())
-        # Range settings
-        self._x_len_ = x_len
-        self._y_range_ = y_range
+        self.startbutton.clicked.connect(self.collect)
+        self.stopbutton.clicked.connect(self.interrupt)
+    
 
-        # Store two lists _x_ and _y_
-        self._x_ = list(range(0, x_len))
-        self._y_ = [0] * x_len
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.stopbutton.setText(_translate("MainWindow", "Stop"))
+        self.startbutton.setToolTip(_translate("MainWindow", "\'Start collecting data\'"))
+        self.startbutton.setText(_translate("MainWindow", "Start"))
+        self.label.setText(_translate("MainWindow", "Duration"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_1), _translate("MainWindow", "Collect"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Process"))
 
-        # Store a figure ax
-        self._ax_ = self.figure.subplots()
-
-        # Initiate the timer
-        self._timer_ = self.new_timer(interval, [(self._update_canvas_, (), {})])
-        self._timer_.start()
-        return
-
-    def _update_canvas_(self) -> None:
-        '''
-        This function gets called regularly by the timer.
-
-        '''
-        self._y_.append(round(get_next_datapoint(), 2))     # Add new datapoint
-        self._y_ = self._y_[-self._x_len_:]                 # Truncate list _y_
-        self._ax_.clear()                                   # Clear ax
-        self._ax_.plot(self._x_, self._y_)                  # Plot y(x)
-        self._ax_.set_ylim(ymin=self._y_range_[0], ymax=self._y_range_[1])
-        self.draw()
-        return
-
-# Data source
-# ------------
-n = np.linspace(0, 499, 500)
-d = 50 + 25 * (np.sin(n / 8.3)) + 10 * (np.sin(n / 7.5)) - 5 * (np.sin(n / 1.5))
-i = 0
-def get_next_datapoint():
-    global i
-    i += 1
-    if i > 499:
-        i = 0
-    return d[i]
 
 if __name__ == "__main__":
-    qapp = QtWidgets.QApplication(sys.argv)
-    app = ApplicationWindow()
-    qapp.exec_()
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
