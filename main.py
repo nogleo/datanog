@@ -14,7 +14,7 @@ class appnog(qtw.QMainWindow):
 
         self.ui.startbutton.clicked.connect(self.collect)
         self.ui.stopbutton.clicked.connect(self.interrupt)
-        self.threadpool = qtc.QTThread()
+        
 
     def collect(self):
         _msg = dn.savedata(dn.pulldata(self.ui.label.text()))
