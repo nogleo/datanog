@@ -187,12 +187,12 @@ class daq:
     def pulldata(self, _size = 1):
         self.q = queue.Queue()
         gc.collect()
-        Ns = int(_size)//self.dt
+        self.state = True
         if _size == 0:
             try:
                 i=0
                 t0=tf = time.perf_counter()
-                while True:
+                while self.state:
                     ti=time.perf_counter()
                     if ti-tf>=self.dt:
                         tf = ti
@@ -206,6 +206,7 @@ class daq:
                 print(e)    
         else:
             try:
+                Ns = int(_size)//self.dt
                 i=0
                 t0=tf = time.perf_counter()
                 while i < Ns:
@@ -239,6 +240,7 @@ class daq:
         np.save(_filename, arr)
         print('{} saved'.format(_filename))
         os.chdir('..')
+        return _filename
 
     def to_raw(self, _q):
         _data = []

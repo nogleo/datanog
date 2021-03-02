@@ -17,7 +17,7 @@ class appnog(qtw.QMainWindow):
 
     def collect(self):
         dn.savedata(dn.pulldata(self.ui.label.text()))
-
+    
 
     def interrupt(self):
         dn.state = False
