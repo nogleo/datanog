@@ -27,20 +27,20 @@ class appnog(qtw.QMainWindow):
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
+        self.msg = ""
         self.ui.startbutton.clicked.connect(self.collect)
         self.ui.stopbutton.clicked.connect(self.interrupt)
         self.threadpool = qtc.QThreadPool()
         print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
 
     def pull(self):
-        self.msg = dn.savedata(dn.pulldata(self.ui.label.text()))
+        dn.savedata(dn.pulldata(self.ui.label.text()))
+        qtw.QMessageBox.about(self, 'Data Collected', '{} saved'.format(dn.msg))
         
 
     def collect(self):
         worker = Worker(self.pull)
         self.threadpool.start(worker)
-        qtw.QMessageBox.about(self, 'Data Collected', '{} saved'.format(self.msg))
         
 
 

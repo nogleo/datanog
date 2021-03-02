@@ -27,7 +27,7 @@ class daq:
         self.dt = 1/self.fs
         self.state = True
         self.G = 1
-
+        self.msg = ''
         self.odr = 8  #8=1660Hz 9=3330Hz 10=6660Hz
         self.range = [1, 3]     #[16G, 2000DPS]
         for device in range(128):
@@ -240,7 +240,7 @@ class daq:
         np.save(_filename, arr)
         print('{} saved'.format(_filename))
         os.chdir('..')
-        return _filename
+        self.msg =  _filename
 
     def to_raw(self, _q):
         _data = []
