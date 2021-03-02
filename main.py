@@ -14,10 +14,12 @@ class appnog(qtw.QMainWindow):
 
         self.ui.startbutton.clicked.connect(self.collect)
         self.ui.stopbutton.clicked.connect(self.interrupt)
+        self.threadpool = qtc.QTThread()
 
     def collect(self):
-        dn.savedata(dn.pulldata(self.ui.label.text()))
-    
+        _msg = dn.savedata(dn.pulldata(self.ui.label.text()))
+        qtw.QMessageBox.Default(self, 'Data Collected', '{} saved'.format(_msg))
+
 
     def interrupt(self):
         dn.state = False
