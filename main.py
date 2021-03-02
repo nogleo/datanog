@@ -18,7 +18,7 @@ class appnog(qtw.QMainWindow):
 
     def collect(self):
         _msg = dn.savedata(dn.pulldata(self.ui.label.text()))
-        qtw.QMessageBox.Default(self, 'Data Collected', '{} saved'.format(_msg))
+        qtw.QMessageBox.About(self, 'Data Collected', '{} saved'.format(_msg))
 
 
     def interrupt(self):
