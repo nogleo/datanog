@@ -35,10 +35,11 @@ class appnog(qtw.QMainWindow):
 
     def pull(self):
         dn.savedata(dn.pulldata(self.ui.label.text()))
-        qtw.QMessageBox.about(self, 'Data Collected', '{} saved'.format(dn.msg))
-        
+        self.ui.startbutton.setEnabled(True)
+        #qtw.QMessageBox.about(self, 'Data Collected', '{} saved'.format(dn.msg))
 
     def collect(self):
+        self.ui.startbutton.setEnabled(False)
         worker = Worker(self.pull)
         self.threadpool.start(worker)
         
