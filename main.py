@@ -68,7 +68,11 @@ class appnog(qtw.QMainWindow):
             also calls a readData function 
         """
         os.chdir(dn.root)
-        os.chdir('DATA')
+        try:
+            os.chdir('DATA')
+        except :
+            pass
+
         self.filename = qtw.QFileDialog.getOpenFileName()[0]
         print("File :", self.filename)
         try:

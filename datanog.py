@@ -224,7 +224,10 @@ class daq:
         return self.q  
 
     def savedata(self, _q):
-        if 'DATA' not in os.listdir():
+        os.chdir(self.root)
+        try:
+            os.chdir('DATA')
+        except:
             os.mkdir('DATA')
         data={}
         for _j in range(self.N):
@@ -245,7 +248,6 @@ class daq:
             np.save(_filename, arr)
 
         print('{} saved'.format(_path))
-        os.chdir(self.root)
 
     def to_raw(self, _q):
         _data = []
