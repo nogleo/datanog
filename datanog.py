@@ -224,11 +224,12 @@ class daq:
         return self.q  
 
     def savedata(self, _q):
+        os.chdir(self.root)
         try:
-            os.chdir('~/datanog/DATA')
+            os.chdir('DATA')
         except:
-            os.mkdir('~/datanog/DATA')
-            os.chdir('~/datanog/DATA')
+            os.mkdir('DATA')
+            os.chdir('DATA')
             pass
         
         data={}
