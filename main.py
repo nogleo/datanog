@@ -70,6 +70,7 @@ class appnog(qtw.QMainWindow):
         """ This function will get the address of the csv file location
             also calls a readData function 
         """
+        os.chdir('DATA')
         self.filename = qtw.QFileDialog.getOpenFileName()[0]
         print("File :", self.filename)
         self.readData()
