@@ -106,7 +106,7 @@ class appnog(qtw.QMainWindow):
         except Exception as e:
             print('==>',e)
         self.canv.draw()
-        ax.tight_layout()
+        plt.tight_layout()
 
     
 
