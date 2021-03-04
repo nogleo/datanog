@@ -93,7 +93,7 @@ class appnog(qtw.QMainWindow):
             print(e)
             pass
         self.canv = MatplotlibCanvas(self)
-        self.toolbar = Navi(self.canv,self.centralwidget)
+        self.toolbar = Navi(self.canv,self.ui.tab_2)
         
         self.horizontalLayout.addWidget(self.toolbar)
         self.verticalLayout.addWidget(self.canv)
