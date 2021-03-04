@@ -229,6 +229,7 @@ class daq:
         except:
             os.mkdir('~/datanog/DATA')
             os.chdir('~/datanog/DATA')
+            pass
         
         data={}
         for _j in range(self.N):
