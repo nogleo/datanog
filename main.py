@@ -4,6 +4,9 @@ import os
 from PyQt5 import QtCore as qtc
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import Qt as qt
+import matplotlib
+import matplotlib.pyplot as plt
+matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as Navi
 from matplotlib.figure import Figure
 import seaborn as sns
@@ -71,14 +74,14 @@ class appnog(qtw.QMainWindow):
         """
         self.filename = qtw.QFileDialog.getOpenFileName()[0]
         print("File :", self.filename)
-        #self.readData()
+        self.readData()
     
     def readData(self):
         self.plotdata = np.load(self.filename)
+        self.updatePlot()
     
     def updatePlot(self):
         plt.clf()
-        plt.style.use(value)
         try:
             self.horizontalLayout.removeWidget(self.toolbar)
             self.verticalLayout.removeWidget(self.canv)
