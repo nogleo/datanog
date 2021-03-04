@@ -102,8 +102,11 @@ class appnog(qtw.QMainWindow):
         ax = self.canv.axes
         try:
             ax.plot(self.plotdata)
+            
         except Exception as e:
             print('==>',e)
+        
+        self.canv.draw()
 
     
 
