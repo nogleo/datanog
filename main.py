@@ -22,9 +22,6 @@ class MatplotlibCanvas(FigureCanvasQTAgg):
         fig.tight_layout()
 
 class Worker(qtc.QRunnable):
-
-    msg_in = qtc.pyqtSignal()
-
     def __init__(self, fn):
         super(Worker, self).__init__()
         self.fn = fn
@@ -32,8 +29,8 @@ class Worker(qtc.QRunnable):
     def run(self):
         try:
             result = self.fn()
-        except Exception:
-            pass
+        except Exception as e:
+            print(e)
 
 class appnog(qtw.QMainWindow):
     def __init__(self, *args, **kwargs):
@@ -70,10 +67,12 @@ class appnog(qtw.QMainWindow):
         """ This function will get the address of the csv file location
             also calls a readData function 
         """
+        os.chdir(dn.root)
         os.chdir('DATA')
         self.filename = qtw.QFileDialog.getOpenFileName()[0]
         print("File :", self.filename)
         self.readData()
+
     
     def readData(self):
         self.plotdata = np.load(self.filename)
@@ -84,7 +83,6 @@ class appnog(qtw.QMainWindow):
         try:
             self.ui.horizontalLayout.removeWidget(self.toolbar)
             self.ui.verticalLayout.removeWidget(self.canv)
-            
             sip.delete(self.toolbar)
             sip.delete(self.canv)
             self.toolbar = None
