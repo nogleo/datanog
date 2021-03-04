@@ -1,15 +1,28 @@
 import datanog as nog
 from gui import Ui_MainWindow
-
+import os
 from PyQt5 import QtCore as qtc
 from PyQt5 import QtWidgets as qtw
+from PyQt5 import Qt as qt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as Navi
+from matplotlib.figure import Figure
+import seaborn as sns
+import pandas as pd
+import sip
+import numpy as np
 
 dn = nog.daq()
 
+class MatplotlibCanvas(FigureCanvasQTAgg):
+    def __init__(self,parent=None, dpi = 120):
+        fig = Figure(dpi = dpi)
+        self.axes = fig.add_subplot(111)
+        super(MatplotlibCanvas,self).__init__(fig)
+        fig.tight_layout()
 
 class Worker(qtc.QRunnable):
 
-    msg_in = qtc.pyqtSignal(str)
+    msg_in = qtc.pyqtSignal()
 
     def __init__(self, fn):
         super(Worker, self).__init__()
@@ -30,13 +43,17 @@ class appnog(qtw.QMainWindow):
         self.msg = ""
         self.ui.startbutton.clicked.connect(self.collect)
         self.ui.stopbutton.clicked.connect(self.interrupt)
+        self.ui.pushButton.clicked.connect(self.getFile)
         self.threadpool = qtc.QThreadPool()
         print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
+        
+        self.canv = MatplotlibCanvas(self)
+
 
     def pull(self):
         dn.savedata(dn.pulldata(self.ui.label.text()))
         self.ui.startbutton.setEnabled(True)
-        #qtw.QMessageBox.about(self, 'Data Collected', '{} saved'.format(dn.msg))
+        qtw.QMessageBox.about(self, 'Data Collected', 'File saved')
 
     def collect(self):
         self.ui.startbutton.setEnabled(False)
@@ -47,6 +64,45 @@ class appnog(qtw.QMainWindow):
 
     def interrupt(self):
         dn.state = False
+    
+    def getFile(self):
+        """ This function will get the address of the csv file location
+            also calls a readData function 
+        """
+        self.filename = qtw.QFileDialog.getOpenFileName()[0]
+        print("File :", self.filename)
+        #self.readData()
+    
+    def readData(self):
+        self.plotdata = np.load(self.filename)
+    
+    def updatePlot(self):
+        plt.clf()
+        plt.style.use(value)
+        try:
+            self.horizontalLayout.removeWidget(self.toolbar)
+            self.verticalLayout.removeWidget(self.canv)
+            
+            sip.delete(self.toolbar)
+            sip.delete(self.canv)
+            self.toolbar = None
+            self.canv = None
+            self.verticalLayout.removeItem(self.spacerItem1)
+        except Exception as e:
+            print(e)
+            pass
+        self.canv = MatplotlibCanvas(self)
+        self.toolbar = Navi(self.canv,self.centralwidget)
+        
+        self.horizontalLayout.addWidget(self.toolbar)
+        self.verticalLayout.addWidget(self.canv)
+        
+        self.canv.axes.cla()
+        ax = self.canv.axes
+        try:
+            plt.plot(self.plotdata)
+        except Exception as e:
+            print('==>',e)
 
     
 
