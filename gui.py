@@ -132,7 +132,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
         self.horizontalSlider.valueChanged['int'].connect(self.label.setNum)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
