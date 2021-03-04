@@ -51,7 +51,7 @@ class appnog(qtw.QMainWindow):
     def pull(self):
         dn.savedata(dn.pulldata(self.ui.label.text()))
         self.ui.startbutton.setEnabled(True)
-        qtw.QMessageBox.about(self, 'Data Collected', 'File saved')
+        #qtw.QMessageBox.about(self, 'Data Collected', 'File saved')
 
     def collect(self):
         self.ui.startbutton.setEnabled(False)
