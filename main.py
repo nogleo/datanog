@@ -81,8 +81,8 @@ class appnog(qtw.QMainWindow):
     def updatePlot(self):
         plt.clf()
         try:
-            self.horizontalLayout.removeWidget(self.toolbar)
-            self.verticalLayout.removeWidget(self.canv)
+            self.ui.horizontalLayout.removeWidget(self.toolbar)
+            self.ui.verticalLayout.removeWidget(self.canv)
             
             sip.delete(self.toolbar)
             sip.delete(self.canv)
@@ -102,7 +102,7 @@ class appnog(qtw.QMainWindow):
         self.canv.axes.cla()
         ax = self.canv.axes
         try:
-            plt.plot(self.plotdata)
+            ax.plot(self.plotdata)
         except Exception as e:
             print('==>',e)
 
