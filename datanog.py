@@ -225,13 +225,8 @@ class daq:
 
     def savedata(self, _q):
         os.chdir(self.root)
-        try:
-            os.chdir('DATA')
-        except:
+        if 'DATA' not in os.listdir():
             os.mkdir('DATA')
-            os.chdir('DATA')
-            pass
-        
         data={}
         for _j in range(self.N):
             data[str(self.dev[_j][0])] = []
