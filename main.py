@@ -71,7 +71,10 @@ class appnog(qtw.QMainWindow):
         os.chdir('DATA')
         self.filename = qtw.QFileDialog.getOpenFileName()[0]
         print("File :", self.filename)
-        self.readData()
+        try:
+            self.readData()
+        except Exception:
+            pass
 
     
     def readData(self):
