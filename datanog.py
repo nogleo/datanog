@@ -224,11 +224,12 @@ class daq:
         return self.q  
 
     def savedata(self, _q):
-        os.chdir(self.root)
         try:
-            os.chdir('DATA')
+            os.chdir('~/datanog/DATA')
         except:
-            os.mkdir('DATA')
+            os.mkdir('~/datanog/DATA')
+            os.chdir('~/datanog/DATA')
+        
         data={}
         for _j in range(self.N):
             data[str(self.dev[_j][0])] = []
