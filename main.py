@@ -9,8 +9,6 @@ import matplotlib.pyplot as plt
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as Navi
 from matplotlib.figure import Figure
-import seaborn as sns
-import pandas as pd
 import sip
 import numpy as np
 
