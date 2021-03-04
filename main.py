@@ -95,8 +95,9 @@ class appnog(qtw.QMainWindow):
         self.canv = MatplotlibCanvas(self)
         self.toolbar = Navi(self.canv,self.ui.tab_2)
         
-        self.horizontalLayout.addWidget(self.toolbar)
-        self.verticalLayout.addWidget(self.canv)
+        
+        self.ui.horizontalLayout.addWidget(self.toolbar)
+        self.ui.verticalLayout.addWidget(self.canv)
         
         self.canv.axes.cla()
         ax = self.canv.axes
