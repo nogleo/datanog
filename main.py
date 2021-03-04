@@ -87,7 +87,6 @@ class appnog(qtw.QMainWindow):
             sip.delete(self.canv)
             self.toolbar = None
             self.canv = None
-            self.ui.verticalLayout.removeItem(self.spacerItem1)
         except Exception as e:
             print(e)
             pass
