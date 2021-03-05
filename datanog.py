@@ -242,8 +242,11 @@ class daq:
 
         for _j in range(self.N):
             arr = np.array(data[str(self.dev[_j][0])])    
-            _filename = '{}.npy'.format(self.dev[_j][0])
-            np.save(_filename, arr)
+            if str(self.dev[_j][0]) == '54':
+                np.save('rot.npy', arr)
+            elif str(self.dev[_j][0]) == '106' or str(self.dev[_j][0] == '107':
+                np.save('gyr{}.npy'.format(str(_j), arr[:,0:3])
+                np.save('acc{}.npy'.format(str(_j), arr[:,3:6])
 
         print('{} saved'.format(_path))
 
