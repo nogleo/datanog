@@ -38,7 +38,7 @@ class daq:
                 elif device == 0x36:
                     self.dev.append([device, 0x0C, 2, '>H'])
                 elif device == 0x48:
-                    self.dev.append([device, 0x00, 2, '>H'])
+                    self.dev.append([device, 0x04, 2, '>H'])
                 self.config(device)
                 print("Device Config: ", device)
             except Exception as e:
@@ -52,16 +52,18 @@ class daq:
             _settings = [[0x10, (self.odr<<4 | self.range[0]<<2)],
                          [0x11, (self.odr<<4 | self.range[1]<<2)],
                          [0x12, 0x44]]  #[0x44 is hardcoded acording to LSM6DSO datasheet]
-        elif _device == 0x48:
-            _settings = [0x01, (3<<11 | 1<<8)]
-
-        if _settings != None:
             for _set in _settings:
                 try:
                     self.bus.write_byte_data(_device, _set[0], _set[1])
                     
                 except Exception as e:
                     print("ERROR: ",e)
+        elif _device == 0x48:
+            _settings = [0x01, (3<<11 | 0<<8)]
+            self.bus.write_byte(0x48, 1)
+            self.bus.write_byte_data(_device, _settings[0], _settings[1])
+
+        
 
     def calibrate(self, _device):
         _sensname = input('Connnect sensor and name it: ')
