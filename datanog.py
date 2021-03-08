@@ -59,7 +59,7 @@ class daq:
                 except Exception as e:
                     print("ERROR: ",e)
         elif _device == 0x48:
-            _settings = [0x01, [(3<<11 | 0<<8)>>8 & 0xFF, (3<<11 | 0<<8) & 0xFF]]
+            _settings = [0x01, [(5<<11 | 0<<8)>>8 & 0xFF, (5<<11 | 0<<8) & 0xFF]]
             self.bus.write_byte_data(_device, _settings[0], _settings[1])
 
         
