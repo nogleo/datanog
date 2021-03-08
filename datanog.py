@@ -59,10 +59,12 @@ class daq:
                 except Exception as e:
                     print("ERROR: ",e)
         elif _device == 0x48:
-            _config = (5<<9 | 0<<8 | 4<<5 | 3)
+            _config = (7<<9 | 0<<8 | 4<<5 | 3)
             _settings = [0x01, [_config>>8 & 0xFF, _config & 0xFF]]
-            self.bus.write_byte_data(_device, _settings[0], _settings[1])
-
+            try:
+                self.bus.write_byte_data(_device, _settings[0], _settings[1])
+            except Exception as e:
+                    print("ERROR: ",e)
         
 
     def calibrate(self, _device):
