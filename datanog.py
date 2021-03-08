@@ -35,8 +35,10 @@ class daq:
                 self.bus.read_byte(device)
                 if device == 0x6b or device == 0x6a:
                     self.dev.append([device, 0x22, 12, '<hhhhhh'])
-                if device == 0x36:
+                elif device == 0x36:
                     self.dev.append([device, 0x0C, 2, '>H'])
+                elif device == 0x48:
+                    self.dev.append([device, 0x00, 2, '>H'])
                 self.config(device)
                 print("Device Config: ", device)
             except Exception as e:
@@ -45,11 +47,15 @@ class daq:
         self.N = len(self.dev)
 
     def config(self, _device):
+        _settings = None
         if _device == 0x6a or _device == 0x6b:
             _settings = [[0x10, (self.odr<<4 | self.range[0]<<2)],
                          [0x11, (self.odr<<4 | self.range[1]<<2)],
                          [0x12, 0x44]]  #[0x44 is hardcoded acording to LSM6DSO datasheet]
+        elif _device == 0x48:
+            _settings = [0x01, (3<<11 | 1<<8)]
 
+        if _settings != None:
             for _set in _settings:
                 try:
                     self.bus.write_byte_data(_device, _set[0], _set[1])
