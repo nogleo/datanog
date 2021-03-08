@@ -38,7 +38,7 @@ class daq:
                 elif device == 0x36:
                     self.dev.append([device, 0x0C, 2, '>H'])
                 elif device == 0x48:
-                    self.dev.append([device, 0x04, 2, '>H'])
+                    self.dev.append([device, 0x00, 2, '>H'])
                 self.config(device)
                 print("Device Config: ", device)
             except Exception as e:
