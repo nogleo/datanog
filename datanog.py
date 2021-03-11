@@ -199,21 +199,19 @@ class daq:
         gc.collect()
         self.state = True
         if int(_size) == 0:
-            try:
-                i=0
-                t0=tf = time.perf_counter()
-                while self.state:
-                    ti=time.perf_counter()
-                    if ti-tf>=self.dt:
-                        tf = ti
-                        i+=1
-                        
-                        for _j in range(self.N):
+                
+            t0=tf = time.perf_counter()
+            while self.state:
+                ti=time.perf_counter()
+                if ti-tf>=self.dt:
+                    tf = ti                    
+                    for _j in range(self.N):
+                        try:
                             self.q.put(self.bus.read_i2c_block_data(self.dev[_j][0],self.dev[_j][1],self.dev[_j][2]))
-                    t1 = time.perf_counter()
-                print(t1-t0)
-            except Exception as e:
-                print(e)    
+                        except Exception as e:
+                            print(e)    
+                t1 = time.perf_counter()
+            print(t1-t0)
         else:
             try:
                 Ns = int(_size)//self.dt
