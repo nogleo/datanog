@@ -59,7 +59,7 @@ class daq:
                 except Exception as e:
                     print("ERROR: ",e)
         elif _device == 0x48:
-            _config = (1<<9 | 0<<8 | 4<<5 | 3)
+            _config = (3<<9 | 0<<8 | 4<<5 | 3)
             _settings = [0x01, [_config>>8 & 0xFF, _config & 0xFF]]
             try:
                 self.bus.write_i2c_block_data(_device, _settings[0], _settings[1])
