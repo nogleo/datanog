@@ -61,7 +61,7 @@ class appnog(qtw.QMainWindow):
 
 
     def interrupt(self):
-        dn.state = False
+        dn.state = 0
     
     def getFile(self):
         """ This function will get the address of the csv file location
