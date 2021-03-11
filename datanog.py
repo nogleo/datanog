@@ -213,7 +213,6 @@ class daq:
                 t1 = time.perf_counter()
             print(t1-t0)
         else:
-            try:
                 Ns = int(_size)//self.dt
                 i=0
                 t0=tf = time.perf_counter()
@@ -224,11 +223,12 @@ class daq:
                         i+=1
                         
                         for _j in range(self.N):
-                            self.q.put(self.bus.read_i2c_block_data(self.dev[_j][0],self.dev[_j][1],self.dev[_j][2]))
+                            try:
+                                self.q.put(self.bus.read_i2c_block_data(self.dev[_j][0],self.dev[_j][1],self.dev[_j][2]))
+                            except Exception as e:
+                                print(e)
                     t1 = time.perf_counter()
                 print(t1-t0)
-            except Exception as e:
-                print(e)
         return self.q  
 
     def savedata(self, _q):
