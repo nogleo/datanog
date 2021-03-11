@@ -209,6 +209,7 @@ class daq:
                         try:
                             self.q.put(self.bus.read_i2c_block_data(self.dev[_j][0],self.dev[_j][1],self.dev[_j][2]))
                         except Exception as e:
+                            self.q.put((0,)*self.dev[_j][2])
                             print(e)    
                 t1 = time.perf_counter()
             print(t1-t0)
@@ -226,6 +227,7 @@ class daq:
                             try:
                                 self.q.put(self.bus.read_i2c_block_data(self.dev[_j][0],self.dev[_j][1],self.dev[_j][2]))
                             except Exception as e:
+                                self.q.put((0,)*self.dev[_j][2])
                                 print(e)
                     t1 = time.perf_counter()
                 print(t1-t0)
