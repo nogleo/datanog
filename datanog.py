@@ -25,7 +25,7 @@ class daq:
         self.dev = []
         self.fs = 1660
         self.dt = 1/self.fs
-        self.state = 1
+        self.state = True
         self.G = 1
         self.root = os.getcwd()
         self.odr = 8  #8=1660Hz 9=3330Hz 10=6660Hz
@@ -197,7 +197,7 @@ class daq:
     def pulldata(self, _size = 1):
         self.q = queue.Queue()
         gc.collect()
-        self.state = 1
+        self.state = True
         if int(_size) == 0:
                 
             t0=tf = time.perf_counter()
