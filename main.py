@@ -43,12 +43,15 @@ class appnog(qtw.QMainWindow):
         self.ui.stopbutton.clicked.connect(self.interrupt)
         self.ui.pushButton.clicked.connect(self.getFile)
         self.ui.pushButton_2.clicked.connect(self.loadDevices)
-        
+        self.ui.pushButton_4.clicked.connect(self.initDevices)
         self.threadpool = qtc.QThreadPool()
         print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
         
         self.canv = MatplotlibCanvas(self)
 
+    def initDevices(self):
+        global dn
+        dn = nog.daq()
 
     def pull(self):
         dn.savedata(dn.pulldata(self.ui.label.text()))
