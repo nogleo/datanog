@@ -42,7 +42,7 @@ class appnog(qtw.QMainWindow):
         self.ui.startbutton.clicked.connect(self.collect)
         self.ui.stopbutton.clicked.connect(self.interrupt)
         self.ui.pushButton.clicked.connect(self.getFile)
-        self.ui.pushButton_2.clicked.connect(self.loadDevices)
+        
         self.ui.pushButton_4.clicked.connect(self.initDevices)
         self.threadpool = qtc.QThreadPool()
         print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
@@ -52,6 +52,7 @@ class appnog(qtw.QMainWindow):
     def initDevices(self):
         global dn
         dn = nog.daq()
+        self.loadDevices()
 
     def pull(self):
         dn.savedata(dn.pulldata(self.ui.label.text()))
@@ -66,6 +67,9 @@ class appnog(qtw.QMainWindow):
     def loadDevices(self):
         for _dev in dn.dev:
             self.ui.comboBox.addItem(str(_dev[0]))
+        
+        for _sens in os.listdir('{}/sensors'.format(dn.root)):
+            self.ui.comboBox_2.addItem(_sens)
 
 
     def interrupt(self):

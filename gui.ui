@@ -39,7 +39,7 @@
     </sizepolicy>
    </property>
    <layout class="QGridLayout" name="gridLayout_3">
-    <item row="0" column="0">
+    <item row="0" column="1">
      <widget class="QTabWidget" name="tabWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -48,14 +48,76 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_1">
        <attribute name="title">
         <string>Collect</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="2" column="1" colspan="3">
+        <item row="0" column="2">
+         <widget class="QComboBox" name="comboBox_2"/>
+        </item>
+        <item row="0" column="3">
+         <widget class="QPushButton" name="pushButton_5">
+          <property name="text">
+           <string>Link</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QPushButton" name="pushButton_4">
+          <property name="text">
+           <string>Init Devices</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QPushButton" name="startbutton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>1</horstretch>
+            <verstretch>1</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>40</pointsize>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>'Start collecting data'</string>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Start</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1" colspan="2">
+         <widget class="QLabel" name="label_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>1</horstretch>
+            <verstretch>1</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>60</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Duration: </string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="comboBox"/>
+        </item>
+        <item row="3" column="1" colspan="3">
          <widget class="QSlider" name="horizontalSlider">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -112,31 +174,7 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QPushButton" name="startbutton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>1</horstretch>
-            <verstretch>1</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>40</pointsize>
-           </font>
-          </property>
-          <property name="toolTip">
-           <string>'Start collecting data'</string>
-          </property>
-          <property name="autoFillBackground">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Start</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
+        <item row="3" column="0">
          <widget class="QPushButton" name="stopbutton">
           <property name="enabled">
            <bool>true</bool>
@@ -160,7 +198,7 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="3">
+        <item row="2" column="3">
          <widget class="QLabel" name="label">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -178,35 +216,27 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="1" colspan="2">
-         <widget class="QLabel" name="label_2">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>1</horstretch>
-            <verstretch>1</verstretch>
-           </sizepolicy>
-          </property>
+        <item row="1" column="1">
+         <widget class="QRadioButton" name="radioButton">
           <property name="font">
            <font>
-            <pointsize>60</pointsize>
+            <pointsize>20</pointsize>
            </font>
           </property>
           <property name="text">
-           <string>Duration: </string>
+           <string>Scaled</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
-         <widget class="QCheckBox" name="checkBox">
-          <property name="text">
-           <string>RAW</string>
+        <item row="1" column="2">
+         <widget class="QRadioButton" name="radioButton_2">
+          <property name="font">
+           <font>
+            <pointsize>20</pointsize>
+           </font>
           </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QPushButton" name="pushButton_4">
           <property name="text">
-           <string>reinit devices</string>
+           <string>Raw</string>
           </property>
          </widget>
         </item>
@@ -294,13 +324,6 @@
         <item row="1" column="0" colspan="3">
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
-           <widget class="QPushButton" name="pushButton_5">
-            <property name="text">
-             <string>Select</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QPushButton" name="pushButton_3">
             <property name="text">
              <string>Calibrate</string>
@@ -308,9 +331,6 @@
            </widget>
           </item>
          </layout>
-        </item>
-        <item row="0" column="1" colspan="2">
-         <widget class="QComboBox" name="comboBox"/>
         </item>
        </layout>
       </widget>
