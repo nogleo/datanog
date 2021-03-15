@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>700</width>
-    <height>420</height>
+    <width>750</width>
+    <height>450</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -38,8 +38,8 @@
      <verstretch>1</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout_2">
-    <item>
+   <layout class="QGridLayout" name="gridLayout_3">
+    <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -48,7 +48,7 @@
        </sizepolicy>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_1">
        <attribute name="title">
@@ -178,7 +178,7 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="2">
+        <item row="1" column="1" colspan="2">
          <widget class="QLabel" name="label_2">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -196,6 +196,20 @@
           </property>
          </widget>
         </item>
+        <item row="0" column="1">
+         <widget class="QCheckBox" name="checkBox">
+          <property name="text">
+           <string>RAW</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QPushButton" name="pushButton_4">
+          <property name="text">
+           <string>reinit devices</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="tab_2">
@@ -210,6 +224,25 @@
             <property name="text">
              <string>Open</string>
             </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="plottype">
+            <item>
+             <property name="text">
+              <string>Time Data</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Spectrogram</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>PSD</string>
+             </property>
+            </item>
            </widget>
           </item>
           <item>
@@ -246,6 +279,41 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab_3">
+       <attribute name="title">
+        <string>Devices</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="pushButton_2">
+          <property name="text">
+           <string>Load</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="3">
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QPushButton" name="pushButton_5">
+            <property name="text">
+             <string>Select</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton_3">
+            <property name="text">
+             <string>Calibrate</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="1" colspan="2">
+         <widget class="QComboBox" name="comboBox"/>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -260,8 +328,8 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>629</x>
-     <y>402</y>
+     <x>679</x>
+     <y>399</y>
     </hint>
     <hint type="destinationlabel">
      <x>629</x>

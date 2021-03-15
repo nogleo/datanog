@@ -42,6 +42,8 @@ class appnog(qtw.QMainWindow):
         self.ui.startbutton.clicked.connect(self.collect)
         self.ui.stopbutton.clicked.connect(self.interrupt)
         self.ui.pushButton.clicked.connect(self.getFile)
+        self.ui.pushButton_2.clicked.connect(self.loadDevices)
+        
         self.threadpool = qtc.QThreadPool()
         print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
         
@@ -58,6 +60,9 @@ class appnog(qtw.QMainWindow):
         worker = Worker(self.pull)
         self.threadpool.start(worker)
         
+    def loadDevices(self):
+        for _dev in dn.dev:
+            self.ui.comboBox.addItem(str(_dev[0]))
 
 
     def interrupt(self):
