@@ -62,13 +62,10 @@ class appnog(qtw.QMainWindow):
     def initDevices(self):
         global dn
         dn = nog.daq()
-        try:
-            self.devsens = np.load('devsens.npy', allow_pickle=True)
-        except Exception as e:
-            print(e)
-            self.devsens={}
-            for _dev in dn.dev:
-                self.devsens[_dev[0]] = 'None'
+        
+        self.devsens={}
+        for _dev in dn.dev:
+            self.devsens[_dev[0]] = 'None'
         self.loadDevices()
         self.ui.linkSensor.setEnabled(True)
         self.ui.calibutton.setEnabled(True)
@@ -91,7 +88,7 @@ class appnog(qtw.QMainWindow):
             pass
 
         for _dev in dn.dev:
-            self.ui.comboBox.addItem(str(_dev[0]))
+            self.ui.comboBox.addItems(self.devsens.keys())
 
     def interrupt(self):
         dn.state = 0
