@@ -140,13 +140,13 @@ class appnog(qtw.QMainWindow):
         self.canv.axes.cla()
         ax = self.canv.axes
 
-        if self.ui.plottype.currentText == "Time Data"
+        if self.ui.plottype.currentText == "Time Data":
             try:
                 t = np.arange(0, dn.dt*len(self.plotdata))
                 ax.plot(t,self.plotdata)
             except Exception as e:
                 print('==>',e)
-        elif self.ui.plottype.currentText == "Spectrogram"
+        elif self.ui.plottype.currentText == "Spectrogram":
             try:
                 f, t, Sxx = scipy.signal.spectrogram(self.plotdata,dn.fs, axis=0)
                 ax.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud', cmap=plt.cm.viridis)
