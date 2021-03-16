@@ -1,5 +1,6 @@
 import datanog as nog
 from gui import Ui_MainWindow
+import scipy
 import os
 from PyQt5 import QtCore as qtc
 from PyQt5 import QtWidgets as qtw
@@ -65,11 +66,12 @@ class appnog(qtw.QMainWindow):
         self.threadpool.start(worker)
         
     def loadDevices(self):
+        self.devsens={}
         for _dev in dn.dev:
+            self.devsens[str(_dev[0])]=''
             self.ui.comboBox.addItem(str(_dev[0]))
-        
         for _sens in os.listdir('{}/sensors'.format(dn.root)):
-            self.ui.comboBox_2.addItem(_sens)
+            self.ui.comboBox_2.addItem(_sens[:-5])
 
 
     def interrupt(self):
@@ -93,6 +95,8 @@ class appnog(qtw.QMainWindow):
             pass
 
     
+
+
     def readData(self):
         self.plotdata = np.load(self.filename)
         self.updatePlot()
@@ -109,6 +113,9 @@ class appnog(qtw.QMainWindow):
         except Exception as e:
             print(e)
             pass
+
+
+
         self.canv = MatplotlibCanvas(self)
         self.toolbar = Navi(self.canv,self.ui.tab_2)
         
@@ -118,13 +125,26 @@ class appnog(qtw.QMainWindow):
         
         self.canv.axes.cla()
         ax = self.canv.axes
-        try:
-            ax.plot(self.plotdata)
-            
-        except Exception as e:
-            print('==>',e)
+
+        if self.ui.plottype.currentText == "Time Data"
+            try:
+                t = np.arange(0, dn.dt*len(self.plotdata))
+                ax.plot(t,self.plotdata)
+            except Exception as e:
+                print('==>',e)
+        elif self.ui.plottype.currentText == "Spectrogram"
+            try:
+                f, t, Sxx = scipy.signal.spectrogram(self.plotdata,dn.fs, axis=0)
+                ax.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud', cmap=plt.cm.viridis)
+                ax.ylim((0, 830))
+                ax.colorbar()
+                ax.ylabel('Frequency [Hz]')
+                ax.xlabel('Time [sec]')
+                ax.show()
         self.canv.draw()
-        plt.tight_layout()
+        ax.tight_layout()
+
+    
 
     
 
