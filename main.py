@@ -13,7 +13,7 @@ from matplotlib.figure import Figure
 import sip
 import numpy as np
 
-dn = nog.daq()
+root = os.getcwd()
 
 class MatplotlibCanvas(FigureCanvasQTAgg):
     def __init__(self,parent=None, dpi = 120):
@@ -72,8 +72,7 @@ class appnog(qtw.QMainWindow):
         for _dev in dn.dev:
             self.devsens[str(_dev[0])]=''
             self.ui.comboBox.addItem(str(_dev[0]))
-        for _sens in os.listdir('{}/sensors'.format(dn.root)):
-            self.ui.comboBox_2.addItem(_sens[:-5])
+        
 
 
     def interrupt(self):
