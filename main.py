@@ -79,9 +79,11 @@ class appnog(qtw.QMainWindow):
     def loadDevices(self):
         
         for _dev in dn.dev:
-            self.devsens[str(_dev[0])]=''
+            try:
+                self.ui.comboBox.removeItem()
+            except :
+                pass
             self.ui.comboBox.addItem('{} ({})'.format(str(_dev[0]), self.devsens[str(_dev[0])]))
-        
 
 
     def interrupt(self):
