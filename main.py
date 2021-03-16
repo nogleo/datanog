@@ -91,7 +91,7 @@ class appnog(qtw.QMainWindow):
             pass
 
         for _dev in dn.dev:
-            self.ui.comboBox.addItem('{} - ({})'.format(_dev[0], self.devsens[_dev[0]]))
+            self.ui.comboBox.addItem('{}--{}'.format(_dev[0], self.devsens[_dev[0]]))
 
     def interrupt(self):
         dn.state = 0
