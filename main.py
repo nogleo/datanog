@@ -91,7 +91,7 @@ class appnog(qtw.QMainWindow):
             pass
 
         for _dev in dn.dev:
-            self.ui.comboBox.addItem(str(_dev[0]))
+            self.ui.comboBox.addItem(_dev[0])
 
     def interrupt(self):
         dn.state = 0
@@ -125,8 +125,8 @@ class appnog(qtw.QMainWindow):
 
         self.filename = qtw.QFileDialog.getOpenFileName()[0]
         print("File :", self.filename)
-        _i = self.ui.comboBox.currentIndex()
-        self.devsens[dn.dev[_i]] = self.filename
+        
+        self.devsens[self.ui.comboBox.currentData()] = self.filename[25:]
         self.loadDevices()
         os.chdir(root)
         np.save('devsens.npy', self.devsens)
