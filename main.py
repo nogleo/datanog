@@ -43,6 +43,8 @@ class appnog(qtw.QMainWindow):
         self.ui.startbutton.clicked.connect(self.collect)
         self.ui.stopbutton.clicked.connect(self.interrupt)
         self.ui.pushButton.clicked.connect(self.getFile)
+        self.ui.calibutton.clicked.connect(self.calib)
+        self.ui.linkSensor.clicked.connect(self.linkSens)
         
         self.ui.pushButton_4.clicked.connect(self.initDevices)
         self.threadpool = qtc.QThreadPool()
@@ -94,7 +96,19 @@ class appnog(qtw.QMainWindow):
         except Exception:
             pass
 
-    
+    def calib(self):
+        dn.calibrate(self.ui.comboBox.currentText())
+
+    def linkSens(self):
+        os.chdir(dn.root)
+        try:
+            os.chdir('DATA')
+        except :
+            pass
+
+        self.filename = qtw.QFileDialog.getOpenFileName()[0]
+        print("File :", self.filename)
+        self.devsens[self.ui.comboBox.currentText] = self.filename
 
 
     def readData(self):
