@@ -155,6 +155,8 @@ class appnog(qtw.QMainWindow):
                 ax.ylabel('Frequency [Hz]')
                 ax.xlabel('Time [sec]')
                 ax.show()
+            except Exception as e:
+                print('==>',e)    
         self.canv.draw()
         ax.tight_layout()
 
