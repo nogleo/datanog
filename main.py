@@ -87,8 +87,8 @@ class appnog(qtw.QMainWindow):
             pass
         for _dev in dn.dev:
             self.ui.comboBox.addItem('{}-({})'.format(str(_dev[0]), self.devsens[str(_dev[0])]))
-
-        np.save('{}/devsens.npy', self.devsens)
+        os.chdir(root)
+        np.save('devsens.npy', self.devsens)
 
     def interrupt(self):
         dn.state = 0
@@ -97,7 +97,7 @@ class appnog(qtw.QMainWindow):
         """ This function will get the address of the csv file location
             also calls a readData function 
         """
-        os.chdir(dn.root)
+        os.chdir(root)
         try:
             os.chdir('DATA')
         except :
@@ -114,7 +114,7 @@ class appnog(qtw.QMainWindow):
         dn.calibrate(dn.dev[self.ui.comboBox.currentIndex()])
 
     def linkSens(self):
-        os.chdir(dn.root)
+        os.chdir(root)
         try:
             os.chdir('sensors')
         except :
