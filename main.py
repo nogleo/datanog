@@ -125,8 +125,8 @@ class appnog(qtw.QMainWindow):
 
         self.filename = qtw.QFileDialog.getOpenFileName()[0]
         print("File :", self.filename)
-        
-        self.devsens[self.ui.comboBox.currentData()] = self.filename[25:]
+        ii = self.ui.comboBox.currentIndex()
+        self.devsens[dn.dev[ii][0]] = self.filename[25:]
         self.loadDevices()
         os.chdir(root)
         np.save('devsens.npy', self.devsens)
