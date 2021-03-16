@@ -68,7 +68,7 @@ class appnog(qtw.QMainWindow):
             print(e)
             self.devsens={}
             for _dev in dn.dev:
-                self.devsens[_dev[0]] = None
+                self.devsens[_dev[0]] = 'None'
         self.loadDevices()
         self.ui.linkSensor.setEnabled(True)
         self.ui.calibutton.setEnabled(True)
