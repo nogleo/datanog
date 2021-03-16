@@ -87,7 +87,7 @@ class appnog(qtw.QMainWindow):
         except :
             pass
         for _sens in self.devsens:
-            self.ui.comboBox.addItems(_sens+'--'+self.devsens[_sens])
+            self.ui.comboBox.addItem(_sens+'--'+self.devsens[_sens])
 
     def interrupt(self):
         dn.state = 0
