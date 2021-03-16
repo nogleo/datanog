@@ -47,6 +47,15 @@ class appnog(qtw.QMainWindow):
         self.ui.linkSensor.clicked.connect(self.linkSens)
         
         self.ui.pushButton_4.clicked.connect(self.initDevices)
+
+        try:
+            self.devsens = np.load('devsens.npy')
+        
+        except Exception as e:
+            print(e)
+            self.devsens={}
+            
+
         self.threadpool = qtc.QThreadPool()
         print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
         
@@ -68,10 +77,10 @@ class appnog(qtw.QMainWindow):
         self.threadpool.start(worker)
         
     def loadDevices(self):
-        self.devsens={}
+        
         for _dev in dn.dev:
             self.devsens[str(_dev[0])]=''
-            self.ui.comboBox.addItem(str(_dev[0]))
+            self.ui.comboBox.addItem('{} ({})'.format(str(_dev[0]), self.devsens[str(_dev[0])]))
         
 
 
@@ -96,18 +105,21 @@ class appnog(qtw.QMainWindow):
             pass
 
     def calib(self):
-        dn.calibrate(self.ui.comboBox.currentText())
+        dn.calibrate(dn.dev[self.ui.comboBox.currentIndex])
 
     def linkSens(self):
         os.chdir(dn.root)
         try:
-            os.chdir('DATA')
+            os.chdir('sensors')
         except :
             pass
 
         self.filename = qtw.QFileDialog.getOpenFileName()[0]
         print("File :", self.filename)
-        self.devsens[self.ui.comboBox.currentText] = self.filename
+        _i = self.ui.comboBox.currentIndex
+        self.devsens[str(dn.dev[_i])] = self.filename
+        self.loadDevices()
+        
 
 
     def readData(self):
