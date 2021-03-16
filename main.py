@@ -66,7 +66,7 @@ class appnog(qtw.QMainWindow):
             print(e)
             self.devsens={}
             for _dev in dn.dev:
-                self.devsens[(_dev[0]] = ''
+                self.devsens[_dev[0]] = ''
         self.loadDevices()
 
     def pull(self):
