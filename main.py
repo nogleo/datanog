@@ -66,7 +66,7 @@ class appnog(qtw.QMainWindow):
             print(e)
             self.devsens={}
             for _dev in dn.dev:
-                self.devsens[str(_dev[0])] = ''
+                self.devsens[(_dev[0]] = ''
         self.loadDevices()
 
     def pull(self):
@@ -86,7 +86,7 @@ class appnog(qtw.QMainWindow):
         except :
             pass
         for _dev in dn.dev:
-            self.ui.comboBox.addItem('{}-({})'.format(str(_dev[0]), self.devsens[str(_dev[0])]))
+            self.ui.comboBox.addItem('{}-({})'.format(str(_dev[0]), self.devsens[_dev[0]]))
         os.chdir(root)
         np.save('devsens.npy', self.devsens)
 
