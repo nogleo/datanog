@@ -48,14 +48,7 @@ class appnog(qtw.QMainWindow):
         
         self.ui.pushButton_4.clicked.connect(self.initDevices)
 
-        try:
-            self.devsens = np.load('devsens.npy')
         
-        except Exception as e:
-            print(e)
-            self.devsens={}
-            for _dev in dn.dev:
-                self.devsens[str(_dev[0])] = ''
             
 
         self.threadpool = qtc.QThreadPool()
@@ -66,6 +59,14 @@ class appnog(qtw.QMainWindow):
     def initDevices(self):
         global dn
         dn = nog.daq()
+        try:
+            self.devsens = np.load('devsens.npy')
+        
+        except Exception as e:
+            print(e)
+            self.devsens={}
+            for _dev in dn.dev:
+                self.devsens[str(_dev[0])] = ''
         self.loadDevices()
 
     def pull(self):
