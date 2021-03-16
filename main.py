@@ -105,7 +105,7 @@ class appnog(qtw.QMainWindow):
             pass
 
     def calib(self):
-        dn.calibrate(dn.dev[self.ui.comboBox.currentIndex])
+        dn.calibrate(dn.dev[self.ui.comboBox.currentIndex()])
 
     def linkSens(self):
         os.chdir(dn.root)
@@ -116,10 +116,10 @@ class appnog(qtw.QMainWindow):
 
         self.filename = qtw.QFileDialog.getOpenFileName()[0]
         print("File :", self.filename)
-        _i = self.ui.comboBox.currentIndex
+        _i = self.ui.comboBox.currentIndex()
         self.devsens[str(dn.dev[_i])] = self.filename
         self.loadDevices()
-        
+
 
 
     def readData(self):
