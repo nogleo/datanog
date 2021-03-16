@@ -45,8 +45,10 @@ class appnog(qtw.QMainWindow):
         self.ui.pushButton.clicked.connect(self.getFile)
         self.ui.calibutton.clicked.connect(self.calib)
         self.ui.linkSensor.clicked.connect(self.linkSens)
-        
+        self.ui.linkSensor.setEnabled(False)
+        self.ui.calibutton.setEnabled(False)
         self.ui.pushButton_4.clicked.connect(self.initDevices)
+        self.ui.comboBox.currentTextChanged['QString'].connect(self.loadDevices)
 
         
             
@@ -55,19 +57,21 @@ class appnog(qtw.QMainWindow):
         print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
         
         self.canv = MatplotlibCanvas(self)
+        self.toolbar = None
 
     def initDevices(self):
         global dn
         dn = nog.daq()
         try:
             self.devsens = np.load('devsens.npy', allow_pickle=True)
-        
         except Exception as e:
             print(e)
             self.devsens={}
             for _dev in dn.dev:
-                self.devsens[_dev[0]] = ''
+                self.devsens[_dev[0]] = None
         self.loadDevices()
+        self.ui.linkSensor.setEnabled(True)
+        self.ui.calibutton.setEnabled(True)
 
     def pull(self):
         dn.savedata(dn.pulldata(self.ui.label.text()))
@@ -86,9 +90,7 @@ class appnog(qtw.QMainWindow):
         except :
             pass
         for _dev in dn.dev:
-            self.ui.comboBox.addItem('{}-({})'.format(str(_dev[0]), self.devsens[_dev[0]]))
-        os.chdir(root)
-        np.save('devsens.npy', self.devsens)
+            self.ui.comboBox.addItem('{}-({})'.format(_dev[0], self.devsens[_dev[0]]))
 
     def interrupt(self):
         dn.state = 0
@@ -123,9 +125,10 @@ class appnog(qtw.QMainWindow):
         self.filename = qtw.QFileDialog.getOpenFileName()[0]
         print("File :", self.filename)
         _i = self.ui.comboBox.currentIndex()
-        self.devsens[str(dn.dev[_i])] = self.filename
+        self.devsens[dn.dev[_i]] = self.filename
         self.loadDevices()
-
+        os.chdir(root)
+        np.save('devsens.npy', self.devsens)
 
 
     def readData(self):
@@ -166,7 +169,7 @@ class appnog(qtw.QMainWindow):
         elif self.ui.plottype.currentText == "Spectrogram":
             try:
                 f, t, Sxx = scipy.signal.spectrogram(self.plotdata,dn.fs, axis=0)
-                ax.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud', cmap=plt.cm.viridis)
+                ax.pcolormesh(t, f, 20*np.log10(abs(Sxx)))
                 ax.ylim((0, 830))
                 ax.colorbar()
                 ax.ylabel('Frequency [Hz]')
