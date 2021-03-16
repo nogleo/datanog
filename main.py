@@ -88,6 +88,7 @@ class appnog(qtw.QMainWindow):
         for _dev in dn.dev:
             self.ui.comboBox.addItem('{}-({})'.format(str(_dev[0]), self.devsens[str(_dev[0])]))
 
+        np.save('{}/devsens.npy', self.devsens)
 
     def interrupt(self):
         dn.state = 0
