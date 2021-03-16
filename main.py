@@ -60,7 +60,7 @@ class appnog(qtw.QMainWindow):
         global dn
         dn = nog.daq()
         try:
-            self.devsens = np.load('devsens.npy')
+            self.devsens = np.load('devsens.npy', allow_pickle=True)
         
         except Exception as e:
             print(e)
