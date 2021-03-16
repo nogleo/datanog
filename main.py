@@ -54,6 +54,8 @@ class appnog(qtw.QMainWindow):
         except Exception as e:
             print(e)
             self.devsens={}
+            for _dev in dn.dev:
+                self.devsens[str(_dev[0])] = ''
             
 
         self.threadpool = qtc.QThreadPool()
