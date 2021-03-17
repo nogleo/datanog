@@ -150,6 +150,7 @@ class daq:
 
 
     def calibrate(self, _device):
+        os.chdir(self.root)
         _sensname = input('Connnect sensor and name it: ')
         _sensor = {'name': _sensname}
         self._caldata = []
@@ -183,7 +184,6 @@ class daq:
         self.acc_raw = _data[0:6*self._nsamp,3:6]
         self.gyr_raw = _data[:,0:3]
         #np.save('./sensors/'+_sensor['name']+'rawdata.npy', _data)
-        #print(_sensor['name']+'rawdata saved')
         print('Calculating calibration parameters. Wait...')
         gc.collect()
         _sensor['acc_p'] = self.calibacc(self.acc_raw)
@@ -191,9 +191,9 @@ class daq:
         _sensor['gyr_p'] = self.calibgyr(self.gyr_raw)        
         np.savez('./sensors/'+_sensor['name'], _sensor['gyr_p'], _sensor['acc_p'])
        
-        os.chdir('..')
+        print(_sensor['name']+' saved')
         gc.collect()
-        return _sensor
+        
     
     def calibacc(self, _accdata):
         _k = np.zeros((3, 3))
