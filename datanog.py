@@ -10,7 +10,7 @@ from numpy.linalg import norm, inv
 from smbus import SMBus
 
 
-
+root = os.getcwd()
 
 
 class daq:
@@ -28,7 +28,7 @@ class daq:
         self.state = 1
         self.raw = 1
         self.G = 1
-        self.root = os.getcwd()
+        
         self.odr = 8  #8=1660Hz 9=3330Hz 10=6660Hz
         self.range = [1, 3]     #[16G, 2000DPS]
         for device in range(128):
@@ -111,7 +111,7 @@ class daq:
         return self.q  
 
     def savedata(self, _q):
-        os.chdir(self.root)
+        os.chdir(root)
         if 'DATA' not in os.listdir():
             os.mkdir('DATA')
         os.chdir('DATA')
@@ -150,7 +150,7 @@ class daq:
 
 
     def calibrate(self, _device):
-        os.chdir(self.root)
+        os.chdir(root)
         _sensname = input('Connnect sensor and name it: ')
         _sensor = {'name': _sensname}
         self._caldata = []

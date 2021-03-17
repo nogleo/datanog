@@ -171,8 +171,6 @@ class appnog(qtw.QMainWindow):
         try:
             
             ax.plot(self.plotdata)
-            ax.ylabel('Magnitude')
-            ax.xlabel('Sample')
             ax.tight_layout()
             ax.show()
         except Exception as e:
