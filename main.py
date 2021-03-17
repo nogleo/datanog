@@ -16,7 +16,7 @@ import numpy as np
 root = os.getcwd()
 
 class MatplotlibCanvas(FigureCanvasQTAgg):
-    def __init__(self,parent=None, dpi = 120):
+    def __init__(self,parent=None, dpi = 100):
         fig = Figure(dpi = dpi)
         self.axes = fig.add_subplot(111)
         super(MatplotlibCanvas,self).__init__(fig)
