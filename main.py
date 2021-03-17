@@ -170,10 +170,9 @@ class appnog(qtw.QMainWindow):
         '''
         try:
             
-            Pxx, freqs, bins, im = ax.specgram(self.plotdata, NFFT=1024, Fs=dn.fs, noverlap=900)
-            ax.colorbar()
-            ax.ylabel('Frequency [Hz]')
-            ax.xlabel('Time [sec]')
+            ax.plot(self.plotdata)
+            ax.ylabel('Magnitude')
+            ax.xlabel('Sample')
             ax.tight_layout()
             ax.show()
         except Exception as e:
