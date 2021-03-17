@@ -169,17 +169,16 @@ class appnog(qtw.QMainWindow):
         elif self.ui.plottype.currentText == "Spectrogram":
         '''
         try:
-            f, t, Sxx = scipy.signal.spectrogram(self.plotdata,dn.fs, axis=0)
-            ax.pcolormesh(t, f, 20*np.log10(abs(Sxx)))
-            ax.ylim((0, 830))
+            
+            Pxx, freqs, bins, im = ax.specgram(self.plotdata, NFFT=1024, Fs=dn.fs, noverlap=900)
             ax.colorbar()
             ax.ylabel('Frequency [Hz]')
             ax.xlabel('Time [sec]')
+            ax.tight_layout()
             ax.show()
         except Exception as e:
             print('==>',e)    
         self.canv.draw()
-        ax.tight_layout()
 
     
 
