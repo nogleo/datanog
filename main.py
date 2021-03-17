@@ -43,7 +43,7 @@ class appnog(qtw.QMainWindow):
         self.ui.startbutton.clicked.connect(self.collect)
         self.ui.stopbutton.clicked.connect(self.interrupt)
         self.ui.pushButton.clicked.connect(self.getFile)
-        self.ui.calibutton.clicked.connect(self.calib)
+        self.ui.calibutton.clicked.connect(self.calibrate)
         self.ui.linkSensor.clicked.connect(self.linkSens)
         self.ui.linkSensor.setEnabled(False)
         self.ui.calibutton.setEnabled(False)
@@ -73,7 +73,6 @@ class appnog(qtw.QMainWindow):
     def pull(self):
         dn.savedata(dn.pulldata(self.ui.label.text()))
         self.ui.startbutton.setEnabled(True)
-        #qtw.QMessageBox.about(self, 'Data Collected', 'File saved')
 
     def collect(self):
         self.ui.startbutton.setEnabled(False)
@@ -111,6 +110,10 @@ class appnog(qtw.QMainWindow):
 
     def calib(self):
         dn.calibrate(dn.dev[self.ui.comboBox.currentIndex()])
+
+    def calibrate(self):
+        workal = Worker(self.calib)
+        self.threadpool.start(workal)
 
     def linkSens(self):
         os.chdir(root)
