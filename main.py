@@ -159,22 +159,21 @@ class appnog(qtw.QMainWindow):
         
         self.canv.axes.cla()
         ax = self.canv.axes
-        '''
-        if self.ui.plottype.currentText == "Time Data":
+        
+        if self.ui.plottype.currentText == "Time":
             try:
-                t = np.arange(0, dn.dt*len(self.plotdata))
-                ax.plot(t,self.plotdata)
+                ax.plot(self.plotdata)
+                plt.tight_layout()
+                ax.show()
             except Exception as e:
                 print('==>',e)
-        elif self.ui.plottype.currentText == "Spectrogram":
-        '''
-        try:
-            
-            ax.plot(self.plotdata)
-            ax.tight_layout()
-            ax.show()
-        except Exception as e:
-            print('==>',e)    
+        elif self.ui.plottype.currentText == "Frequency":        
+            try:                
+                ax.psd(self.plotdata, NFFT=1024, Fs=dn.fs)
+                plt.tight_layout()
+                ax.show()
+            except Exception as e:
+                print('==>',e)    
         self.canv.draw()
 
     
