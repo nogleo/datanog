@@ -160,14 +160,14 @@ class appnog(qtw.QMainWindow):
         self.canv.axes.cla()
         ax = self.canv.axes
         
-        if self.ui.plottype.currentText == "Time":
+        if self.ui.plottype.currentIndex == 0:
             try:
                 ax.plot(self.plotdata)
                 plt.tight_layout()
                 ax.show()
             except Exception as e:
                 print('==>',e)
-        elif self.ui.plottype.currentText == "Frequency":        
+        elif self.ui.plottype.currentIndex == 1:        
             try:                
                 ax.psd(self.plotdata, NFFT=1024, Fs=dn.fs)
                 plt.tight_layout()
