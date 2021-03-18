@@ -196,8 +196,8 @@ class Ui_MainWindow(object):
         self.radioButton_2.setText(_translate("MainWindow", "Raw"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_1), _translate("MainWindow", "Collect"))
         self.pushButton.setText(_translate("MainWindow", "Open"))
-        self.plottype.setItemText(0, _translate("MainWindow", "Time Data"))
-        self.plottype.setItemText(1, _translate("MainWindow", "Spectrogram"))
+        self.plottype.setItemText(0, _translate("MainWindow", "Time"))
+        self.plottype.setItemText(1, _translate("MainWindow", "Frquency"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Process"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Page"))
 

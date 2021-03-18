@@ -282,12 +282,12 @@
            <widget class="QComboBox" name="plottype">
             <item>
              <property name="text">
-              <string>Time Data</string>
+              <string>Time</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>Spectrogram</string>
+              <string>Frquency</string>
              </property>
             </item>
            </widget>
