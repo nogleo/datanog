@@ -128,8 +128,16 @@ class daq:
             if str(self.dev[_j][0]) == '54':
                 np.save('rot.npy', arr)
             elif str(self.dev[_j][0]) == '106' or str(self.dev[_j][0]) == '107':
-                np.save('gyr{}.npy'.format(str(_j)), arr[:,0:3])
-                np.save('acc{}.npy'.format(str(_j)), arr[:,3:6])
+                if self.dev[_j][-1] != None:
+                    _param = np.load(root+'/sensors/'+_dev[-1], allow_pickle=True)
+                    np.save('gyr{}.npy'.format(str(_j)), self.transl(arr[:,0:3], _param['arr_0']))
+                    np.save('acc{}.npy'.format(str(_j)), self.transl(arr[:,3:6], _param['arr_1']))
+                else:
+                    np.save('gyr{}*.npy'.format(str(_j)), arr[:,0:3])
+                    np.save('acc{}*.npy'.format(str(_j)), arr[:,3:6])
+
+
+
             elif str(self.dev[_j][0]) == '72':
                 np.save('cur.npy', arr)
 
@@ -143,11 +151,17 @@ class daq:
         
         while _q.qsize()>0:
             for _j in range(self.N):
-                _data[str(self.dev[_j][0])].append(unpack(self.dev[_j][-1], bytearray(_q.get())))
+                _data[str(self.dev[_j][0])].append(unpack(self.dev[_j][-2], bytearray(_q.get())))
+        
         
         return _data
         
-
+    def transl(self, _data, X):
+        _NS = nap.array(X[0:9].reshape((3,3)))
+        _b = nap.array(X[-3:])
+        _data_out = (_NS@(_data-_b))
+        
+        return _data_out
 
     def calibrate(self, _device):
         os.chdir(root)

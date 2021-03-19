@@ -49,6 +49,7 @@ class appnog(qtw.QMainWindow):
         self.ui.calibutton.setEnabled(False)
         self.ui.pushButton_4.clicked.connect(self.initDevices)
         
+        
 
         
             
