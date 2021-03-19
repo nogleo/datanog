@@ -129,7 +129,7 @@ class daq:
                 np.save('rot.npy', arr)
             elif str(self.dev[_j][0]) == '106' or str(self.dev[_j][0]) == '107':
                 if self.dev[_j][-1] != None:
-                    _param = np.load(root+'/sensors/'+_dev[-1], allow_pickle=True)
+                    _param = np.load(root+'/sensors/'+self.dev[_j][-1], allow_pickle=True)
                     np.save('gyr{}.npy'.format(str(_j)), self.transl(arr[:,0:3], _param['arr_0']))
                     np.save('acc{}.npy'.format(str(_j)), self.transl(arr[:,3:6], _param['arr_1']))
                 else:
