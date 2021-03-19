@@ -159,7 +159,7 @@ class daq:
     def transl(self, _data, X):
         _NS = nap.array(X[0:9].reshape((3,3)))
         _b = nap.array(X[-3:])
-        _data_out = (_NS@(_data-_b))
+        _data_out = (_NS@(_data-_b).T).T
         
         return _data_out
 
