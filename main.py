@@ -85,8 +85,8 @@ class appnog(qtw.QMainWindow):
             self.ui.comboBox.clear()
         except :
             pass
-        for _sens in self.devsens:
-            self.ui.comboBox.addItem(_sens+'--'+self.devsens[_sens])
+        for _sens in dn.dev:
+            self.ui.comboBox.addItem(str(_sens[0])+'--'+str(_sens[-1]))
 
     def interrupt(self):
         dn.state = 0
@@ -125,7 +125,7 @@ class appnog(qtw.QMainWindow):
         self.filename = qtw.QFileDialog.getOpenFileName()[0]
         print("File :", self.filename)
         ii = self.ui.comboBox.currentIndex()
-        self.devsens[str(dn.dev[ii][0])] = self.filename[25:]
+        dn.dev[ii][-1] = self.filename[25:]
         self.loadDevices()
         os.chdir(root)
         np.save('devsens.npy', self.devsens)
@@ -147,33 +147,19 @@ class appnog(qtw.QMainWindow):
         except Exception as e:
             print(e)
             pass
-
-
-
         self.canv = MatplotlibCanvas(self)
         self.toolbar = Navi(self.canv,self.ui.tab_2)
-        
-        
         self.ui.horizontalLayout.addWidget(self.toolbar)
         self.ui.verticalLayout.addWidget(self.canv)
-        
         self.canv.axes.cla()
         ax = self.canv.axes
-        
-        if self.ui.plottype.currentIndex == 0:
-            try:
-                ax.plot(self.plotdata)
-                plt.tight_layout()
-                ax.show()
-            except Exception as e:
-                print('==>',e)
-        elif self.ui.plottype.currentIndex == 1:        
-            try:                
-                ax.psd(self.plotdata, NFFT=1024, Fs=dn.fs)
-                plt.tight_layout()
-                ax.show()
-            except Exception as e:
-                print('==>',e)    
+            
+        try:
+            ax.plot(self.plotdata)
+            plt.tight_layout()
+            ax.show()
+        except Exception as e:
+            print('==>',e)
         self.canv.draw()
 
     

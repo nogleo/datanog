@@ -35,11 +35,11 @@ class daq:
             try:
                 self.bus.read_byte(device)
                 if device == 0x6b or device == 0x6a:
-                    self.dev.append([device, 0x22, 12, '<hhhhhh'])
+                    self.dev.append([device, 0x22, 12, '<hhhhhh', None])
                 elif device == 0x36:
-                    self.dev.append([device, 0x0C, 2, '>H'])
+                    self.dev.append([device, 0x0C, 2, '>H', None])
                 elif device == 0x48:
-                    self.dev.append([device, 0x00, 2, '>h'])
+                    self.dev.append([device, 0x00, 2, '>h', None])
                 self.config(device)
                 print("Device Config: ", device)
             except Exception as e:

@@ -279,20 +279,6 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="plottype">
-            <item>
-             <property name="text">
-              <string>Time</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Frquency</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item>
            <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
