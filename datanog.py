@@ -27,7 +27,7 @@ class daq:
         self.dt = 1/self.fs
         self.state = 1
         self.raw = 1
-        self.G = 1
+        self.G = 9.81
         
         self.odr = 8  #8=1660Hz 9=3330Hz 10=6660Hz
         self.range = [1, 3]     #[16G, 2000DPS]
@@ -284,5 +284,5 @@ class daq:
             sum += _NS@(u-_b).T*self.dt
        
     
-        return (90 - nap.abs(sum)).sum()**2
+        return (nap.pi/2 - nap.abs(sum)).sum()**2
 
