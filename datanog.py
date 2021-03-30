@@ -124,9 +124,13 @@ class daq:
 
 
         for _j in range(self.N):
-            arr = np.array(data[str(self.dev[_j][0])])    
+            arr = np.array(data[str(self.dev[_j][0])])
             if str(self.dev[_j][0]) == '54':
-                np.save('rot.npy', arr)
+                if self.dev[_j][-1] != None:
+                    _scale = np.load(root+'/sensors/'+self.dev[_j][-1])
+                    np.save('rot.npy', arr*_scale)
+                else:
+                    np.save('rot*.npy', arr)
             elif str(self.dev[_j][0]) == '106' or str(self.dev[_j][0]) == '107':
                 if self.dev[_j][-1] != None:
                     _param = np.load(root+'/sensors/'+self.dev[_j][-1], allow_pickle=True)
