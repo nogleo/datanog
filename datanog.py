@@ -169,7 +169,7 @@ class daq:
         _sensor = {'name': _sensname}
         self._caldata = []
         print('Iniciando 6 pos calibration')
-        self._nsamp = int(input('Number of Samples/Position: ') or 3/self.dt)
+        self._nsamp = int((input('Seconds/Position: ') or 3)/self.dt)
 
         for _n in range(6):
             input('Position {}'.format(_n+1))
@@ -181,7 +181,7 @@ class daq:
                     tf = ti
                     i+=1
                     self._caldata.append(self.pull(_device))
-        self._gsamps = int(input('Number of Samples/Rotation: ') or 1/self.dt)
+        self._gsamps = int((input('Seconds/Rotation: ') or 1.5)/self.dt)
         for _n in range(0,6,2):
             input('Rotate 90 deg around axis {}-{}'.format(_n+1,_n+2))
             i=0
