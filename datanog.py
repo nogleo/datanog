@@ -269,7 +269,7 @@ class daq:
         _k[:,1] = _ang[:,_ang[1].argmax()]
         _k[:,2] = _ang[:,_ang[2].argmax()]
 
-        _kT = np.diag([np.pi/2])@inv(_k)
+        _kT = np.diag([np.pi/2]*3)@inv(_k)
         _param = np.append(_kT.flatten(), _b.T)        
         _jac = jacobian(self.gyrObj)
         _hes = hessian(self.gyrObj)
