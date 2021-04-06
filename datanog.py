@@ -173,7 +173,7 @@ class daq:
         _sensor = {'name': _sensname}
         self._caldata = []
         print('Iniciando 6 pos calibration')
-        self._nsamp = int((input('Seconds/Position: ') or 3)/self.dt)
+        self._nsamp = int((input('KiloSamples/Position: ') or 5)*1000)
 
         for _n in range(6):
             input('Position {}'.format(_n+1))
@@ -185,7 +185,7 @@ class daq:
                     tf = ti
                     i+=1
                     self._caldata.append(self.pull(_device))
-        self._gsamps = int((input('Seconds/Rotation: ') or 1.5)/self.dt)
+        self._gsamps = int((input('KiloSamples/Rotation: ') or 3)*1000)
         for _n in range(0,6,2):
             input('Rotate 90 deg around axis {}-{}'.format(_n+1,_n+2))
             i=0
@@ -201,7 +201,7 @@ class daq:
         _data = np.array(self._caldata)
         self.acc_raw = _data[0:6*self._nsamp,3:6]
         self.gyr_raw = _data[:,0:3]
-        #np.save('./sensors/'+_sensor['name']+'rawdata.npy', _data)
+        np.save('./sensors/'+_sensor['name']+'rawdata.npy', _data)
         print('Calculating calibration parameters. Wait...')
         gc.collect()
         _sensor['acc_p'] = self.calibacc(self.acc_raw)
