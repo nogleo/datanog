@@ -134,11 +134,11 @@ class daq:
             elif str(self.dev[_j][0]) == '106' or str(self.dev[_j][0]) == '107':
                 if self.dev[_j][-1] != None:
                     _param = np.load(root+'/sensors/'+self.dev[_j][-1], allow_pickle=True)
-                    np.save('gyr{}.npy'.format(str(_j)), self.transl(arr[:,0:3], _param['arr_0']))
-                    np.save('acc{}.npy'.format(str(_j)), self.transl(arr[:,3:6], _param['arr_1']))
+                    np.save('gyr{}.npy'.format(str(self.dev[_j][0])), self.transl(arr[:,0:3], _param['arr_0']))
+                    np.save('acc{}.npy'.format(str(self.dev[_j][0])), self.transl(arr[:,3:6], _param['arr_1']))
                 else:
-                    np.save('gyr{}*.npy'.format(str(_j)), arr[:,0:3])
-                    np.save('acc{}*.npy'.format(str(_j)), arr[:,3:6])
+                    np.save('gyr{}*.npy'.format(str(self.dev[_j][0])), arr[:,0:3])
+                    np.save('acc{}*.npy'.format(str(self.dev[_j][0])), arr[:,3:6])
 
 
 
@@ -269,7 +269,7 @@ class daq:
         _k[:,1] = _ang[:,_ang[1].argmax()]
         _k[:,2] = _ang[:,_ang[2].argmax()]
 
-        _kT = np.diag([90,90,90])@inv(_k)
+        _kT = np.diag([np.pi/2])@inv(_k)
         _param = np.append(_kT.flatten(), _b.T)        
         _jac = jacobian(self.gyrObj)
         _hes = hessian(self.gyrObj)
