@@ -6,7 +6,7 @@ import autograd.numpy as nap
 import scipy.optimize as op
 import scipy.integrate as intg
 from autograd import jacobian, hessian
-from numpy.linalg import norm, inv
+from numpy.linalg import norm, inv, pinv
 from smbus import SMBus
 
 
@@ -28,6 +28,7 @@ class daq:
         self.state = 1
         self.raw = 1
         self.G = 9.81
+        self.Rot = np.pi/2
         
         self.odr = 8  #8=1660Hz 9=3330Hz 10=6660Hz
         self.range = [1, 3]     #[16G, 2000DPS]
@@ -173,24 +174,24 @@ class daq:
         _sensor = {'name': _sensname}
         self._caldata = []
         print('Iniciando 6 pos calibration')
-        self._nsamp = int((input('KiloSamples/Position: ') or 5)*1000)
+        self.Ns = int((input('KiloSamples/Position: ') or 5)*1000)
 
         for _n in range(6):
             input('Position {}'.format(_n+1))
             i=0
             tf = time.perf_counter()
-            while i<self._nsamp:
+            while i<self.Ns:
                 ti=time.perf_counter()
                 if ti-tf>=self.dt:
                     tf = ti
                     i+=1
                     self._caldata.append(self.pull(_device))
-        self._gsamps = int((input('KiloSamples/Rotation: ') or 3)*1000)
+        self.Nd = int((input('KiloSamples/Rotation: ') or 3)*1000)
         for _n in range(0,6,2):
             input('Rotate 90 deg around axis {}-{}'.format(_n+1,_n+2))
             i=0
             tf = time.perf_counter()
-            while i<self._gsamps:
+            while i<self.Nd:
                 ti=time.perf_counter()
                 if ti-tf>=self.dt:
                     tf = ti
@@ -199,7 +200,7 @@ class daq:
         
         
         _data = np.array(self._caldata)
-        self.acc_raw = _data[0:6*self._nsamp,3:6]
+        self.acc_raw = _data[0:6*self.Ns,3:6]
         self.gyr_raw = _data[:,0:3]
         np.save('./sensors/'+_sensor['name']+'rawdata.npy', _data)
         print('Calculating calibration parameters. Wait...')
@@ -213,76 +214,66 @@ class daq:
         gc.collect()
         
     
-    def calibacc(self, _accdata):
-        _k = np.zeros((3, 3))
-        _b = np.zeros((3))
-        _Ti = np.ones((3, 3))
-        
-        self.acc_m = np.zeros((6, 3))
-        for _i in range(6):
-            for _j in range(3):
-                self.acc_m[_i, _j] = np.mean(_accdata[_i*self._nsamp:(_i+1)*self._nsamp, _j])
+    def calibacc(self, _accdata):        
+        #mean values for the 6 positions
+        aux=[]
+        for ii in range(6):
+            aux.append(_accdata[ii*self.Ns:(ii+1)*self.Ns,:].mean(0))
+        a_m = np.array(aux).T
+        #determination of biases
+        aux=[]
+        for ii in range(3):
+            aux.append((a_m[ii,:].max()+a_m[ii,:].min())/(2))
+        b = np.array(aux, ndmin=2).T
 
-        
-        for _i in range(3):
-            _max = self.acc_m[:,_i].max(0)
-            _min = self.acc_m[:,_i].min(0)
-            _k[_i, _i] = (_max - _min)/ (2*self.G)
-            _b[_i] = (_max + _min)/2    
-            _Ti[_i, _i-2] = np.arctan(self.acc_m[self.acc_m[:,_i].argmax(0),_i-2] / _max)
-            _Ti[_i, _i-1] = np.arctan(self.acc_m[self.acc_m[:,_i].argmax(0),_i-1] / _max)
-        _kT = inv(_k.dot(inv(_Ti)))
-        _param = np.append(_kT.flatten(), _b.T)
+        #unbiased mean values and expected (real) mean values 
+        a_mu = a_m-b
+        a_mr = np.zeros_like(a_mu)
+        for ii in range(3):
+            a_mr[ii,a_mu[ii,:].argmax()] = self.G
+            a_mr[ii,a_mu[ii,:].argmin()] = -self.G
+        #transformation matrix
+        T = a_mr@pinv(a_mu)
+
+        _param = np.append(T.flatten(), b.T)
         _jac = jacobian(self.accObj)
         _hes = hessian(self.accObj)
         _res = op.minimize(self.accObj, _param, method='trust-ncg', jac=_jac, hess=_hes)
+        print(_param - _res.x)
         return _res.x
   
-    
+    nap.linalg.grad_norm()
     def accObj(self, X):
-        _NS = nap.array(X[0:9].reshape((3,3)))
-        _b = nap.array(X[-3:])
-        _sum = 0
-        for u in self.acc_m:
-            _sum += (self.G - nap.linalg.norm(_NS@(u-_b).T))**2
-
-        return _sum
+        _T = nap.array(X[0:9].reshape((3,3)))
+        _b = nap.array(X[-3:]).reshape((3,1))
+        _diff = self.G - norm(_T@(self.acc_raw.T-_b),axis=0)
+        return (_diff**2).sum()
         
     def calibgyr(self, _gyrdata):
-        _gyr_s = _gyrdata[0:6*self._nsamp,:]
-        _b = np.mean(_gyr_s, axis=0).T
-        _gyr_d = _gyrdata[6*self._nsamp:,:] 
-        _gyr_r = _gyr_d - _b
-        _ang = np.zeros((3, 3))
-        for i in range(3):
-            for j in range(3):
-                _ang[i, j] = np.abs(intg.trapz(_gyr_r[self._gsamps*i:self._gsamps*(i+1), j], dx=self.dt))
+        g_s = _gyrdata[0:6*self.Ns,:]            #static gyro data
+        g_d = _gyrdata[6*self.Ns:,:]             #dynamic gyro data
+        
+        b = g_s.mean(0).reshape(3,1)            #bias from mean static measurements
+        # integrate dynamic rates to determine total angle
+        g_dm = np.zeros((3,3))              
 
-        _n = _ang.argmax(axis=0)
+        for ii in range(3):
+            g_dm[ii,:] = np.abs(intg.trapz(g_d[ii*self.Nd:(ii+1)*self.Nd,:].T-b,dx=self.dt , axis=1))
+        g_dr = np.zeros_like(g_dm)
 
-        self.rates = np.zeros((self._gsamps,3))
-        for i in range(3):
-            self.rates[:,i] = _gyr_d[self._gsamps*_n[i]:self._gsamps*(_n[i]+1), i]
-
-        _k = np.zeros((3,3))
-        _k[:,0] = _ang[:,_ang[0].argmax()]
-        _k[:,1] = _ang[:,_ang[1].argmax()]
-        _k[:,2] = _ang[:,_ang[2].argmax()]
-
-        _kT = np.diag([np.pi/2]*3)@inv(_k)
-        _param = np.append(_kT.flatten(), _b.T)        
+        for ii in range(3):
+            g_dr[ii,g_dm[ii,:].argmax()] = self.Rot
+            
+        T = g_dr@inv(g_dm)
+        _param = np.append(T.flatten(), b.T)        
         _jac = jacobian(self.gyrObj)
         _hes = hessian(self.gyrObj)
         _res = op.minimize(self.gyrObj, _param, method='trust-ncg', jac=_jac, hess=_hes)
+        print(_param - _res.x)
         return _res.x
     
     def gyrObj(self,Y):
-        _NS = nap.array(Y[0:9].reshape((3,3)))
+        _T = nap.array(Y[0:9].reshape((3,3)))
         _b = nap.array(Y[-3:])
-        sum = 0
-        for u in self.rates:
-            sum += _NS@(u-_b).T*self.dt
-       
-    
-        return (nap.pi/2 - nap.abs(sum)).sum()**2
+        return (self.Rot - np.abs(intg.trapz(_T@(self.gyr_raw.T-_b),dx=self.dt , axis=1)))**2
 
