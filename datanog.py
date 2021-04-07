@@ -236,11 +236,13 @@ class daq:
         T = a_mr@pinv(a_mu)
 
         _param = np.append(T.flatten(), b.T)
+        '''
         _jac = jacobian(self.accObj)
         _hes = hessian(self.accObj)
         _res = op.minimize(self.accObj, _param, method='trust-ncg', jac=_jac, hess=_hes)
         print(_param - _res.x)
-        return _res.x
+        return _res.x'''
+        return _param
   
     
     def accObj(self, X):
@@ -266,14 +268,15 @@ class daq:
             
         T = g_dr@inv(g_dm)
         _param = np.append(T.flatten(), b.T)        
-        _jac = jacobian(self.gyrObj)
+        '''_jac = jacobian(self.gyrObj)
         _hes = hessian(self.gyrObj)
         _res = op.minimize(self.gyrObj, _param, method='trust-ncg', jac=_jac, hess=_hes)
         print(_param - _res.x)
-        return _res.x
+        return _res.x'''
+        return _param
     
     def gyrObj(self,Y):
         _T = nap.array(Y[0:9].reshape((3,3)))
         _b = nap.array(Y[-3:])
-        return (self.Rot - np.abs(intg.trapz(_T@(self.gyr_raw.T-_b),dx=self.dt , axis=1)))**2
+        return (self.Rot - nap.abs(intg.trapz(_T@(self.gyr_raw.T-_b),dx=self.dt , axis=1)))**2
 
