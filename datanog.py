@@ -223,7 +223,7 @@ class daq:
         #determination of biases
         aux=[]
         for ii in range(3):
-            aux.append((a_m[ii,:].max()+a_m[ii,:].min())/(2))
+            aux.append((a_m[ii,:].max() + a_m[ii,:].min()) / 2)
         b = np.array(aux, ndmin=2).T
 
         #unbiased mean values and expected (real) mean values 
@@ -242,7 +242,7 @@ class daq:
         print(_param - _res.x)
         return _res.x
   
-    nap.linalg.grad_norm()
+    
     def accObj(self, X):
         _T = nap.array(X[0:9].reshape((3,3)))
         _b = nap.array(X[-3:]).reshape((3,1))
