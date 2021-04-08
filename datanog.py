@@ -162,7 +162,7 @@ class daq:
     def transl(self, _data, X):
         _T = np.array(X[0:9].reshape((3,3)))
         _b = np.array(X[-3:]).reshape((3,1))
-        _data_out = (_T@(_data-_b).T)
+        _data_out = _T@(_data.T-_b)
         
         return _data_out.T
 
