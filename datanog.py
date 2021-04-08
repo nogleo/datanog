@@ -160,11 +160,11 @@ class daq:
         return _data
         
     def transl(self, _data, X):
-        _NS = nap.array(X[0:9].reshape((3,3)))
-        _b = nap.array(X[-3:])
-        _data_out = (_NS@(_data-_b).T).T
+        _T = np.array(X[0:9].reshape((3,3)))
+        _b = np.array(X[-3:]).reshape((3,1))
+        _data_out = (_T@(_data-_b).T)
         
-        return _data_out
+        return _data_out.T
 
     def calibrate(self, _device):
         os.chdir(root)
