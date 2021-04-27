@@ -157,8 +157,8 @@ class appnog(qtw.QMainWindow):
             
         try:
             ax.plot(self.plotdata)
-            plt.tight_layout()
-            ax.show()
+            ax.tight_layout()
+            plt.show()
         except Exception as e:
             print('==>',e)
         self.canv.draw()

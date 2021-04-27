@@ -231,8 +231,8 @@ class daq:
             a_mr[ii,a_mu[ii,:].argmax()] = self.G
             a_mr[ii,a_mu[ii,:].argmin()] = -self.G
         #transformation matrix
-        #T = a_mr@pinv(a_mu)
-        T = np.diag([1/(2**15)*16*9.81]*3)
+        T = a_mr@pinv(a_mu)
+        
         _param = np.append(T.flatten(), b.T)
        
         return _param
@@ -256,7 +256,7 @@ class daq:
             g_dr[ii,g_dm[ii,:].argmax()] = self.Rot
             
         #T = g_dr@inv(g_dm)
-        T = np.diag([1/(2**15)*np.deg2rad(2000)]*3)
+        T = np.diag([1/(2**15)*2000]*3)
         _param = np.append(T.flatten(), b.T)        
        
         return _param
