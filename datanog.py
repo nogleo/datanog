@@ -255,7 +255,8 @@ class daq:
         for ii in range(3):
             g_dr[ii,g_dm[ii,:].argmax()] = self.Rot
             
-        T = g_dr@inv(g_dm)
+        #T = g_dr@inv(g_dm)
+        T = np.diag([1/(2**15)*np.deg2rad(2000)]*3)
         _param = np.append(T.flatten(), b.T)        
        
         return _param
