@@ -26,7 +26,7 @@ class daq:
         self.state = 1
         self.raw = 1
         self.G = 9.81
-        self.Rot = np.pi/2
+        self.Rot = np.pi
         
         self.odr = 8  #8=1660Hz 9=3330Hz 10=6660Hz
         self.range = [1, 3]     #[16G, 2000DPS]
@@ -184,9 +184,9 @@ class daq:
                     tf = ti
                     i+=1
                     self._caldata.append(self.pull(_device))
-        self.Nd = int((input('KiloSamples/Rotation: ') or 3)*1000)
+        self.Nd = int((input('KiloSamples/Rotation: ') or 6)*1000)
         for _n in range(0,6,2):
-            input('Rotate 90 deg around axis {}-{}'.format(_n+1,_n+2))
+            input('Rotate 180 deg around axis {}-{}'.format(_n+1,_n+2))
             i=0
             tf = time.perf_counter()
             while i<self.Nd:
@@ -255,8 +255,8 @@ class daq:
         for ii in range(3):
             g_dr[ii,g_dm[ii,:].argmax()] = self.Rot
             
-        #T = g_dr@inv(g_dm)
-        T = np.diag([1/(2**15)*2000]*3)
+        T = g_dr@inv(g_dm)
+        
         _param = np.append(T.flatten(), b.T)        
        
         return _param
