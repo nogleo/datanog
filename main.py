@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as Navi
 from matplotlib.figure import Figure
-import sip
 import numpy as np
 
 root = os.getcwd()
@@ -141,8 +140,6 @@ class appnog(qtw.QMainWindow):
         try:
             self.ui.horizontalLayout.removeWidget(self.toolbar)
             self.ui.verticalLayout.removeWidget(self.canv)
-            sip.delete(self.toolbar)
-            sip.delete(self.canv)
             self.toolbar = None
             self.canv = None
         except Exception as e:
@@ -157,7 +154,6 @@ class appnog(qtw.QMainWindow):
             
         try:
             ax.plot(self.plotdata)
-            ax.tight_layout()
             plt.show()
         except Exception as e:
             print('==>',e)
