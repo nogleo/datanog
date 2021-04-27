@@ -231,8 +231,8 @@ class daq:
             a_mr[ii,a_mu[ii,:].argmax()] = self.G
             a_mr[ii,a_mu[ii,:].argmin()] = -self.G
         #transformation matrix
-        T = a_mr@pinv(a_mu)
-
+        #T = a_mr@pinv(a_mu)
+        T = np.diag([1/(2**15)*16*9.81]*3)
         _param = np.append(T.flatten(), b.T)
        
         return _param
