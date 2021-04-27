@@ -172,7 +172,7 @@ class daq:
         _sensor = {'name': _sensname}
         self._caldata = []
         print('Iniciando 6 pos calibration')
-        self.Ns = int((input('KiloSamples/Position: ') or 5)*1000)
+        self.Ns = int((input('KiloSamples/Position: ') or 6)*1000)
 
         for _n in range(6):
             input('Position {}'.format(_n+1))
