@@ -2,9 +2,9 @@ import datanog as nog
 from gui import Ui_MainWindow
 import scipy
 import os
-from PyQt6 import QtCore as qtc
-from PyQt6 import QtWidgets as qtw
-from PyQt6 import Qt as qt
+from PyQt5 import QtCore as qtc
+from PyQt5 import QtWidgets as qtw
+from PyQt5 import Qt as qt
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.use('Qt5Agg')
