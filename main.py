@@ -154,7 +154,7 @@ class appnog(qtw.QMainWindow):
             
         try:
             ax.plot(self.plotdata)
-            plt.show()
+            
         except Exception as e:
             print('==>',e)
         self.canv.draw()
