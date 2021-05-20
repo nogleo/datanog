@@ -153,12 +153,12 @@ class appnog(qtw.QMainWindow):
         ax = self.canv.axes
             
         try:
-            if self.ui.comboBox_2.text() == 'Time':
+            if self.ui.comboBox_2.currentText() == 'Time':
                 _t = np.arange(len(self.plotdata))*dn.dt              
                 ax.plot(_t, self.plotdata)
-            elif self.ui.comboBox_2.text() == 'Frequency':
+            elif self.ui.comboBox_2.currentText() == 'Frequency':
                 ax.psd(self.plotdata, Fs=dn.fs, NFFT=dn.fs//2, noverlap=dn.fs//4, scale_by_freq=False, detrend='linear', axis=0)
-            elif self.ui.comboBox_2.text() == 'Time-Frequency':
+            elif self.ui.comboBox_2.currentText() == 'Time-Frequency':
                 for ii in range(self.plotdata.shape[1]):
                     plt.subplot(self.plotdata.shape[1]*100+10+ii+1)
                     f, t, Sxx = scipy.signal.spectrogram(self.plotdata[:,ii], self.fs, axis=0, scaling='spectrum', nperseg=self.fs//4, noverlap=self.fs//8, detrend='linear', mode='psd', window='hann')
