@@ -1,6 +1,6 @@
 import datanog as nog
 from gui import Ui_MainWindow
-import scipy
+import scipy.signal as signal
 import os
 from PyQt5 import QtCore as qtc
 from PyQt5 import QtWidgets as qtw
@@ -47,6 +47,7 @@ class appnog(qtw.QMainWindow):
         self.ui.linkSensor.setEnabled(False)
         self.ui.calibutton.setEnabled(False)
         self.ui.pushButton_4.clicked.connect(self.initDevices)
+        self.ui.comboBox_2.currentIndexChanged.connect(self.updatePlot)
         
         
 
@@ -60,8 +61,10 @@ class appnog(qtw.QMainWindow):
         self.toolbar = None
 
     def initDevices(self):
-        global dn
-        dn = nog.daq()
+        global dn, fs, dt
+        fs=float(self.ui.label_4.text())
+        dt=1/self.fs
+        dn = nog.daq(fs=self.fs)
         
         self.devsens={}
         for _dev in dn.dev:
@@ -136,6 +139,7 @@ class appnog(qtw.QMainWindow):
         self.updatePlot()
     
     def updatePlot(self):
+        global dn
         plt.clf()
         try:
             self.ui.horizontalLayout.removeWidget(self.toolbar)
@@ -153,8 +157,22 @@ class appnog(qtw.QMainWindow):
         ax = self.canv.axes
             
         try:
-            ax.plot(self.plotdata)
-            
+            if self.ui.comboBox_2.currentText() == 'Time':
+                _t = np.arange(len(self.plotdata))*dt              
+                ax.plot(_t, self.plotdata)
+            elif self.ui.comboBox_2.currentText() == 'Frequency':
+                ax.psd(self.plotdata, Fs=fs, NFFT=fs//2, noverlap=fs//4, scale_by_freq=False, detrend='linear', axis=0)
+            elif self.ui.comboBox_2.currentText() == 'Time-Frequency':
+                for ii in range(self.plotdata.shape[1]):
+                    plt.subplot(self.plotdata.shape[1]*100+10+ii+1)
+                    f, t, Sxx = signal.spectrogram(self.plotdata[:,ii], fs, axis=0, scaling='spectrum', nperseg=fs//4, noverlap=fs//8, detrend='linear', mode='psd', window='hann')
+                    Sxx[Sxx==0] = 10**(-20)
+                    ax.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud', cmap=plt.inferno())
+                    ax.ylim((0, fs//8))
+                    ax.colorbar()
+                    ax.ylabel('Frequency [Hz]')
+                    ax.xlabel('Time [sec]')
+
         except Exception as e:
             print('==>',e)
         self.canv.draw()
