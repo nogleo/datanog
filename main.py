@@ -47,6 +47,7 @@ class appnog(qtw.QMainWindow):
         self.ui.linkSensor.setEnabled(False)
         self.ui.calibutton.setEnabled(False)
         self.ui.pushButton_4.clicked.connect(self.initDevices)
+        self.ui.comboBox_2.c
         
         
 
@@ -136,6 +137,7 @@ class appnog(qtw.QMainWindow):
         self.updatePlot()
     
     def updatePlot(self):
+        global dn
         plt.clf()
         try:
             self.ui.horizontalLayout.removeWidget(self.toolbar)
