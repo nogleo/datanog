@@ -61,9 +61,9 @@ class appnog(qtw.QMainWindow):
         self.toolbar = None
 
     def initDevices(self):
-        global dn
-        self.fs=float(self.ui.label_4.text())
-        self.dt=1/self.fs
+        global dn, fs, dt
+        fs=float(self.ui.label_4.text())
+        dt=1/self.fs
         dn = nog.daq(fs=self.fs)
         
         self.devsens={}
@@ -158,17 +158,17 @@ class appnog(qtw.QMainWindow):
             
         try:
             if self.ui.comboBox_2.currentText() == 'Time':
-                _t = np.arange(len(self.plotdata))*self.dt              
+                _t = np.arange(len(self.plotdata))*dt              
                 ax.plot(_t, self.plotdata)
             elif self.ui.comboBox_2.currentText() == 'Frequency':
-                ax.psd(self.plotdata, Fs=self.fs, NFFT=self.fs//2, noverlap=self.fs//4, scale_by_freq=False, detrend='linear', axis=0)
+                ax.psd(self.plotdata, Fs=fs, NFFT=fs//2, noverlap=fs//4, scale_by_freq=False, detrend='linear', axis=0)
             elif self.ui.comboBox_2.currentText() == 'Time-Frequency':
                 for ii in range(self.plotdata.shape[1]):
                     plt.subplot(self.plotdata.shape[1]*100+10+ii+1)
-                    f, t, Sxx = signal.spectrogram(self.plotdata[:,ii], self.fs, axis=0, scaling='spectrum', nperseg=self.fs//4, noverlap=self.fs//8, detrend='linear', mode='psd', window='hann')
+                    f, t, Sxx = signal.spectrogram(self.plotdata[:,ii], fs, axis=0, scaling='spectrum', nperseg=fs//4, noverlap=fs//8, detrend='linear', mode='psd', window='hann')
                     Sxx[Sxx==0] = 10**(-20)
                     ax.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud', cmap=plt.inferno())
-                    ax.ylim((0, self.fs//8))
+                    ax.ylim((0, fs//8))
                     ax.colorbar()
                     ax.ylabel('Frequency [Hz]')
                     ax.xlabel('Time [sec]')
