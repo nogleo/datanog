@@ -157,21 +157,10 @@ class appnog(qtw.QMainWindow):
         ax = self.canv.axes
             
         try:
-            if self.ui.comboBox_2.currentText() == 'Time':
-                _t = np.arange(len(self.plotdata))*dt              
-                ax.plot(_t, self.plotdata)
-            elif self.ui.comboBox_2.currentText() == 'Frequency':
-                ax.psd(self.plotdata, Fs=fs, NFFT=fs//2, noverlap=fs//4, scale_by_freq=False, detrend='linear', axis=0)
-            elif self.ui.comboBox_2.currentText() == 'Time-Frequency':
-                for ii in range(self.plotdata.shape[1]):
-                    plt.subplot(self.plotdata.shape[1]*100+10+ii+1)
-                    f, t, Sxx = signal.spectrogram(self.plotdata[:,ii], fs, axis=0, scaling='spectrum', nperseg=fs//4, noverlap=fs//8, detrend='linear', mode='psd', window='hann')
-                    Sxx[Sxx==0] = 10**(-20)
-                    ax.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud', cmap=plt.inferno())
-                    ax.ylim((0, fs//8))
-                    ax.colorbar()
-                    ax.ylabel('Frequency [Hz]')
-                    ax.xlabel('Time [sec]')
+            _t = np.arange(len(self.plotdata))*dt              
+            ax.plot(_t, self.plotdata)
+            ax.ylabel('Magnitude')
+            ax.xlabel('Time [sec]')
 
         except Exception as e:
             print('==>',e)
