@@ -137,7 +137,7 @@ class appnog(qtw.QMainWindow):
         self.updatePlot()
     
     def updatePlot(self):
-        globals(dn)
+        global dn
         plt.clf()
         try:
             self.ui.horizontalLayout.removeWidget(self.toolbar)
