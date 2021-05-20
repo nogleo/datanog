@@ -47,7 +47,7 @@ class appnog(qtw.QMainWindow):
         self.ui.linkSensor.setEnabled(False)
         self.ui.calibutton.setEnabled(False)
         self.ui.pushButton_4.clicked.connect(self.initDevices)
-        self.ui.comboBox_2.currentIndexChanged(self.updatePlot)
+        self.ui.comboBox_2.currentIndexChanged.connect(self.updatePlot)
         
         
 
