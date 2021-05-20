@@ -64,7 +64,7 @@ class appnog(qtw.QMainWindow):
         global dn, fs, dt
         fs=float(self.ui.label_4.text())
         print(fs)
-        dt=1/self.fs
+        dt=1/fs
         dn = nog.daq(fs=fs)
         
         self.devsens={}
