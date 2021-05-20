@@ -63,8 +63,9 @@ class appnog(qtw.QMainWindow):
     def initDevices(self):
         global dn, fs, dt
         fs=float(self.ui.label_4.text())
+        print(fs)
         dt=1/self.fs
-        dn = nog.daq(fs=self.fs)
+        dn = nog.daq(fs=fs)
         
         self.devsens={}
         for _dev in dn.dev:
