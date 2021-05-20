@@ -12,7 +12,7 @@ root = os.getcwd()
 
 
 class daq:
-    def __init__(self):
+    def __init__(self, fs=2000):
         self.__name__ = "daq"
         try:
             self.bus = SMBus(1)
@@ -21,7 +21,7 @@ class daq:
             print("ERROR ", e)
 
         self.dev = []
-        self.fs = 1660
+        self.fs = fs
         self.dt = 1/self.fs
         self.state = 1
         self.raw = 1
