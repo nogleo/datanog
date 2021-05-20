@@ -1,6 +1,6 @@
 import datanog as nog
 from gui import Ui_MainWindow
-import scipy
+import scipy.signal as signal
 import os
 from PyQt5 import QtCore as qtc
 from PyQt5 import QtWidgets as qtw
@@ -61,18 +61,17 @@ class appnog(qtw.QMainWindow):
         self.toolbar = None
 
     def initDevices(self):
-        global dn
-        dn = nog.daq(fs=float(self.ui.label_4.text()))
+        self.dn = nog.daq(fs=float(self.ui.label_4.text()))
         
         self.devsens={}
-        for _dev in dn.dev:
+        for _dev in self.dn.dev:
             self.devsens[str(_dev[0])] = 'None'
         self.loadDevices()
         self.ui.linkSensor.setEnabled(True)
         self.ui.calibutton.setEnabled(True)
 
     def pull(self):
-        dn.savedata(dn.pulldata(self.ui.label.text()))
+        self.dn.savedata(self.dn.pulldata(self.ui.label.text()))
         self.ui.startbutton.setEnabled(True)
 
     def collect(self):
@@ -86,11 +85,11 @@ class appnog(qtw.QMainWindow):
             self.ui.comboBox.clear()
         except :
             pass
-        for _sens in dn.dev:
+        for _sens in self.dn.dev:
             self.ui.comboBox.addItem(str(_sens[0])+'--'+str(_sens[-1]))
 
     def interrupt(self):
-        dn.state = 0
+        self.dn.state = 0
     
     def getFile(self):
         """ This function will get the address of the csv file location
@@ -110,7 +109,7 @@ class appnog(qtw.QMainWindow):
             pass
 
     def calib(self):
-        dn.calibrate(dn.dev[self.ui.comboBox.currentIndex()])
+        self.dn.calibrate(self.dn.dev[self.ui.comboBox.currentIndex()])
 
     def calibrate(self):
         workal = Worker(self.calib)
@@ -126,7 +125,7 @@ class appnog(qtw.QMainWindow):
         self.filename = qtw.QFileDialog.getOpenFileName()[0]
         print("File :", self.filename)
         ii = self.ui.comboBox.currentIndex()
-        dn.dev[ii][-1] = self.filename[25:]
+        self.dn.dev[ii][-1] = self.filename[25:]
         self.loadDevices()
         os.chdir(root)
         np.save('devsens.npy', self.devsens)
@@ -137,7 +136,6 @@ class appnog(qtw.QMainWindow):
         self.updatePlot()
     
     def updatePlot(self):
-        global dn
         plt.clf()
         try:
             self.ui.horizontalLayout.removeWidget(self.toolbar)
@@ -156,17 +154,17 @@ class appnog(qtw.QMainWindow):
             
         try:
             if self.ui.comboBox_2.currentText() == 'Time':
-                _t = np.arange(len(self.plotdata))*dn.dt              
+                _t = np.arange(len(self.plotdata))*self.dn.dt              
                 ax.plot(_t, self.plotdata)
             elif self.ui.comboBox_2.currentText() == 'Frequency':
-                ax.psd(self.plotdata, Fs=dn.fs, NFFT=dn.fs//2, noverlap=dn.fs//4, scale_by_freq=False, detrend='linear', axis=0)
+                ax.psd(self.plotdata, Fs=self.dn.fs, NFFT=self.dn.fs//2, noverlap=self.dn.fs//4, scale_by_freq=False, detrend='linear', axis=0)
             elif self.ui.comboBox_2.currentText() == 'Time-Frequency':
                 for ii in range(self.plotdata.shape[1]):
                     plt.subplot(self.plotdata.shape[1]*100+10+ii+1)
-                    f, t, Sxx = scipy.signal.spectrogram(self.plotdata[:,ii], self.fs, axis=0, scaling='spectrum', nperseg=self.fs//4, noverlap=self.fs//8, detrend='linear', mode='psd', window='hann')
+                    f, t, Sxx = signal.spectrogram(self.plotdata[:,ii], self.fs, axis=0, scaling='spectrum', nperseg=self.fs//4, noverlap=self.fs//8, detrend='linear', mode='psd', window='hann')
                     Sxx[Sxx==0] = 10**(-20)
                     ax.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud', cmap=plt.inferno())
-                    ax.ylim((0, dn.fs//8))
+                    ax.ylim((0, self.dn.fs//8))
                     ax.colorbar()
                     ax.ylabel('Frequency [Hz]')
                     ax.xlabel('Time [sec]')
