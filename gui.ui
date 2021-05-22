@@ -52,49 +52,9 @@
       </property>
       <widget class="QWidget" name="tab_1">
        <attribute name="title">
-        <string>Collect</string>
+        <string>DAQ</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="4" column="4">
-         <widget class="QLabel" name="label_4">
-          <property name="font">
-           <font>
-            <pointsize>20</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>2000</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="5">
-         <widget class="QSlider" name="horizontalSlider_2">
-          <property name="minimum">
-           <number>100</number>
-          </property>
-          <property name="maximum">
-           <number>4000</number>
-          </property>
-          <property name="singleStep">
-           <number>1</number>
-          </property>
-          <property name="pageStep">
-           <number>10</number>
-          </property>
-          <property name="value">
-           <number>2000</number>
-          </property>
-          <property name="sliderPosition">
-           <number>2000</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="5">
          <widget class="QPushButton" name="calibutton">
           <property name="font">
@@ -272,21 +232,6 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="3">
-         <widget class="QLabel" name="label_3">
-          <property name="font">
-           <font>
-            <pointsize>20</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Sample Frequency:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="3">
          <widget class="QComboBox" name="comboBox"/>
         </item>
@@ -294,7 +239,7 @@
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
-        <string>View</string>
+        <string>Viz</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
@@ -304,25 +249,6 @@
             <property name="text">
              <string>Open</string>
             </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="comboBox_2">
-            <item>
-             <property name="text">
-              <string>Time</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Frequency</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Time-Frequency</string>
-             </property>
-            </item>
            </widget>
           </item>
           <item>
@@ -361,7 +287,7 @@
       </widget>
       <widget class="QWidget" name="tab">
        <attribute name="title">
-        <string>Page</string>
+        <string>DSP</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_4"/>
       </widget>
@@ -385,22 +311,6 @@
     <hint type="destinationlabel">
      <x>629</x>
      <y>215</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>horizontalSlider_2</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>label_4</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>677</x>
-     <y>104</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>491</x>
-     <y>96</y>
     </hint>
    </hints>
   </connection>
