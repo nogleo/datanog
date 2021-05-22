@@ -28,7 +28,7 @@ class daq:
         self.G = 9.81
         self.Rot = np.pi
         
-        self.odr = 9  #8=1660Hz 9=3330Hz 10=6660Hz
+        self.odr = 10  #8=1660Hz 9=3330Hz 10=6660Hz
         self.range = [1, 3]     #[16G, 2000DPS]
         for device in range(128):
             try:
