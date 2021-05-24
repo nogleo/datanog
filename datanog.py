@@ -6,6 +6,8 @@ import scipy.integrate as intg
 from numpy.linalg import norm, inv, pinv
 from smbus import SMBus
 import ahrs
+import sigprocess as sp
+import scipy
 
 
 root = os.getcwd()
@@ -127,14 +129,18 @@ class daq:
             if str(self.dev[_j][0]) == '54':
                 if self.dev[_j][-1] != None:
                     _scale = np.load(root+'/sensors/'+self.dev[_j][-1])
-                    np.save('rot.npy', arr*_scale)
+                    np.save('rot.npy', sp.fix_outlier(arr*_scale))
                 else:
                     np.save('rot*.npy', arr)
             elif str(self.dev[_j][0]) == '106' or str(self.dev[_j][0]) == '107':
                 if self.dev[_j][-1] != None:
                     _param = np.load(root+'/sensors/'+self.dev[_j][-1], allow_pickle=True)
-                    np.save('gyr{}.npy'.format(str(self.dev[_j][0])), self.transl(arr[:,0:3], _param['arr_0']))
-                    np.save('acc{}.npy'.format(str(self.dev[_j][0])), self.transl(arr[:,3:6], _param['arr_1']))
+                    body = sp.imu2body(self.transl(arr[:,3:6], _param['arr_1']), self.transl(arr[:,0:3], _param['arr_0']))
+                    np.save('omega{}.npy'.format(str(self.dev[_j][0])), body.om)
+                    np.save('theta{}.npy'.format(str(self.dev[_j][0])), body.th)
+                    np.save('acc{}.npy'.format(str(self.dev[_j][0])), body.a)
+                    np.save('vel{}.npy'.format(str(self.dev[_j][0])), body.v)
+                    np.save('dsp{}.npy'.format(str(self.dev[_j][0])), body.d)
                 else:
                     np.save('gyr{}*.npy'.format(str(self.dev[_j][0])), arr[:,0:3])
                     np.save('acc{}*.npy'.format(str(self.dev[_j][0])), arr[:,3:6])
@@ -142,7 +148,10 @@ class daq:
 
 
             elif str(self.dev[_j][0]) == '72':
+                peaks,_ = scipy.signal.find_peaks(abs(arr.flatten()),width=2, prominence=5, height=2000, distance=10)
+                T = [peaks[0], peaks[peaks>4000][0], peaks[-1]]
                 np.save('cur.npy', arr)
+                np.save('T.npy', T)
 
 
         print('{} saved'.format(_path))
