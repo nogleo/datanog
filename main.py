@@ -62,10 +62,7 @@ class appnog(qtw.QMainWindow):
 
     def initDevices(self):
         global dn, fs, dt
-        fs=float(self.ui.label_4.text())
-        print(fs)
-        dt=1/fs
-        dn = nog.daq(fs=fs)
+        dn = nog.daq()
         
         self.devsens={}
         for _dev in dn.dev:
@@ -158,7 +155,7 @@ class appnog(qtw.QMainWindow):
         ax = self.canv.axes
             
         try:
-            _t = np.arange(len(self.plotdata))*dt              
+            _t = np.arange(len(self.plotdata))*dn.dt              
             ax.plot(_t, self.plotdata)
             ax.ylabel('Magnitude')
             ax.xlabel('Time [sec]')
