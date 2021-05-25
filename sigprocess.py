@@ -1,12 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sun May 23 14:35:00 2021
-
-@author: nog
-"""
 import scipy
-import matplotlib.pyplot as pltsp.
+import matplotlib.pyplot as plt
 import numpy as np
 
 fs = 1660
