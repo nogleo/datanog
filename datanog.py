@@ -141,8 +141,8 @@ class daq:
                     np.save('v_{}.npy'.format(self.dev[_j][-1]), body.v)
                     np.save('d_{}.npy'.format(self.dev[_j][-1]), body.d)
                 else:
-                    np.save('gyr{}*.npy'.format(self.dev[_j][-1]), arr[:,0:3])
-                    np.save('acc{}*.npy'.format(self.dev[_j][-1]), arr[:,3:6])
+                    np.save('gyr{}*.npy'.format(self.dev[_j][0]), arr[:,0:3])
+                    np.save('acc{}*.npy'.format(self.dev[_j][0]), arr[:,3:6])
 
 
 

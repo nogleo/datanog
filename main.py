@@ -11,7 +11,7 @@ matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as Navi
 from matplotlib.figure import Figure
 import numpy as np
-
+import sigprocess as sp
 root = os.getcwd()
 
 class MatplotlibCanvas(FigureCanvasQTAgg):
