@@ -50,8 +50,8 @@ def FDI(data, factor=1, NFFT=fs//4):
     Data = np.zeros_like(_data, dtype=complex)
     for ii in range(0, N-n, n//2):
         Y = _data[ii:ii+n,:]*w
-        k =  (1j*2*np.pi*scipy.fftpack.fftfreq(len(Y), dt).reshape((n,1)))
-        y = (scipy.fftpack.ifft(np.vstack((np.zeros((factor,width)),scipy.fftpack.fft(Y, axis=0)[factor:]/(k[factor:]))), axis=0))
+        k =  (1j*2*np.pi*scipy.fft.fftfreq(len(Y), dt).reshape((n,1)))
+        y = (scipy.fft.ifft(np.vstack((np.zeros((factor,width)),scipy.fft.fft(Y, axis=0)[factor:]/(k[factor:]))), axis=0))
         Data[ii:ii+n,:] += y
     return np.real(Data[2*n:-2*n,:])
     
