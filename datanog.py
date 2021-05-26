@@ -5,7 +5,6 @@ import numpy as np
 import scipy.integrate as intg
 from numpy.linalg import norm, inv, pinv
 from smbus import SMBus
-import ahrs
 import sigprocess as sp
 import scipy
 
@@ -135,15 +134,15 @@ class daq:
             elif str(self.dev[_j][0]) == '106' or str(self.dev[_j][0]) == '107':
                 if self.dev[_j][-1] != None:
                     _param = np.load(root+'/sensors/'+self.dev[_j][-1], allow_pickle=True)
-                    body = sp.imu2body(self.transl(arr[:,3:6], _param['arr_1']), self.transl(arr[:,0:3], _param['arr_0']))
-                    np.save('omega{}.npy'.format(str(self.dev[_j][0])), body.om)
-                    np.save('theta{}.npy'.format(str(self.dev[_j][0])), body.th)
-                    np.save('acc{}.npy'.format(str(self.dev[_j][0])), body.a)
-                    np.save('vel{}.npy'.format(str(self.dev[_j][0])), body.v)
-                    np.save('dsp{}.npy'.format(str(self.dev[_j][0])), body.d)
+                    body = sp.imu2body(acc=self.transl(arr[:,3:6], _param['arr_1']), gyr=self.transl(arr[:,0:3], _param['arr_0']))
+                    np.save('om_{}.npy'.format(self.dev[_j][-1]), body.om)
+                    np.save('th_{}.npy'.format(self.dev[_j][-1]), body.th)
+                    np.save('a_{}.npy'.format(self.dev[_j][-1]), body.a)
+                    np.save('v_{}.npy'.format(self.dev[_j][-1]), body.v)
+                    np.save('d_{}.npy'.format(self.dev[_j][-1]), body.d)
                 else:
-                    np.save('gyr{}*.npy'.format(str(self.dev[_j][0])), arr[:,0:3])
-                    np.save('acc{}*.npy'.format(str(self.dev[_j][0])), arr[:,3:6])
+                    np.save('gyr{}*.npy'.format(self.dev[_j][-1]), arr[:,0:3])
+                    np.save('acc{}*.npy'.format(self.dev[_j][-1]), arr[:,3:6])
 
 
 
