@@ -53,6 +53,7 @@ class daq:
             _settings = [[0x10, (self.odr<<4 | self.range[0]<<2 | 1<<1)],
                          [0x11, (self.odr<<4 | self.range[1]<<2)],
                          [0x12, 0x44],
+                         [0x13, 1<<1],
                          [0x15, 0b011],
                          [0X17, (0b000 <<5)]]  #[0x44 is hardcoded acording to LSM6DSO datasheet]
             for _set in _settings:
