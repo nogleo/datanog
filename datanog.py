@@ -50,9 +50,11 @@ class daq:
     def config(self, _device):
         _settings = None
         if _device == 0x6a or _device == 0x6b:
-            _settings = [[0x10, (self.odr<<4 | self.range[0]<<2)],
+            _settings = [[0x10, (self.odr<<4 | self.range[0]<<2 | 1<<1)],
                          [0x11, (self.odr<<4 | self.range[1]<<2)],
-                         [0x12, 0x44]]  #[0x44 is hardcoded acording to LSM6DSO datasheet]
+                         [0x12, 0x44],
+                         [0x15, 0b011],
+                         [0X17, (0b000 <<5)]]  #[0x44 is hardcoded acording to LSM6DSO datasheet]
             for _set in _settings:
                 try:
                     self.bus.write_byte_data(_device, _set[0], _set[1])
