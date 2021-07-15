@@ -2,6 +2,7 @@ import os, gc, queue
 from struct import unpack
 import time
 import numpy as np
+from numpy.core.fromnumeric import ndim
 import scipy.integrate as intg
 from numpy.linalg import norm, inv, pinv
 from smbus import SMBus
@@ -122,14 +123,15 @@ class daq:
         _path = 'data_{}.csv'.format(len(os.listdir()))
         #os.mkdir(_path)
         #os.chdir(_path)
-        print(_path)
         
         #head=['t']
         #print(head)
         head=[]
         data = self.to_num(_q)
-        data_out = np.array([])
-        #data_out = np.array(np.linspace(0, len(data)*self.dt, len(data))).reshape((len(data),1))
+        print(len(data))
+        
+        data_out = np.array(np.linspace(0, len(data)*self.dt, len(data)), ndmin=2)
+        print(data_out.shape)
 
         for _j in range(self.N):
             arr = np.array(data[str(self.dev[_j][0])])
