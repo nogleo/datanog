@@ -127,7 +127,7 @@ class appnog(qtw.QMainWindow):
         print("File :", self.filename)
         ii = self.ui.comboBox.currentIndex()
         dn.dev[ii][-1] = self.filename[25:]
-        self.loadDevices()
+        self.initDevices()
         os.chdir(root)
         np.save('devsens.npy', self.devsens)
 
