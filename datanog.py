@@ -130,7 +130,7 @@ class daq:
         data = self.to_num(_q)
         print(len(data))
         
-        data_out = np.linspace(0, len(data)*self.dt, len(data))
+        data_out = np.linspace(0, len(data)*self.dt, len(data)).reshape((len(data),1))
         print(data_out.shape)
 
         for _j in range(self.N):
