@@ -119,7 +119,7 @@ class daq:
         if 'DATA' not in os.listdir():
             os.mkdir('DATA')
         os.chdir('DATA')
-        _path = 'data_{}'.format(len(os.listdir()))
+        _path = 'data_{}.csv'.format(len(os.listdir()))
         #os.mkdir(_path)
         #os.chdir(_path)
         
@@ -151,32 +151,7 @@ class daq:
         df = pd.DataFrame(frame)
         df.to_csv(_path, index=False)
 
-        for _j in range(self.N):
-            arr = np.array(data[str(self.dev[_j][0])])
-            if str(self.dev[_j][0]) == '54':
-                if self.dev[_j][-1] != None:
-                    _scale = np.load(root+'/sensors/'+self.dev[_j][-1])
-                    np.save('rot.npy', sp.fix_outlier(arr*_scale))
-                else:
-                    np.save('rot*.npy', arr)
-            elif str(self.dev[_j][0]) == '106' or str(self.dev[_j][0]) == '107':
-                if self.dev[_j][-1] != None:
-                    _param = np.load(root+'/sensors/'+self.dev[_j][-1], allow_pickle=True)
-                    np.save('gyr{}.npy'.format(self.dev[_j][0]), self.transl(arr[:,0:3], _param['arr_0']))
-                    np.save('acc{}.npy'.format(self.dev[_j][0]), self.transl(arr[:,3:6], _param['arr_1']))
-                else:
-                    np.save('gyr{}*.npy'.format(self.dev[_j][0]), arr[:,0:3])
-                    np.save('acc{}*.npy'.format(self.dev[_j][0]), arr[:,3:6])
-
-
-
-            elif str(self.dev[_j][0]) == '72':
-                peaks,_ = scipy.signal.find_peaks(abs(arr.flatten()),width=2, prominence=5, height=2000, distance=10)
-                T = [peaks[0], peaks[peaks>4000][0], peaks[-1]]
-                np.save('cur.npy', arr)
-                np.save('T.npy', T)
-
-
+        
         print('{} saved'.format(_path))
 
     def to_num(self, _q):
