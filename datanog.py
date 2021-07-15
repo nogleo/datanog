@@ -148,6 +148,7 @@ class daq:
                     data_out = np.hstack(data_out, arr)
             elif str(self.dev[_j][0]) == '72':
                 data_out = np.hstack(data_out, arr)
+            print(data_out)
         
         frame = {}
         for jj in range(len(head)):
