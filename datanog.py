@@ -127,10 +127,10 @@ class daq:
         #head=['t']
         #print(head)
         head=[]
-        print(len(_q))
         data = self.to_num(_q)
+        N = len(data[str(self.dev[0][0])])
         
-        data_out = np.linspace(0, len(_q)*self.dt, len(_q)).reshape((len(_q),1))
+        data_out = np.linspace(0, N*self.dt, N).reshape((N,1))
         print(data_out.shape)
 
         for _j in range(self.N):
