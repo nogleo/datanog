@@ -128,7 +128,7 @@ class daq:
         print(head)
         data = self.to_num(_q)
         
-        data_out = np.array(np.linspace(0, len(data)*self.dt, len(data)))
+        data_out = np.array(np.linspace(0, len(data)*self.dt, len(data))).reshape((len(data),1))
 
         for _j in range(self.N):
             arr = np.array(data[str(self.dev[_j][0])])
