@@ -87,6 +87,7 @@ class appnog(qtw.QMainWindow):
         except :
             pass
         for _sens in dn.dev:
+            self.devsens[str(_sens[0])] = str(_sens[-1])
             self.ui.comboBox.addItem(str(_sens[0])+'--'+str(_sens[-1]))
 
     def interrupt(self):
@@ -127,7 +128,7 @@ class appnog(qtw.QMainWindow):
         print("File :", self.filename)
         ii = self.ui.comboBox.currentIndex()
         dn.dev[ii][-1] = self.filename[25:]
-        self.initDevices()
+        self.loadDevices()
         os.chdir(root)
         np.save('devsens.npy', self.devsens)
 
