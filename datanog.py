@@ -7,13 +7,14 @@ from numpy.linalg import norm, inv, pinv
 from smbus import SMBus
 import sigprocess as sp
 import scipy
+import pandas as pd
 
 
 root = os.getcwd()
 
 
 class daq:
-    def __init__(self, fs=3330):
+    def __init__(self, fs=1666):
         self.__name__ = "daq"
         try:
             self.bus = SMBus(1)
@@ -35,11 +36,11 @@ class daq:
             try:
                 self.bus.read_byte(device)
                 if device == 0x6b or device == 0x6a:
-                    self.dev.append([device, 0x22, 12, '<hhhhhh', None])
+                    self.dev.append([device, 0x22, 12, '<hhhhhh',[str(device)+'Gx',str(device)+'Gy',str(device)+'Gz',str(device)+'Ax',str(device)+'Ay',str(device)+'Az'], None])
                 elif device == 0x36:
-                    self.dev.append([device, 0x0C, 2, '>H', None])
+                    self.dev.append([device, 0x0C, 2, '>H',['rot'], None])
                 elif device == 0x48:
-                    self.dev.append([device, 0x00, 2, '>h', None])
+                    self.dev.append([device, 0x00, 2, '>h', ['cur'], None])
                 self.config(device)
                 print("Device Config: ", device)
             except Exception as e:
@@ -119,12 +120,36 @@ class daq:
             os.mkdir('DATA')
         os.chdir('DATA')
         _path = 'data_{}'.format(len(os.listdir()))
-        os.mkdir(_path)
-        os.chdir(_path)
+        #os.mkdir(_path)
+        #os.chdir(_path)
         
         data = self.to_num(_q)
+        head=['t']
+        data_out = np.array(np.linspace(0, len(data)*self.dt, len(data)))
 
+        for _j in range(self.N):
+            arr = np.array(data[str(self.dev[_j][0])])
+            head = head+self.dev[_j][-2]
+            if str(self.dev[_j][0]) == '54':
+                if self.dev[_j][-1] != None:
+                    _scale = np.load(root+'/sensors/'+self.dev[_j][-1])
+                    data_out = np.hstack(data_out, sp.fix_outlier(arr*_scale))
+                else:
+                    data_out = np.hstack(data_out, arr)
+            elif str(self.dev[_j][0]) == '106' or str(self.dev[_j][0]) == '107':
+                if self.dev[_j][-1] != None:
+                    _param = np.load(root+'/sensors/'+self.dev[_j][-1], allow_pickle=True)
+                    data_out = np.hstack(data_out, np.hstack(self.transl(arr[:,0:3], _param['arr_0']), self.transl(arr[:,3:6], _param['arr_1'])))
+                else:
+                    data_out = np.hstack(data_out, arr)
+            elif str(self.dev[_j][0]) == '72':
+                data_out = np.hstack(data_out, arr)
 
+        frame = {}
+        for jj in range(len(head)):
+            frame[head[jj]]=data_out[:,jj]
+        df = pd.DataFrame(frame)
+        df.to_csv(_path, index=False)
 
         for _j in range(self.N):
             arr = np.array(data[str(self.dev[_j][0])])
