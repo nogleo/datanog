@@ -124,11 +124,12 @@ class daq:
         #os.chdir(_path)
         print(_path)
         
-        head=['t']
-        print(head)
+        #head=['t']
+        #print(head)
+        head=[]
         data = self.to_num(_q)
-        
-        data_out = np.array(np.linspace(0, len(data)*self.dt, len(data))).reshape((len(data),1))
+        data_out = np.array([])
+        #data_out = np.array(np.linspace(0, len(data)*self.dt, len(data))).reshape((len(data),1))
 
         for _j in range(self.N):
             arr = np.array(data[str(self.dev[_j][0])])
