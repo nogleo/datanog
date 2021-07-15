@@ -122,6 +122,7 @@ class daq:
         _path = 'data_{}.csv'.format(len(os.listdir()))
         #os.mkdir(_path)
         #os.chdir(_path)
+        print(_path)
         
         data = self.to_num(_q)
         head=['t']
