@@ -124,9 +124,8 @@ class daq:
         #os.mkdir(_path)
         #os.chdir(_path)
         
-        #head=['t']
+        head=['t']
         #print(head)
-        head=[]
         data = self.to_num(_q)
         N = len(data[str(self.dev[0][0])])
         
