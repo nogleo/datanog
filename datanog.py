@@ -137,17 +137,17 @@ class daq:
             if str(self.dev[_j][0]) == '54':
                 if self.dev[_j][-1] != None:
                     _scale = np.load(root+'/sensors/'+self.dev[_j][-1])
-                    data_out = np.hstack(data_out, sp.fix_outlier(arr*_scale))
+                    data_out = np.hstack((data_out, sp.fix_outlier(arr*_scale)))
                 else:
-                    data_out = np.hstack(data_out, arr)
+                    data_out = np.hstack((data_out, arr))
             elif str(self.dev[_j][0]) == '106' or str(self.dev[_j][0]) == '107':
                 if self.dev[_j][-1] != None:
                     _param = np.load(root+'/sensors/'+self.dev[_j][-1], allow_pickle=True)
-                    data_out = np.hstack(data_out, np.hstack(self.transl(arr[:,0:3], _param['arr_0']), self.transl(arr[:,3:6], _param['arr_1'])))
+                    data_out = np.hstack((data_out, np.hstack((self.transl(arr[:,0:3], _param['arr_0']), self.transl(arr[:,3:6], _param['arr_1'])))))
                 else:
-                    data_out = np.hstack(data_out, arr)
+                    data_out = np.hstack((data_out, arr))
             elif str(self.dev[_j][0]) == '72':
-                data_out = np.hstack(data_out, arr)
+                data_out = np.hstack((data_out, arr))
             print(data_out)
         
         frame = {}
