@@ -124,9 +124,10 @@ class daq:
         #os.chdir(_path)
         print(_path)
         
-        data = self.to_num(_q)
         head=['t']
         print(head)
+        data = self.to_num(_q)
+        
         data_out = np.array(np.linspace(0, len(data)*self.dt, len(data)))
 
         for _j in range(self.N):
@@ -164,7 +165,7 @@ class daq:
         
         while _q.qsize()>0:
             for _j in range(self.N):
-                _data[str(self.dev[_j][0])].append(unpack(self.dev[_j][-2], bytearray(_q.get())))
+                _data[str(self.dev[_j][0])].append(unpack(self.dev[_j][-3], bytearray(_q.get())))
         
         
         return _data
