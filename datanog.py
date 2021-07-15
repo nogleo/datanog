@@ -126,11 +126,13 @@ class daq:
         
         data = self.to_num(_q)
         head=['t']
+        print(head)
         data_out = np.array(np.linspace(0, len(data)*self.dt, len(data)))
 
         for _j in range(self.N):
             arr = np.array(data[str(self.dev[_j][0])])
             head = head+self.dev[_j][-2]
+            print(head)
             if str(self.dev[_j][0]) == '54':
                 if self.dev[_j][-1] != None:
                     _scale = np.load(root+'/sensors/'+self.dev[_j][-1])
@@ -145,7 +147,7 @@ class daq:
                     data_out = np.hstack(data_out, arr)
             elif str(self.dev[_j][0]) == '72':
                 data_out = np.hstack(data_out, arr)
-        print(head)
+        
         frame = {}
         for jj in range(len(head)):
             frame[head[jj]]=data_out[:,jj]
