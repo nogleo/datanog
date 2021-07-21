@@ -81,7 +81,6 @@ class appnog(qtw.QMainWindow):
         self.threadpool.start(worker)
         
     def loadDevices(self):
-        print(self.devsens)
         try:
             self.ui.comboBox.clear()
         except :
@@ -89,6 +88,7 @@ class appnog(qtw.QMainWindow):
         for _sens in dn.dev:
             self.devsens[str(_sens[0])] = str(_sens[-1])
             self.ui.comboBox.addItem(str(_sens[0])+'--'+str(_sens[-1]))
+        print(self.devsens)
 
     def interrupt(self):
         dn.state = 0

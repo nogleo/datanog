@@ -2,9 +2,15 @@ import scipy
 import matplotlib.pyplot as plt
 import numpy as np
 import ahrs
+import pandas as pd
+import plotly as ply
 
 fs = 1660
 dt = 1/fs
+
+
+
+
 
 def fix_outlier(_data):
     _m = _data.mean()
@@ -15,28 +21,16 @@ def fix_outlier(_data):
     return _data
 
 def PSD(_data):
-    f, Pxx = scipy.signal.welch(_data, fs, nperseg=fs//2, noverlap=fs//4, window='hann', average='median', scaling='spectrum', detrend='linear', axis=0)
+    f, Pxx = scipy.signal.welch(_data, fs, nperseg=fs//4, noverlap=fs//8, window='hann', average='median', scaling='spectrum', detrend='linear', axis=0)
     plt.figure()
     plt.subplot(211)
     _t = np.linspace(0, len(_data)*dt, len(_data))
     plt.plot(_t, _data)
     plt.subplot(212)
-    plt.plot(f, 20*np.log10(Pxx))
+    plt.semilogx(f, 20*np.log10(abs(Pxx)))
     plt.grid()
     
-def spect(_data):
-    plt.figure()
-    for ii in range(_data.shape[1]):
-        plt.subplot(_data.shape[1]*100+10+ii+1)
-        f, t, Sxx = scipy.signal.spectrogram(_data[:,ii], fs, axis=0, scaling='spectrum', nperseg=fs//4, noverlap=fs//5, detrend='linear', mode='psd', window='hann')
-        Sxx[Sxx==0] = 10**(-20)
-        plt.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud', cmap=plt.inferno())#,vmax=20*np.log10(abs(Sxx).max()), vmin=-20*np.log10(abs(Sxx).max()))
-        plt.ylim((0, fs//8))
-        plt.colorbar()
-        plt.ylabel('Frequency [Hz]')
-        plt.xlabel('Time [sec]')
-        plt.tight_layout()
-        plt.show()
+
 
 def FDI(data, factor=1, NFFT=fs//4):
     n = NFFT
@@ -55,10 +49,16 @@ def FDI(data, factor=1, NFFT=fs//4):
         Data[ii:ii+n,:] += y
     return np.real(Data[2*n:-2*n,:])
     
-def spect(_data, dbmin=-80):
+def spect(_df, dbmin=-80):
+    _data = _df.to_numpy()
     plt.figure()
-    for ii in range(_data.shape[1]):
-        plt.subplot(_data.shape[1]*100+10+ii+1)
+    if len(_data.shape)<2:
+        _data = _data.reshape((len(_data),1))
+    kk = _data.shape[1]
+    
+            
+    for ii in range(kk):
+        plt.subplot(kk*100+10+ii+1)
         f, t, Sxx = scipy.signal.spectrogram(_data[:,ii], fs=fs, axis=0, scaling='spectrum', nperseg=fs//4, noverlap=fs//8, detrend='linear', mode='psd', window='hann')
         Sxx[Sxx==0] = 10**(-20)
         plt.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud', cmap=plt.inferno(),vmax=20*np.log10(abs(Sxx)).max(), vmin=20*np.log10(abs(Sxx)).max()-dbmin)
@@ -69,19 +69,37 @@ def spect(_data, dbmin=-80):
         plt.tight_layout()
         plt.show()
 
-class imu2body:
+
        
-    def __init__(self, acc, gyr, pos=[0, 0, 0]):
-        
-        grv = np.array([[0],[0],[-9.81]])
-        q0=ahrs.Quaternion(ahrs.common.orientation.acc2q(acc[0]))
-        imu = ahrs.filters.Complementary(acc=acc, gyr=gyr, frequency=fs, q0=q0, gain=0.001)
-        theta = ahrs.QuaternionArray(imu.Q)
-        self.th = ahrs.QuaternionArray(imu.Q).to_angles()
-        acc_cc = np.zeros_like(acc)
-        for ii in range(len(acc)):
-            acc_cc[ii,:] = acc[ii,:] + ahrs.Quaternion(imu.Q[ii]).rotate(grv).T 
-        self.a = acc_cc
-        self.v = FDI(self.a)
-        self.d = FDI(self.v)
-        self.om = gyr
+def imu2body(df, pos=[0, 0, 0]):
+    gyr = df.to_numpy()[:,0:3]
+    acc = df.to_numpy()[:,3:]
+    grv = np.array([[0],[0],[-9.81]])
+    q0=ahrs.Quaternion(ahrs.common.orientation.acc2q(acc[0]))
+    imu = ahrs.filters.Complementary(acc=acc, gyr=gyr, frequency=fs, q0=q0, gain=0.001)
+    theta = ahrs.QuaternionArray(imu.Q).to_angles()
+    
+    acc_cc = np.zeros_like(acc)
+    for ii in range(len(acc)):
+        acc_cc[ii,:] = acc[ii,:] + ahrs.Quaternion(imu.Q[ii]).rotate(grv).T 
+    d = FDI(FDI(acc_cc))
+    v = FDI(acc_cc)
+    
+    ah = {'DspX': d[:,0],
+          'DspY': d[:,1],
+          'DspZ': d[:,2],
+          'VelX': v[:,0],
+          'VelY': v[:,1],
+          'VelZ': v[:,2],
+          'AccX': acc_cc[:,0],
+          'AccY': acc_cc[:,1],
+          'AccZ': acc_cc[:,2],
+          'ThetaX': theta[:,0],
+          'ThetaY': theta[:,0],
+          'ThetaZ': theta[:,0],
+          'OmegaX': gyr[:,0],
+          'OmegaY': gyr[:,1],
+          'OmegaZ': gyr[:,2],
+          }
+    imu = pd.DataFrame(ah)
+    return imu
