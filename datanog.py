@@ -149,7 +149,8 @@ class daq:
                 else:
                     data_out = np.hstack((data_out, arr))
             elif str(self.dev[_j][0]) == '72':
-                data_out = np.hstack((data_out, arr))
+                _scale = np.load(root+'/sensors/'+self.dev[_j][-1])
+                data_out = np.hstack((data_out, arr*_scale))
             print(data_out)
         
         frame = {}
