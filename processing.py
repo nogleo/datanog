@@ -5,23 +5,27 @@ import scipy
 from scipy import signal
 import emd
 from scipy import ndimage
+import ghostipy as gsp
 
 from sigprocess import *
 cm = np.array([8.0563e-005,	5.983e-004,	-6.8188e-003])
 L = np.array([5.3302e-018, -7.233e-002, 3.12e-002+2.0e-003])
 pos = L-cm
 
-num = 0
+num = 4
 df = pd.read_csv('DATA/A/data_{}.csv'.format(num), index_col='t')
 
 data, t, fs, dt = prep_data(df, 1660, 415, 5)
 
-
+data[:,1] = data[:,1]*0.0005
 # A = imu2body(data[:,2:8],t, fs)
 B = imu2body(data[:,8:], t, fs, pos)
 B.insert(0, 'rot', data[:,0])
 B.insert(0, 'cur', data[:,1]/10000)
 
+
+
+gsp.cwt()
 PSD(B, fs)
 # %%
 S = B[['Az']].to_numpy()

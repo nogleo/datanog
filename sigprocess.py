@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import ahrs
 import pandas as pd
-import plotly as ply
 import scipy.signal as signal
 import scipy.integrate as intg
 from numpy import pi
