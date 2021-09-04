@@ -12,6 +12,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationTool
 from matplotlib.figure import Figure
 import numpy as np
 import sigprocess as sp
+import pandas as pd
 root = os.getcwd()
 
 class MatplotlibCanvas(FigureCanvasQTAgg):
@@ -66,13 +67,14 @@ class appnog(qtw.QMainWindow):
         
         self.devsens={}
         for _dev in dn.dev:
-            self.devsens[str(_dev[0])] = 'None'
+            self.devsens[str(_dev[0])] = str(_dev[-1])
         self.loadDevices()
         self.ui.linkSensor.setEnabled(True)
         self.ui.calibutton.setEnabled(True)
 
     def pull(self):
-        dn.savedata(dn.pulldata(self.ui.label.text()))
+        data = dn.savedata(dn.pulldata(self.ui.label.text()))
+        sp.PSD(data, dn.fs)
         self.ui.startbutton.setEnabled(True)
 
     def collect(self):
@@ -81,13 +83,14 @@ class appnog(qtw.QMainWindow):
         self.threadpool.start(worker)
         
     def loadDevices(self):
-        print(self.devsens)
         try:
             self.ui.comboBox.clear()
         except :
             pass
         for _sens in dn.dev:
+            self.devsens[str(_sens[0])] = str(_sens[-1])
             self.ui.comboBox.addItem(str(_sens[0])+'--'+str(_sens[-1]))
+        print(self.devsens)
 
     def interrupt(self):
         dn.state = 0

@@ -2,18 +2,20 @@ import os, gc, queue
 from struct import unpack
 import time
 import numpy as np
+from numpy.core.fromnumeric import ndim
 import scipy.integrate as intg
 from numpy.linalg import norm, inv, pinv
 from smbus import SMBus
 import sigprocess as sp
 import scipy
+import pandas as pd
 
 
 root = os.getcwd()
 
 
 class daq:
-    def __init__(self, fs=3330):
+    def __init__(self, fs=1666):
         self.__name__ = "daq"
         try:
             self.bus = SMBus(1)
@@ -34,12 +36,14 @@ class daq:
         for device in range(128):
             try:
                 self.bus.read_byte(device)
-                if device == 0x6b or device == 0x6a:
-                    self.dev.append([device, 0x22, 12, '<hhhhhh', None])
+                if device == 0x6a:
+                    self.dev.append([device, 0x22, 12, '<hhhhhh',['A_'+'Gx','A_'+'Gy','A_'+'Gz','A_'+'Ax','A_'+'Ay','A_'+'Az'], None])
+                elif device == 0x6b:
+                    self.dev.append([device, 0x22, 12, '<hhhhhh',['B_'+'Gx','B_'+'Gy','B_'+'Gz','B_'+'Ax','B_'+'Ay','B_'+'Az'], None])
                 elif device == 0x36:
-                    self.dev.append([device, 0x0C, 2, '>H', None])
+                    self.dev.append([device, 0x0C, 2, '>H',['rot'], None])
                 elif device == 0x48:
-                    self.dev.append([device, 0x00, 2, '>h', None])
+                    self.dev.append([device, 0x00, 2, '>h', ['cur'], None])
                 self.config(device)
                 print("Device Config: ", device)
             except Exception as e:
@@ -118,41 +122,47 @@ class daq:
         if 'DATA' not in os.listdir():
             os.mkdir('DATA')
         os.chdir('DATA')
-        _path = 'data_{}'.format(len(os.listdir()))
-        os.mkdir(_path)
-        os.chdir(_path)
+        _path = 'data_{}.csv'.format(len(os.listdir()))
+        #os.mkdir(_path)
+        #os.chdir(_path)
         
+        head=['t']
+        #print(head)
         data = self.to_num(_q)
-
-
+        N = len(data[str(self.dev[0][0])])
+        
+        data_out = np.linspace(0, N*self.dt, N).reshape((N,1))
+        print(data_out.shape)
 
         for _j in range(self.N):
             arr = np.array(data[str(self.dev[_j][0])])
+            head = head+self.dev[_j][-2]
+            print(head)
             if str(self.dev[_j][0]) == '54':
                 if self.dev[_j][-1] != None:
                     _scale = np.load(root+'/sensors/'+self.dev[_j][-1])
-                    np.save('rot.npy', sp.fix_outlier(arr*_scale))
+                    data_out = np.hstack((data_out, sp.fix_outlier(arr*_scale)))
                 else:
-                    np.save('rot*.npy', arr)
+                    data_out = np.hstack((data_out, arr))
             elif str(self.dev[_j][0]) == '106' or str(self.dev[_j][0]) == '107':
                 if self.dev[_j][-1] != None:
                     _param = np.load(root+'/sensors/'+self.dev[_j][-1], allow_pickle=True)
-                    np.save('gyr{}.npy'.format(self.dev[_j][0]), self.transl(arr[:,0:3], _param['arr_0']))
-                    np.save('acc{}.npy'.format(self.dev[_j][0]), self.transl(arr[:,3:6], _param['arr_1']))
+                    data_out = np.hstack((data_out, np.hstack((self.transl(arr[:,0:3], _param['arr_0']), self.transl(arr[:,3:6], _param['arr_1'])))))
                 else:
-                    np.save('gyr{}*.npy'.format(self.dev[_j][0]), arr[:,0:3])
-                    np.save('acc{}*.npy'.format(self.dev[_j][0]), arr[:,3:6])
-
-
-
+                    data_out = np.hstack((data_out, arr))
             elif str(self.dev[_j][0]) == '72':
-                peaks,_ = scipy.signal.find_peaks(abs(arr.flatten()),width=2, prominence=5, height=2000, distance=10)
-                T = [peaks[0], peaks[peaks>4000][0], peaks[-1]]
-                np.save('cur.npy', arr)
-                np.save('T.npy', T)
-
-
+                _scale = np.load(root+'/sensors/'+self.dev[_j][-1])
+                data_out = np.hstack((data_out, (arr.astype('int')>>4)*_scale))
+            print(data_out)
+        
+        frame = {}
+        for jj in range(len(head)):
+            frame[head[jj]]=data_out[:,jj]
+        df = pd.DataFrame(frame)
+        df.to_csv(_path, index=False)
+       
         print('{} saved'.format(_path))
+        return data_out
 
     def to_num(self, _q):
         _data={}
@@ -161,7 +171,7 @@ class daq:
         
         while _q.qsize()>0:
             for _j in range(self.N):
-                _data[str(self.dev[_j][0])].append(unpack(self.dev[_j][-2], bytearray(_q.get())))
+                _data[str(self.dev[_j][0])].append(unpack(self.dev[_j][-3], bytearray(_q.get())))
         
         
         return _data
