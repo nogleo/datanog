@@ -36,8 +36,10 @@ class daq:
         for device in range(128):
             try:
                 self.bus.read_byte(device)
-                if device == 0x6b or device == 0x6a:
-                    self.dev.append([device, 0x22, 12, '<hhhhhh',[str(device)+'Gx',str(device)+'Gy',str(device)+'Gz',str(device)+'Ax',str(device)+'Ay',str(device)+'Az'], None])
+                if device == 0x6a:
+                    self.dev.append([device, 0x22, 12, '<hhhhhh',['A_'+'Gx','A_'+'Gy','A_'+'Gz','A_'+'Ax','A_'+'Ay','A_'+'Az'], None])
+                elif device == 0x6b:
+                    self.dev.append([device, 0x22, 12, '<hhhhhh',['B_'+'Gx','B_'+'Gy','B_'+'Gz','B_'+'Ax','B_'+'Ay','B_'+'Az'], None])
                 elif device == 0x36:
                     self.dev.append([device, 0x0C, 2, '>H',['rot'], None])
                 elif device == 0x48:
@@ -158,9 +160,9 @@ class daq:
             frame[head[jj]]=data_out[:,jj]
         df = pd.DataFrame(frame)
         df.to_csv(_path, index=False)
-
-        
+       
         print('{} saved'.format(_path))
+        return data_out
 
     def to_num(self, _q):
         _data={}

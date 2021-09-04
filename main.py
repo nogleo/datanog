@@ -12,6 +12,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationTool
 from matplotlib.figure import Figure
 import numpy as np
 import sigprocess as sp
+import pandas as pd
 root = os.getcwd()
 
 class MatplotlibCanvas(FigureCanvasQTAgg):
@@ -72,7 +73,8 @@ class appnog(qtw.QMainWindow):
         self.ui.calibutton.setEnabled(True)
 
     def pull(self):
-        dn.savedata(dn.pulldata(self.ui.label.text()))
+        data = dn.savedata(dn.pulldata(self.ui.label.text()))
+        sp.PSD(data, dn.fs)
         self.ui.startbutton.setEnabled(True)
 
     def collect(self):
