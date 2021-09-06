@@ -139,15 +139,15 @@ class appnog(qtw.QMainWindow):
 
 
     def readData(self):
-        self.plotdata = pd.read_csv(self.filename, index_col='t')
-        self.frames = self.plotdata.columns
+        self.data = pd.read_csv(self.filename, index_col='t')
+        
         
     def processData(self):
         self.ui.processbttn.setEnabled(False)
         self.ui.openbttn.setEnabled(False)
         self.ui.plotbttn.setEnabled(False)
         _path = self.filename[:-4]
-        _path.replace('DATA', 'PROCDATA')
+        _path = _path.replace('DATA', 'PROCDATA')
         try:
             os.chdir(_path)
         except:
@@ -162,7 +162,9 @@ class appnog(qtw.QMainWindow):
         cmb = np.array([8.0563e-005,	5.983e-004,	-6.8188e-003])
         Lb = np.array([5.3302e-018, -7.233e-002, 3.12e-002+2.0e-003])
         posb = Lb-cmb
-        data, t, fs, dt = sp.prep_data(self.plotdata, 1660, 415, 10)
+        data, t, fs, dt = sp.prep_data(self.data, 1660, 415, 10)
+        self.Fs = fs
+
         A = sp.imu2body(data[:,2:8],t, fs, posa)
         A.to_csv('A.csv')
         B = sp.imu2body(data[:,8:], t, fs, posb)
@@ -195,8 +197,8 @@ class appnog(qtw.QMainWindow):
         ax = self.canv.axes
             
         try:            
-            _t = self.plotdata.index.to_numpy()           
-            ax.plot(_t, self.plotdata)
+            _t = self.data.index.to_numpy()           
+            ax.plot(_t, self.data)
             ax.ylabel('Magnitude')
             ax.xlabel('Time [sec]')
 
