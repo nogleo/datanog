@@ -49,6 +49,7 @@ class appnog(qtw.QMainWindow):
         self.ui.calibutton.setEnabled(False)
         self.ui.pushButton_4.clicked.connect(self.initDevices)
         self.ui.plotbttn.clicked.connect(self.updatePlot)
+        self.ui.processbttn.clicked.connect(self.processData)
 
         
         
@@ -139,11 +140,36 @@ class appnog(qtw.QMainWindow):
 
     def readData(self):
         self.plotdata = pd.read_csv(self.filename, index_col='t')
-        self.frames = []
-        for ii,frame in enumerate(self.plotdata):
-            self.frames.append(qtw.QCheckBox(frame))
-            self.ui.dataLayout.addWidget(self.frames[ii])
+        self.frames = self.plotdata.columns
+        
+    def processData(self):
+        cma = np.array([-4.4019e-004	, 1.2908e-003,	-1.9633e-002])
+        La = np.array([-8.3023e-019, 	-8.1e-002,	-8.835e-002])
+        posa = La-cma
 
+        cmb = np.array([8.0563e-005,	5.983e-004,	-6.8188e-003])
+        Lb = np.array([5.3302e-018, -7.233e-002, 3.12e-002+2.0e-003])
+        posb = Lb-cmb
+        data, t, fs, dt = sp.prep_data(self.plotdata, 1660, 415, 10)
+        A = sp.imu2body(data[:,2:8],t, fs, posa)
+        B = sp.imu2body(data[:,8:], t, fs, posb)
+        c = {'cur': data[:,1],
+             'rot': data[:,0]}
+        C = pd.DataFrame(c,t)
+        os.chdir(root)
+        if 'PROCDATA' not in os.listdir():
+            os.mkdir('PROCDATA')
+        os.chdir('PROCDATA')
+
+        _path = self.filename[:-4]
+        try:
+            os.chdir(_path)
+        except:
+            os.mkdir(_path)
+            os.chdir(_path)
+        A.to_csv('A.csv', index='t')
+        B.to_csv('B.csv', index='t')
+        C.to_csv('C.csv', index='t')
         
     
     def updatePlot(self):
@@ -165,7 +191,7 @@ class appnog(qtw.QMainWindow):
         ax = self.canv.axes
             
         try:            
-            _t = self.plotdata.index.to_numpy()            
+            _t = self.plotdata.index.to_numpy()           
             ax.plot(_t, self.plotdata)
             ax.ylabel('Magnitude')
             ax.xlabel('Time [sec]')

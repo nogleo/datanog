@@ -8,25 +8,30 @@ from scipy import ndimage
 import ghostipy as gsp
 
 from sigprocess import *
-cm = np.array([8.0563e-005,	5.983e-004,	-6.8188e-003])
-L = np.array([5.3302e-018, -7.233e-002, 3.12e-002+2.0e-003])
-pos = L-cm
+cma = np.array([-4.4019e-004	, 1.2908e-003,	-1.9633e-002])
+La = np.array([-8.3023e-019, 	-8.1e-002,	-8.835e-002])
+posa = La-cma
 
-num = 4
+cmb = np.array([8.0563e-005,	5.983e-004,	-6.8188e-003])
+Lb = np.array([5.3302e-018, -7.233e-002, 3.12e-002+2.0e-003])
+posb = Lb-cmb
+
+num = 9
 df = pd.read_csv('DATA/A/data_{}.csv'.format(num), index_col='t')
 df['cur'] = df['cur']*0.0005
-PSD(df,1660)
-data, t, fs, dt = prep_data(df, 1660, 415, 5)
-PSD(data,fs)
+df['rot'] = np.deg2rad(df['rot'])
+# PSD(df,1660)
+data, t, fs, dt = prep_data(df, 1660, 415, 10)
+# PSD(data,fs)
 
 
 
-# A = imu2body(data[:,2:8],t, fs)
-B = imu2body(data[:,8:], t, fs, pos)
-B.insert(0, 'rot', data[:,0])
-B.insert(0, 'cur', data[:,1])
+A = imu2body(data[:,2:8],t, fs, posa)
+B = imu2body(data[:,8:], t, fs, posb)
+# B.insert(0, 'rot', data[:,0])
+# B.insert(0, 'cur', data[:,1])
 PSD(B, fs)
-
+PSD(A, fs)
 kwargs_dict = {}
 kwargs_dict['cmap'] = plt.cm.Spectral_r
 kwargs_dict['vmin'] = 0
@@ -35,9 +40,9 @@ kwargs_dict['linewidth'] = 0
 kwargs_dict['rasterized'] = True
 kwargs_dict['shading'] = 'auto'
 
-Cur = gsp.analytic_signal(B['cur'])
+Cur = gsp.analytic_signal(B['Dz'])
 
-coefs_cwt, _, f_cwt, t_cwt, _ = gsp.cwt(B['cur'].to_numpy(),fs=fs,timestamps=t, freq_limits=[0.2, 360], voices_per_octave=16)
+coefs_cwt, _, f_cwt, t_cwt, _ = gsp.cwt(B['Dz'].to_numpy(),fs=fs,timestamps=t, freq_limits=[0.2, 360], voices_per_octave=16)
 psd_cwt = coefs_cwt.real**2 + coefs_cwt.imag**2
 psd_cwt /= np.max(psd_cwt)
 
@@ -45,7 +50,7 @@ fig = plt.figure()
 pc_cwt = plt.pcolormesh(t_cwt, f_cwt, psd_cwt, **kwargs_dict)
 
 
-coefs_wsst, _, f_wsst, t_wsst, _  = gsp.wsst(B['cur'].to_numpy(),fs=fs,timestamps=t, freq_limits=[0.2, 360], voices_per_octave=16)
+coefs_wsst, _, f_wsst, t_wsst, _  = gsp.wsst(B['Dx'].to_numpy(),fs=fs,timestamps=t, freq_limits=[0.2, 360], voices_per_octave=16)
 psd_wsst = coefs_wsst.real**2 + coefs_wsst.imag**2
 psd_wsst /= np.max(psd_wsst)
 
@@ -97,7 +102,5 @@ emd.plotting.plot_holospectrum(hht,freq_bins, freq_bins2,  fig=fig2,freq_lims=(2
 
 
 # %%
-H = signal.hilbert(B[['Dx','Dy','Dz', 'thx','thy','thz']], axis=0)
-Ia = np.abs(H)
 
 

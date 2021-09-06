@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>750</width>
-    <height>420</height>
+    <width>1153</width>
+    <height>692</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -249,6 +249,47 @@
           </property>
          </widget>
         </item>
+        <item row="1" column="1" rowspan="2">
+         <layout class="QVBoxLayout" name="plotLayout">
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item row="1" column="0" rowspan="2">
+         <layout class="QVBoxLayout" name="dataLayout">
+          <item>
+           <widget class="QPushButton" name="processbttn">
+            <property name="text">
+             <string>Process</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
         <item row="0" column="1">
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
@@ -267,54 +308,6 @@
              <size>
               <width>40</width>
               <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </item>
-        <item row="1" column="1" rowspan="4">
-         <layout class="QVBoxLayout" name="plotLayout">
-          <item>
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </item>
-        <item row="1" column="0" rowspan="4">
-         <layout class="QVBoxLayout" name="dataLayout">
-          <item>
-           <widget class="QPushButton" name="processbttn">
-            <property name="text">
-             <string>Process</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="checkBox">
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
              </size>
             </property>
            </spacer>
@@ -352,8 +345,8 @@
      <y>399</y>
     </hint>
     <hint type="destinationlabel">
-     <x>629</x>
-     <y>215</y>
+     <x>1132</x>
+     <y>294</y>
     </hint>
    </hints>
   </connection>
