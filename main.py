@@ -143,6 +143,18 @@ class appnog(qtw.QMainWindow):
         self.frames = self.plotdata.columns
         
     def processData(self):
+        self.ui.processbttn.setEnabled(False)
+        self.ui.openbttn.setEnabled(False)
+        self.ui.plotbttn.setEnabled(False)
+        _path = self.filename[:-4]
+        _path.replace('DATA', 'PROCDATA')
+        try:
+            os.chdir(_path)
+        except:
+            os.mkdir(_path)
+            os.chdir(_path)
+        print(_path)
+
         cma = np.array([-4.4019e-004	, 1.2908e-003,	-1.9633e-002])
         La = np.array([-8.3023e-019, 	-8.1e-002,	-8.835e-002])
         posa = La-cma
@@ -152,25 +164,17 @@ class appnog(qtw.QMainWindow):
         posb = Lb-cmb
         data, t, fs, dt = sp.prep_data(self.plotdata, 1660, 415, 10)
         A = sp.imu2body(data[:,2:8],t, fs, posa)
+        A.to_csv('A.csv')
         B = sp.imu2body(data[:,8:], t, fs, posb)
+        B.to_csv('B.csv')
         c = {'cur': data[:,1],
              'rot': data[:,0]}
         C = pd.DataFrame(c,t)
-        os.chdir(root)
-        if 'PROCDATA' not in os.listdir():
-            os.mkdir('PROCDATA')
-        os.chdir('PROCDATA')
-
-        _path = self.filename[:-4]
-        try:
-            os.chdir(_path)
-        except:
-            os.mkdir(_path)
-            os.chdir(_path)
-        A.to_csv('A.csv', index='t')
-        B.to_csv('B.csv', index='t')
-        C.to_csv('C.csv', index='t')
-        
+        C.to_csv('C.csv')
+                
+        self.ui.processbttn.setEnabled(True)
+        self.ui.openbttn.setEnabled(True)
+        self.ui.plotbttn.setEnabled(True)
     
     def updatePlot(self):
         global dn
