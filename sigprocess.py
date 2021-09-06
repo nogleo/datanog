@@ -12,10 +12,10 @@ fs = 1660
 dt = 1/fs
 def prep_data(df, fs, fc, factor):
     S = df.to_numpy()   
-    S[:,0] = np.unwrap(np.deg2rad(S[:,0]))
-    # b,a = scipy.signal.cheby1(23, 0.175, fc, fs=fs)
-    # S[:,2:] = scipy.signal.filtfilt(b, a, S[:,2:], axis=0)
-    S[:,2:] = freqfilt(S[:,2:], fs, fc)
+    S[:,0] = np.unwrap(S[:,0])
+    b,a = scipy.signal.cheby1(23, 0.175, fc, fs=fs)
+    S[:,2:] = scipy.signal.filtfilt(b, a, S[:,2:], axis=0)
+    # S[:,2:] = freqfilt(S[:,2:], fs, fc)
     t = df.index.to_numpy()
     N = len(S)
     ss, tt = scipy.signal.resample(S,factor*N, t=t, axis=0, window='hann')
@@ -34,8 +34,8 @@ def freqfilt(data, fs, fc):
     ff = fftfreq(N,1/fs)
     k = (abs(ff)<=fc).reshape((N,1))
     Data = fft(data, axis=0)
-    # Data.real = Data.real*k
     Data.real = Data.real*k
+    # Data.real = Data.real*k
     data_out = np.real(ifft(Data, axis=0))
     data_out[:,0] = data_out[:,0]%(2*np.pi)
     return data_out
@@ -58,6 +58,7 @@ def PSD(_data, fs):
     plt.plot(_t, _data)
     plt.subplot(212)
     plt.semilogx(f, 20*np.log10(abs(Pxx)))
+    plt.xlim((1,415))
     plt.grid()
     
 
