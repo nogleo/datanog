@@ -42,12 +42,14 @@ class appnog(qtw.QMainWindow):
         self.msg = ""
         self.ui.startbutton.clicked.connect(self.collect)
         self.ui.stopbutton.clicked.connect(self.interrupt)
-        self.ui.pushButton.clicked.connect(self.getFile)
+        self.ui.openbttn.clicked.connect(self.getFile)
         self.ui.calibutton.clicked.connect(self.calibrate)
         self.ui.linkSensor.clicked.connect(self.linkSens)
         self.ui.linkSensor.setEnabled(False)
         self.ui.calibutton.setEnabled(False)
         self.ui.pushButton_4.clicked.connect(self.initDevices)
+        self.ui.plotbttn.clicked.connect(self.updatePlot())
+
         
         
         
@@ -136,15 +138,20 @@ class appnog(qtw.QMainWindow):
 
 
     def readData(self):
-        self.plotdata = np.load(self.filename)
-        self.updatePlot()
+        self.plotdata = pd.read_csv(self.filename, index_col='t')
+        self.frames = []
+        for ii,frame in enumerate(self.plotdata):
+            self.frames.append(qtw.QCheckBox(frame))
+            self.ui.dataLayout.addWidget(self.frames[ii])
+
+        
     
     def updatePlot(self):
         global dn
         plt.clf()
         try:
             self.ui.horizontalLayout.removeWidget(self.toolbar)
-            self.ui.verticalLayout.removeWidget(self.canv)
+            self.ui.plotLayout.removeWidget(self.canv)
             self.toolbar = None
             self.canv = None
         except Exception as e:
@@ -153,12 +160,12 @@ class appnog(qtw.QMainWindow):
         self.canv = MatplotlibCanvas(self)
         self.toolbar = Navi(self.canv,self.ui.tab_2)
         self.ui.horizontalLayout.addWidget(self.toolbar)
-        self.ui.verticalLayout.addWidget(self.canv)
+        self.ui.plotLayout.addWidget(self.canv)
         self.canv.axes.cla()
         ax = self.canv.axes
             
-        try:
-            _t = np.arange(len(self.plotdata))*dn.dt              
+        try:            
+            _t = self.plotdata.index.to_numpy()            
             ax.plot(_t, self.plotdata)
             ax.ylabel('Magnitude')
             ax.xlabel('Time [sec]')
