@@ -196,12 +196,11 @@ class appnog(qtw.QMainWindow):
         self.canv.axes.cla()
         ax = self.canv.axes
             
-        try:            
-            _t = self.data.index.to_numpy()           
-            ax.plot(_t, self.data.to_numpy())
-            ax.legend(self.data.columns)
-            ax.ylabel('Magnitude')
-            ax.xlabel('Time [sec]')
+        try:        
+                       
+            ax.plot(self.data)
+            ax.legend(self.data.columns)            
+            
 
         except Exception as e:
             print('==>',e)
