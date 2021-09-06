@@ -198,7 +198,8 @@ class appnog(qtw.QMainWindow):
             
         try:            
             _t = self.data.index.to_numpy()           
-            ax.plot(_t, self.data)
+            ax.plot(_t, self.data.to_numpy())
+            ax.legend(self.data.columns)
             ax.ylabel('Magnitude')
             ax.xlabel('Time [sec]')
 
