@@ -140,6 +140,7 @@ class appnog(qtw.QMainWindow):
 
     def readData(self):
         self.data = pd.read_csv(self.filename, index_col='t')
+        self.updatePlot()
         
         
     def processData(self):

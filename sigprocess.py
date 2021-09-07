@@ -8,6 +8,7 @@ import scipy.integrate as intg
 from numpy import pi
 from scipy.fftpack import fft, ifft, dct, idct, dst, idst, fftshift, fftfreq
 from numpy import linspace, zeros, array, pi, sin, cos, exp, arange
+import ghostipy as gsp
 fs = 1660
 dt = 1/fs
 def prep_data(df, fs, fc, factor):
@@ -50,17 +51,27 @@ def fix_outlier(_data):
         _data[peak-5:peak+5] = _f(np.arange(0,10)).T
     return _data
 
-def PSD(_data, fs):
-    f, Pxx = scipy.signal.welch(_data, fs, nperseg=fs//4, noverlap=fs//8, window='hann', average='median', scaling='spectrum', detrend='linear', axis=0)
+# def PSD(_data, fs):
+#     f, Pxx = scipy.signal.welch(_data, fs, nperseg=fs//4, noverlap=fs//8, window='hann', average='median', scaling='spectrum', detrend='linear', axis=0)
+#     plt.figure()
+#     plt.subplot(211)
+#     _t = np.linspace(0, len(_data)*dt, len(_data))
+#     plt.plot(_t, _data)
+#     plt.subplot(212)
+#     plt.semilogx(f, 20*np.log10(abs(Pxx)))
+#     plt.xlim((1,415))
+#     plt.grid()
+
+def PSD(df, fs):
+    f, Pxx = scipy.signal.welch(df, fs, nperseg=fs//4, noverlap=fs//8, window='hann', average='mean', scaling='spectrum', detrend=False, axis=0)
     plt.figure()
     plt.subplot(211)
-    _t = np.linspace(0, len(_data)*dt, len(_data))
-    plt.plot(_t, _data)
+    plt.plot(df)
+    plt.legend(df.columns)
     plt.subplot(212)
     plt.semilogx(f, 20*np.log10(abs(Pxx)))
     plt.xlim((1,415))
-    plt.grid()
-    
+    plt.grid()   
 
 
 def FDI(data, factor=1, NFFT=fs//4):
@@ -80,22 +91,55 @@ def FDI(data, factor=1, NFFT=fs//4):
         Data[ii:ii+n,:] += y
     return np.real(Data[2*n:-2*n,:])
     
-def spect(_data,fs, dbmin=80):       
-    plt.figure()
-    if len(_data.shape)<2:
-        _data = _data.reshape((len(_data),1))
-    kk = _data.shape[1]           
-    for ii in range(kk):
-        plt.subplot(kk*100+10+ii+1)
-        f, t, Sxx = scipy.signal.spectrogram(_data[:,ii], fs=fs, axis=0, scaling='spectrum', nperseg=fs//4, noverlap=fs//8, detrend='linear', mode='psd', window='hann')
+# def spect(df,fs, dbmin=80):
+          
+#     plt.figure()
+#     if len(_data.shape)<2:
+#         _data = _data.reshape((len(_data),1))
+#     kk = _data.shape[1]           
+#     for ii in range(kk):
+#         plt.subplot(kk*100+10+ii+1)
+#         f, t, Sxx = scipy.signal.spectrogram(_data[:,ii], fs=fs, axis=0, scaling='spectrum', nperseg=fs//4, noverlap=fs//8, detrend='linear', mode='psd', window='hann')
+#         Sxx[Sxx==0] = 10**(-20)
+#         plt.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='auto', cmap=plt.inferno(),vmax=20*np.log10(abs(Sxx)).max(), vmin=20*np.log10(abs(Sxx)).max()-dbmin)
+#         plt.ylim((0, 300))
+#         plt.colorbar()
+#         plt.ylabel('Frequency [Hz]')
+#         plt.xlabel('Time [sec]')
+#         plt.tight_layout()
+#         plt.show()
+
+def spect(df,fs, dbmin=80):
+    for frame in df:
+        plt.figure()
+        f, t, Sxx = scipy.signal.spectrogram(df[frame], fs=fs, axis=0, scaling='spectrum', nperseg=fs//4, noverlap=fs//8, detrend=False, mode='psd', window='hann')
         Sxx[Sxx==0] = 10**(-20)
-        plt.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud', cmap=plt.inferno(),vmax=20*np.log10(abs(Sxx)).max(), vmin=20*np.log10(abs(Sxx)).max()-dbmin)
-        plt.ylim((0, 300))
+        plt.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud',  cmap=plt.cm.Spectral_r,vmax=20*np.log10(abs(Sxx)).max(), vmin=20*np.log10(abs(Sxx)).max()-dbmin)
+        plt.ylim((0, 415))
         plt.colorbar()
+        plt.title(frame)
         plt.ylabel('Frequency [Hz]')
         plt.xlabel('Time [sec]')
         plt.tight_layout()
         plt.show()
+
+
+def CWT(df,fs):
+    t=df.index.to_numpy()
+    kwargs_dict = {}
+    kwargs_dict['cmap'] = plt.cm.Spectral_r
+    kwargs_dict['vmin'] = 0
+    kwargs_dict['vmax'] = 1
+    kwargs_dict['linewidth'] = 0
+    kwargs_dict['rasterized'] = True
+    kwargs_dict['shading'] = 'auto'
+    for frame in df:        
+        plt.figure()
+        coefs_cwt, _, f_cwt, t_cwt, _ = gsp.cwt(df[frame],fs=fs,timestamps=t, boundary='zeros', freq_limits=[1, 415], voices_per_octave=16, wavelet=gsp.wavelets.AmorWavelet())
+        psd_cwt = coefs_cwt.real**2 + coefs_cwt.imag**2
+        psd_cwt /= np.max(psd_cwt)
+        plt.pcolormesh(t_cwt, f_cwt, psd_cwt, **kwargs_dict)
+        plt.colorbar()
         
 def FDD(_data, factor=1, NFFT=fs):
     N = len(_data)

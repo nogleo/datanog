@@ -18,6 +18,7 @@ posb = Lb-cmb
 
 num = 9
 df = pd.read_csv('DATA/A/data_{}.csv'.format(num), index_col='t')
+
 df['cur'] = df['cur']*0.0005
 df['rot'] = np.deg2rad(df['rot'])
 # PSD(df,1660)
@@ -26,8 +27,12 @@ data, t, fs, dt = prep_data(df, 1660, 415, 10)
 
 
 
+
 A = imu2body(data[:,2:8],t, fs, posa)
 B = imu2body(data[:,8:], t, fs, posb)
+c = {'cur': data[:,1],'rot': data[:,0]}
+C = pd.DataFrame(c,t)
+C.to_csv('C.csv')
 # B.insert(0, 'rot', data[:,0])
 # B.insert(0, 'cur', data[:,1])
 PSD(B, fs)
@@ -38,7 +43,7 @@ kwargs_dict['vmin'] = 0
 kwargs_dict['vmax'] = 1
 kwargs_dict['linewidth'] = 0
 kwargs_dict['rasterized'] = True
-kwargs_dict['shading'] = 'auto'
+kwargs_dict['shading'] = 'gouraud'
 
 Cur = gsp.analytic_signal(B['Dz'])
 
