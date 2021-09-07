@@ -8,7 +8,7 @@ import scipy.integrate as intg
 from numpy import pi
 from scipy.fftpack import fft, ifft, dct, idct, dst, idst, fftshift, fftfreq
 from numpy import linspace, zeros, array, pi, sin, cos, exp, arange
-import ghostipy as gsp
+
 fs = 1660
 dt = 1/fs
 def prep_data(df, fs, fc, factor):
@@ -124,22 +124,11 @@ def spect(df,fs, dbmin=80):
         plt.show()
 
 
-def CWT(df,fs):
-    t=df.index.to_numpy()
-    kwargs_dict = {}
-    kwargs_dict['cmap'] = plt.cm.Spectral_r
-    kwargs_dict['vmin'] = 0
-    kwargs_dict['vmax'] = 1
-    kwargs_dict['linewidth'] = 0
-    kwargs_dict['rasterized'] = True
-    kwargs_dict['shading'] = 'auto'
-    for frame in df:        
-        plt.figure()
-        coefs_cwt, _, f_cwt, t_cwt, _ = gsp.cwt(df[frame],fs=fs,timestamps=t, boundary='zeros', freq_limits=[1, 415], voices_per_octave=16, wavelet=gsp.wavelets.AmorWavelet())
-        psd_cwt = coefs_cwt.real**2 + coefs_cwt.imag**2
-        psd_cwt /= np.max(psd_cwt)
-        plt.pcolormesh(t_cwt, f_cwt, psd_cwt, **kwargs_dict)
-        plt.colorbar()
+
+    
+    
+
+
         
 def FDD(_data, factor=1, NFFT=fs):
     N = len(_data)
@@ -179,7 +168,7 @@ def imu2body(df, t, fs, pos=[0, 0, 0]):
     alpha = FDD(gyr)
     accc = acc + np.cross(gyr,np.cross(gyr,pos)) + np.cross(alpha,pos)
     q0=ahrs.Quaternion(ahrs.common.orientation.acc2q(accc[0]))
-    imu = ahrs.filters.Complementary(acc=accc, gyr=gyr, frequency=fs, q0=q0, gain=0.001)
+    imu = ahrs.filters.Complementary(acc=accc, gyr=gyr, frequency=fs, q0=q0)
     theta = ahrs.QuaternionArray(imu.Q).to_angles()
     
     acccc = np.zeros_like(accc)

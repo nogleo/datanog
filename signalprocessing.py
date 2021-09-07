@@ -34,7 +34,7 @@ def spect(df, dbmin=80):
         plt.figure()           
         f, t, Sxx = scipy.signal.spectrogram(df[frame], fs=fs, scaling='spectrum',nfft=fs, nperseg=fs//2, noverlap=fs//4, detrend='linear', mode='complex', window='hann')
         Sxx[Sxx==0] = 10**(-20)
-        plt.pcolormesh(t, f, 20*np.log10(np.abs(Sxx)), shading='gouraud', cmap=plt.inferno(),vmax=20*np.log10(np.abs(Sxx)).max(), vmin=20*np.log10(np.abs(Sxx)).max()-dbmin)
+        plt.pcolormesh(t, f, 20*np.log10(np.abs(Sxx)), shading='gouraud', cmap=plt.cm.Spectral_r,vmax=20*np.log10(np.abs(Sxx)).max(), vmin=20*np.log10(np.abs(Sxx)).max()-dbmin)
         plt.ylim((0, fs//4))
         plt.colorbar()
         plt.title('Spectrogram of {}'.format(frame))
@@ -282,7 +282,34 @@ def CSD(X,Y):
     plt.tight_layout()
     plt.show()
     
+def CWT(df,fs):
+    t=df.index.to_numpy()
+    kwargs_dict = {}
+    kwargs_dict['cmap'] = plt.cm.Spectral_r
+    kwargs_dict['vmin'] = 0
+    kwargs_dict['vmax'] = 1
+    kwargs_dict['linewidth'] = 0
+    kwargs_dict['rasterized'] = True
+    kwargs_dict['shading'] = 'auto'
+    for frame in df:        
+        plt.figure()
+        coefs_cwt, _, f_cwt, t_cwt, _ = gsp.cwt(df[frame],fs=fs,timestamps=t, boundary='zeros', freq_limits=[1, 415], voices_per_octave=16, wavelet=gsp.wavelets.AmorWavelet())
+        psd_cwt = coefs_cwt.real**2 + coefs_cwt.imag**2
+        psd_cwt /= np.max(psd_cwt)
+        plt.pcolormesh(t_cwt, f_cwt, psd_cwt, **kwargs_dict)
+        plt.colorbar()
 
+def HHT(df, fs):
+    t = df.index.to_numpy()
+    mfreqs = np.array([360,300,240,180,120,90,60,30,15,7.5])
+    freq_edges, freq_bins = emd.spectra.define_hist_bins(1, 415, 414, 'log')
+    for frame in df:        
+        imf, _ = emd.sift.mask_sift(df[frame.to_numpy()], mask_freqs=mfreqs/fs,  mask_amp_mode='ratio_sig', ret_mask_freq=True, nphases=8, mask_amp=5)
+        Ip, If, Ia = emd.spectra.frequency_transform(imf, fs, 'nht')
+        emd.plotting.plot_imfs(imf,t, scale_y=True, cmap=True)
+        emd.plotting.plot_imfs(Ia,t, scale_y=True, cmap=True)
+        emd.plotting.plot_imfs(Ip,t, scale_y=True, cmap=True)
+        emd.plotting.plot_imfs(If,t, scale_y=True, cmap=True)
 
 
 def PSD(_data):
@@ -344,6 +371,11 @@ b1 = imu2body(acc1, gyr1)
 peaks,_ =signal.find_peaks(abs(cur.flatten()),width=2, prominence=5, height=2000, distance=10)
 T = [peaks[0], peaks[peaks>4000][0], peaks[-1]]
 # %%
+
+
+
+
+
 
 spect(inst_freq)
 
