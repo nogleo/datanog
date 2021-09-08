@@ -6,6 +6,8 @@ from scipy import signal
 import emd
 from scipy import ndimage
 import ghostipy as gsp
+import gc
+import ssqueezepy as sq
 
 from sigprocess import *
 cma = np.array([-4.4019e-004	, 1.2908e-003,	-1.9633e-002])
@@ -25,14 +27,21 @@ df['rot'] = np.deg2rad(df['rot'])
 data, t, fs, dt = prep_data(df, 1660, 415, 10)
 # PSD(data,fs)
 
-
-
+C = pd.DataFrame({'cur': data[:,1],'rot': data[:,0]},t)
+C.plot()
+B = imu2body(data[:,8:], t, fs, posb)
+B[['thx','thy','thz']].plot()
+B[['Ax','Ay','Az']].plot()
 
 A = imu2body(data[:,2:8],t, fs, posa)
-B = imu2body(data[:,8:], t, fs, posb)
-c = {'cur': data[:,1],'rot': data[:,0]}
-C = pd.DataFrame(c,t)
-C.to_csv('C.csv')
+ 
+
+
+
+
+_b, _t = scipy.signal.resample(B, len(B)//10, t=t, axis=0, window='hann')
+b = pd.DataFrame(_b,_t, columns=B.columns)
+
 # B.insert(0, 'rot', data[:,0])
 # B.insert(0, 'cur', data[:,1])
 PSD(B, fs)
@@ -47,7 +56,7 @@ kwargs_dict['shading'] = 'gouraud'
 
 Cur = gsp.analytic_signal(B['Dz'])
 
-coefs_cwt, _, f_cwt, t_cwt, _ = gsp.cwt(B['Dz'].to_numpy(),fs=fs,timestamps=t, freq_limits=[0.2, 360], voices_per_octave=16)
+coefs_cwt, _, f_cwt, t_cwt, _ = gsp.cwt(b['Ay'].to_numpy(),fs=fs//10,timestamps=tt,boundary='mirror', freq_limits=[1, 360], voices_per_octave=16)
 psd_cwt = coefs_cwt.real**2 + coefs_cwt.imag**2
 psd_cwt /= np.max(psd_cwt)
 
@@ -55,7 +64,7 @@ fig = plt.figure()
 pc_cwt = plt.pcolormesh(t_cwt, f_cwt, psd_cwt, **kwargs_dict)
 
 
-coefs_wsst, _, f_wsst, t_wsst, _  = gsp.wsst(B['Dx'].to_numpy(),fs=fs,timestamps=t, freq_limits=[0.2, 360], voices_per_octave=16)
+coefs_wsst, _, f_wsst, t_wsst, _  = gsp.wsst(b['Ay'].to_numpy(),fs=fs//10,timestamps=tt, freq_limits=[1, 360], voices_per_octave=16)
 psd_wsst = coefs_wsst.real**2 + coefs_wsst.imag**2
 psd_wsst /= np.max(psd_wsst)
 
@@ -69,16 +78,14 @@ cbar_wsst.ax.tick_params(labelsize=16)
 cbar_wsst.set_label("Normalized PSD", fontsize=16, labelpad=15)
 
 # %%
-S = B[['cur']].to_numpy()
-
-imf, mask_freqs = emd.sift.mask_sift(S, mask_freqs=240/fs,  mask_amp_mode='ratio_sig', ret_mask_freq=True, nphases=8, mask_amp=5, mask_step_factor=2)
-
-mfreqs = mask_freqs*fs
-IP, IF, IA = emd.spectra.frequency_transform(imf, fs, 'nht')
-emd.plotting.plot_imfs(imf,t, scale_y=True, cmap=True)
-emd.plotting.plot_imfs(IA,t, scale_y=False, cmap=True)
-emd.plotting.plot_imfs(IP,t, scale_y=True, cmap=True)
-emd.plotting.plot_imfs(IF,t, scale_y=False, cmap=True)
+S = b[['Ay']].to_numpy()
+mfreqs = np.array([360,300,240,180,120,90,60,30,15,7.5])
+imf, _ = emd.sift.mask_sift(S, mask_freqs=mfreqs/fs//10,  mask_amp_mode='ratio_sig', ret_mask_freq=True, nphases=8, mask_amp=5)
+Ip, If, Ia = emd.spectra.frequency_transform(imf, fs, 'nht')
+emd.plotting.plot_imfs(imf,tt, scale_y=True, cmap=True)
+emd.plotting.plot_imfs(Ia,tt, scale_y=True, cmap=True)
+emd.plotting.plot_imfs(Ip,tt, scale_y=True, cmap=True)
+emd.plotting.plot_imfs(If,tt, scale_y=True, cmap=True)
 
 config = emd.sift.get_config('mask_sift')
 config['mask_amp_mode'] = 'ratio_sig'
@@ -88,21 +95,14 @@ config['imf_opts/sd_thresh'] = 0.05
 config['envelope_opts/interp_method'] = 'mono_pchip'
 imf2 = emd.sift.mask_sift_second_layer(IA, mask_freqs, sift_args=config)
 IP2, IF2, IA2 = emd.spectra.frequency_transform(imf2, fs, 'nht')
-spec = emd.spectra.hilberthuang_1d(IF, IA, freq_edges)
+spec = emd.spectra.hilberthuang_1d(If, Ia, freq_edges)
 
-emd.plotting.plot
-
-
-
-freq_edges, freq_bins = emd.spectra.define_hist_bins(1, 300, 299, 'log')
-freq_edges2, freq_bins2 = emd.spectra.define_hist_bins(1, 300, 299, 'log')
-hht = emd.spectra.hilberthuang(IF, IA, freq_edges, mode='amplitude')
-holo = emd.spectra.holospectrum(IF,IF2, IA2, freq_edges, freq_edges2)
-shht = ndimage.gaussian_filter(hht, 1)
+freq_edges, freq_bins = emd.spectra.define_hist_bins(1, 415, 414, 'log')
+hht = emd.spectra.hilberthuang(If, Ia, freq_edges, mode='energy')
+shht = ndimage.gaussian_filter(hht, 2)
 fig = plt.figure(figsize=(10, 6)) 
-emd.plotting.plot_hilberthuang(shht, t, freq_bins, fig=fig,freq_lims=(2, 300), log_y=True, cmap='inferno')
-fig2 = plt.figure(figsize=(10, 6))
-emd.plotting.plot_holospectrum(hht,freq_bins, freq_bins2,  fig=fig2,freq_lims=(2, 300))
+emd.plotting.plot_hilberthuang(shht, t, freq_bins, fig=fig,freq_lims=(1, 415), log_y=True, cmap=plt.cm.Spectral_r)
+
 
 
 

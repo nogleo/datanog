@@ -168,7 +168,7 @@ def imu2body(df, t, fs, pos=[0, 0, 0]):
     alpha = FDD(gyr)
     accc = acc + np.cross(gyr,np.cross(gyr,pos)) + np.cross(alpha,pos)
     q0=ahrs.Quaternion(ahrs.common.orientation.acc2q(accc[0]))
-    imu = ahrs.filters.Complementary(acc=accc, gyr=gyr, frequency=fs, q0=q0)
+    imu = ahrs.filters.Complementary(acc=accc, gyr=gyr, frequency=fs, q0=q0, gain=0.0001)
     theta = ahrs.QuaternionArray(imu.Q).to_angles()
     
     acccc = np.zeros_like(accc)

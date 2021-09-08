@@ -282,6 +282,7 @@ def CSD(X,Y):
     plt.tight_layout()
     plt.show()
     
+import ghostipy as gsp
 def CWT(df,fs):
     t=df.index.to_numpy()
     kwargs_dict = {}
@@ -299,6 +300,7 @@ def CWT(df,fs):
         plt.pcolormesh(t_cwt, f_cwt, psd_cwt, **kwargs_dict)
         plt.colorbar()
 
+import emd   
 def HHT(df, fs):
     t = df.index.to_numpy()
     mfreqs = np.array([360,300,240,180,120,90,60,30,15,7.5])

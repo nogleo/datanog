@@ -2,6 +2,7 @@ import datanog as nog
 from gui import Ui_MainWindow
 import scipy.signal as signal
 import os
+import pickle
 from PyQt5 import QtCore as qtc
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import Qt as qt
@@ -69,6 +70,12 @@ class appnog(qtw.QMainWindow):
         dn = nog.daq()
         
         self.devsens={}
+        try:
+            with open(root+'sensors.data', 'r') as f:
+                dn.dev = pickle.load(f)
+            print(root+'sensors.data loaded')
+        except:
+            print('no previous sensor data')
         for _dev in dn.dev:
             self.devsens[str(_dev[0])] = str(_dev[-1])
         self.loadDevices()
@@ -134,6 +141,8 @@ class appnog(qtw.QMainWindow):
         ii = self.ui.comboBox.currentIndex()
         dn.dev[ii][-1] = self.filename[25:]
         self.loadDevices()
+        with open(root+'sensors.data', 'w') as f:
+            pickle.dump(dn.dev, f)
         os.chdir(root)
         np.save('devsens.npy', self.devsens)
 
