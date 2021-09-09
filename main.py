@@ -71,7 +71,7 @@ class appnog(qtw.QMainWindow):
         
         self.devsens={}
         try:
-            with open(root+'sensors.data', 'r') as f:
+            with open(root+'sensors.data', 'rb') as f:
                 dn.dev = pickle.load(f)
             print(root+'sensors.data loaded')
         except:
@@ -141,7 +141,7 @@ class appnog(qtw.QMainWindow):
         ii = self.ui.comboBox.currentIndex()
         dn.dev[ii][-1] = self.filename[25:]
         self.loadDevices()
-        with open(root+'sensors.data', 'w') as f:
+        with open(root+'sensors.data', 'wb') as f:
             pickle.dump(dn.dev, f)
         os.chdir(root)
         np.save('devsens.npy', self.devsens)
