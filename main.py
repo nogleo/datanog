@@ -198,9 +198,13 @@ class appnog(qtw.QMainWindow):
             self.NS = NS*dn.fs
         
         for ii in range(6):
-            msgbx = qtw.QMessageBox.information(self, 'Position {}'.format(ii+1),
-                                        'Position Calibration Dice with the side {} upwards'.format(ii+1), qtw.QMessageBox.Ok | qtw.QMessageBox.Cancel)
-            ret = msgbx.exec_()
+            msgbx = qtw.QMessageBox()
+            msgbx.setIcon(qtw.QMessageBox.information)
+            msgbx.setText('Position Calibration Dice with the side {} upwards'.format(ii+1))
+            msgbx.setWindowTitle('Position {}'.format(ii+1))
+            msgbx.setStandardButtons(qtw.QMessageBox.Ok | qtw.QMessageBox.Cancel)
+            
+            ret = msgbx.exec()
             if ret==qtw.QMessageBox.Ok:
                 i=0
                 tf = time.perf_counter()
@@ -218,9 +222,14 @@ class appnog(qtw.QMainWindow):
         if ok:
             self.ND = ND*dn.fs
         for ii in range(0,6,2):
-            msgbx = qtw.QMessageBox.information(self, 'Rotation axis {}-{}'.format(ii+1,ii+2),
-                                        'Rotate 180 deg around axis {}-{}'.format(ii+1,ii+2))
-            ret = msgbx.exec_()
+            msgbx = qtw.QMessageBox()
+            msgbx = qtw.QMessageBox()
+            msgbx.setIcon(qtw.QMessageBox.information)
+            msgbx.setText('Rotate 180 deg around axis {}-{}'.format(ii+1,ii+2))
+            msgbx.setWindowTitle('Rotation axis {}-{}'.format(ii+1,ii+2))
+            msgbx.setStandardButtons(qtw.QMessageBox.Ok | qtw.QMessageBox.Cancel)
+            
+            ret = msgbx.exec()
             if ret==qtw.QMessageBox.Ok:
                 i=0
                 tf = time.perf_counter()
