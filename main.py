@@ -269,6 +269,7 @@ class appnog(qtw.QMainWindow):
                 print('cancelled')
                 return
         
+<<<<<<< HEAD
         NS, ok = qtw.QInputDialog().getInt(self,    'Sample Length',
                                                     'Number seconds per Position: ',
                                                     5, 1, 10, 1)
@@ -294,6 +295,18 @@ class appnog(qtw.QMainWindow):
         i=0
         while ii < 6:
             ok = self.showmessage('Move your IMU to the '+str(ii+1)+' position')
+=======
+        NS, ok = qtw.QInputDialog().getInt(self,
+                                        'Sample Length', 
+                                        'Number seconds per Position: ', 
+                                        value=5, minValue=1, maxValue=10)
+        if ok and NS:
+            self.NS = NS//dn.dt
+        
+        for ii in range(6):
+            ok = qtw.QMessageBox(self, 'Position {}'.format(ii+1),
+                                        'Position Calibration Dice with the side {} upwards'.format(ii+1))
+>>>>>>> 4707523 (fix get integer)
             if ok:
                 print('collecting position  '+ str(ii+1))   
                     
