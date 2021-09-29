@@ -8,26 +8,44 @@ import scipy.integrate as intg
 from numpy import pi
 from scipy.fftpack import fft, ifft, dct, idct, dst, idst, fftshift, fftfreq
 from numpy import linspace, zeros, array, pi, sin, cos, exp, arange
-
+import emd 
 fs = 1660
 dt = 1/fs
 def prep_data(df, fs, fc, factor):
-    S = df.to_numpy()   
-    S[:,0] = np.unwrap(S[:,0])
-    b,a = scipy.signal.cheby1(23, 0.175, fc, fs=fs)
-    S[:,2:] = scipy.signal.filtfilt(b, a, S[:,2:], axis=0)
-    # S[:,2:] = freqfilt(S[:,2:], fs, fc)
     t = df.index.to_numpy()
-    N = len(S)
-    ss, tt = scipy.signal.resample(S,factor*N, t=t, axis=0, window='hann')
-    ss[:,0] = ss[:,0]%(2*np.pi)
-    ss = ss[100:-100,:]
-    tt = tt[100:-100]
-    fs = factor*fs
-    dt = 1/fs
+    if df.rot.max()>=300.0:
+        df['rot'] = np.deg2rad(df['rot'])
     
-    return ss, tt, fs, dt
+    df.rot = np.unwrap(df.rot)
+    b,a = scipy.signal.cheby1(23, 0.175, fc, fs=fs)
+    S = scipy.signal.filtfilt(b, a, df, axis=0)
+    # S[:,2:] = freqfilt(S[:,2:], fs, fc)
+    ss, tt = scipy.signal.resample(S,factor*len(S), t=t, axis=0, window='hann')
+    # ss[:,0] = ss[:,0]%(2*np.pi)
+    # ss = ss[100:-100,:]
+    # tt = tt[100:-100]
+    FS = factor*fs
     
+    cma = np.array([-4.4019e-004	, 1.2908e-003,	-1.9633e-002])
+    La = np.array([-8.3023e-019, 	-8.1e-002,	-8.835e-002])
+    posa = La-cma
+    cmb = np.array([8.0563e-005,	5.983e-004,	-6.8188e-003])
+    Lb = np.array([5.3302e-018, -7.233e-002, 3.12e-002+2.0e-003])
+    posb = Lb-cmb
+    
+    A = imu2body(ss[:,2:8],tt, FS, posa)
+    B = imu2body(ss[:,8:], tt, FS, posb)
+    C = pd.DataFrame({'cur': ss[:,1],'rot': ss[:,0]},tt)
+    
+    Q = [A, B, C]
+    
+    for ii in range(len(Q)):
+        _q, _t = scipy.signal.resample(Q[ii], len(Q[ii])//factor, t=Q[ii].index, axis=0, window='hann')
+        Q[ii] = pd.DataFrame(_q,_t, columns=Q[ii].columns)
+    A, B, C = Q
+    C['rot'] = C['rot']%(2*np.pi)
+    return A, B, C, FS/factor
+   
 
 def freqfilt(data, fs, fc):
     data[:,0] = np.unwrap(np.deg2rad(data[:,0]))
@@ -67,10 +85,10 @@ def PSD(df, fs):
     plt.figure()
     plt.subplot(211)
     plt.plot(df)
-    plt.legend(df.columns)
+    # plt.legend(df.columns)
     plt.subplot(212)
     plt.semilogx(f, 20*np.log10(abs(Pxx)))
-    plt.xlim((1,415))
+    plt.xlim((1,500))
     plt.grid()   
 
 
@@ -112,10 +130,10 @@ def FDI(data, factor=1, NFFT=fs//4):
 def spect(df,fs, dbmin=80):
     for frame in df:
         plt.figure()
-        f, t, Sxx = scipy.signal.spectrogram(df[frame], fs=fs, axis=0, scaling='spectrum', nperseg=fs//4, noverlap=fs//8, detrend=False, mode='psd', window='hann')
+        f, t, Sxx = scipy.signal.spectrogram(df[frame], fs=fs, axis=0, scaling='spectrum', nperseg=fs//2, noverlap=fs//4, detrend=False, mode='psd', window='hann')
         Sxx[Sxx==0] = 10**(-20)
-        plt.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud',  cmap=plt.cm.Spectral_r,vmax=20*np.log10(abs(Sxx)).max(), vmin=20*np.log10(abs(Sxx)).max()-dbmin)
-        plt.ylim((0, 415))
+        plt.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud',  cmap='turbo',vmax=20*np.log10(abs(Sxx)).max(), vmin=20*np.log10(abs(Sxx)).max()-dbmin)
+        plt.ylim((1, 480))
         plt.colorbar()
         plt.title(frame)
         plt.ylabel('Frequency [Hz]')
@@ -168,7 +186,7 @@ def imu2body(df, t, fs, pos=[0, 0, 0]):
     alpha = FDD(gyr)
     accc = acc + np.cross(gyr,np.cross(gyr,pos)) + np.cross(alpha,pos)
     q0=ahrs.Quaternion(ahrs.common.orientation.acc2q(accc[0]))
-    imu = ahrs.filters.Complementary(acc=accc, gyr=gyr, frequency=fs, q0=q0, gain=0.0001)
+    imu = ahrs.filters.Complementary(acc=accc, gyr=gyr, frequency=fs, q0=q0, gain=0.001)
     theta = ahrs.QuaternionArray(imu.Q).to_angles()
     
     acccc = np.zeros_like(accc)
@@ -203,3 +221,36 @@ def imu2body(df, t, fs, pos=[0, 0, 0]):
 
     dataFrame = pd.DataFrame(ah, t)
     return dataFrame
+
+
+
+def vizspect(tt, ff, Sxx, Title, xlims=None, ylims=None, fscale='linear'):
+    
+    fig = plt.figure() 
+    ax = fig.add_subplot(111)
+    plt.yscale(fscale)
+    spec = ax.imshow(Sxx, aspect='auto', cmap='turbo', extent=[tt[0], tt[-1], ff[0], ff[-1]])
+    plt.colorbar(spec)
+    ax.set_xlim(xlims)
+    ax.set_ylim(ylims)
+    ax.set_title(Title)
+    ax.set_xlabel('Time [s]')
+    ax.set_ylabel('Frequency [Hz]')
+    
+    fig.show()
+    
+    
+    
+def apply_emd(S, fs):
+    mfreqs = np.array([360,300,240,180,120,90,60,30,15,7.5])
+    imf, _ = emd.sift.mask_sift(S, mask_freqs=mfreqs/fs,  mask_amp_mode='ratio_sig', ret_mask_freq=True, nphases=8, mask_amp=S.max())
+    Ip, If, Ia = emd.spectra.frequency_transform(imf, fs, 'nht')
+    emd.plotting.plot_imfs(imf,t, scale_y=True, cmap=True)
+    emd.plotting.plot_imfs(Ia,t, scale_y=True, cmap=True)
+    emd.plotting.plot_imfs(Ip,t, scale_y=True, cmap=True)
+    emd.plotting.plot_imfs(If,t, scale_y=True, cmap=True)    
+    
+    
+    
+    
+    

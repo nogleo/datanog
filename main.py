@@ -2,6 +2,7 @@ import datanog as nog
 from gui import Ui_MainWindow
 import scipy.signal as signal
 import os
+import time
 import pickle
 from PyQt5 import QtCore as qtc
 from PyQt5 import QtWidgets as qtw
@@ -12,8 +13,8 @@ matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as Navi
 from matplotlib.figure import Figure
 import numpy as np
-import sigprocess as sp
 import pandas as pd
+import gc
 root = os.getcwd()
 
 class MatplotlibCanvas(FigureCanvasQTAgg):
@@ -44,13 +45,13 @@ class appnog(qtw.QMainWindow):
         self.ui.startbutton.clicked.connect(self.collect)
         self.ui.stopbutton.clicked.connect(self.interrupt)
         self.ui.openbttn.clicked.connect(self.getFile)
-        self.ui.calibutton.clicked.connect(self.calibrate)
+        self.ui.calibutton.clicked.connect(self.calibration)
         self.ui.linkSensor.clicked.connect(self.linkSens)
         self.ui.linkSensor.setEnabled(False)
         self.ui.calibutton.setEnabled(False)
-        self.ui.pushButton_4.clicked.connect(self.initDevices)
-        self.ui.plotbttn.clicked.connect(self.updatePlot)
-        self.ui.processbttn.clicked.connect(self.processData)
+        self.ui.initbttn.clicked.connect(self.initDevices)
+        
+        
 
         
         
@@ -84,7 +85,7 @@ class appnog(qtw.QMainWindow):
 
     def pull(self):
         data = dn.savedata(dn.pulldata(self.ui.label.text()))
-        sp.PSD(data, dn.fs)
+        
         self.ui.startbutton.setEnabled(True)
 
     def collect(self):
@@ -148,48 +149,12 @@ class appnog(qtw.QMainWindow):
 
 
     def readData(self):
-        self.data = pd.read_csv(self.filename, index_col='t')
-        self.updatePlot()
+        data = pd.read_csv(self.filename, index_col='t')
+        self.updatePlot(data)
         
         
-    def processData(self):
-        self.ui.processbttn.setEnabled(False)
-        self.ui.openbttn.setEnabled(False)
-        self.ui.plotbttn.setEnabled(False)
-        _path = self.filename[:-4]
-        _path = _path.replace('DATA', 'PROCDATA')
-        try:
-            os.chdir(_path)
-        except:
-            os.mkdir(_path)
-            os.chdir(_path)
-        print(_path)
-
-        cma = np.array([-4.4019e-004	, 1.2908e-003,	-1.9633e-002])
-        La = np.array([-8.3023e-019, 	-8.1e-002,	-8.835e-002])
-        posa = La-cma
-
-        cmb = np.array([8.0563e-005,	5.983e-004,	-6.8188e-003])
-        Lb = np.array([5.3302e-018, -7.233e-002, 3.12e-002+2.0e-003])
-        posb = Lb-cmb
-        data, t, fs, dt = sp.prep_data(self.data, 1660, 415, 10)
-        self.Fs = fs
-
-        A = sp.imu2body(data[:,2:8],t, fs, posa)
-        A.to_csv('A.csv')
-        B = sp.imu2body(data[:,8:], t, fs, posb)
-        B.to_csv('B.csv')
-        c = {'cur': data[:,1],
-             'rot': data[:,0]}
-        C = pd.DataFrame(c,t)
-        C.to_csv('C.csv')
-                
-        self.ui.processbttn.setEnabled(True)
-        self.ui.openbttn.setEnabled(True)
-        self.ui.plotbttn.setEnabled(True)
-    
-    def updatePlot(self):
-        global dn
+       
+    def updatePlot(self, plotdata):
         plt.clf()
         try:
             self.ui.horizontalLayout.removeWidget(self.toolbar)
@@ -208,7 +173,7 @@ class appnog(qtw.QMainWindow):
             
         try:        
                        
-            ax.plot(self.data)
+            ax.plot(plotdata)
             ax.legend(self.data.columns)            
             
 
@@ -216,9 +181,62 @@ class appnog(qtw.QMainWindow):
             print('==>',e)
         self.canv.draw()
 
-    
+    def calibration(self):
+        device = dn.dev[self.ui.comboBox.currentIndex()]
+        self.calibrationdata = []
+        msg, ok = qtw.QInputDialog().getText(self,
+                                        'Name your IMU',
+                                        'Type the name of your IMU for calibration: ',
+                                        qtw.QLineEdit.Normal)
+        if ok and msg:
+            sensor ={'name': msg} 
+        
+        NS, ok = qtw.QInputDialog().getInt()(self,
+                                        'Sample Length', 
+                                        'Number seconds per Position: ', 
+                                        value=5, minValue=1, maxValue=10)
+        if ok and NS:
+            self.NS = NS//dn.dt
+        
+        for ii in range(6):
+            ok = qtw.QMessageBox(self, 'Position {}'.format(ii+1),
+                                        'Position Calibration Dice with the side {} upwards'.format(ii+1))
+            if ok:
+                i=0
+                tf = time.perf_counter()
+                while i<self.NS:
+                    ti=time.perf_counter()
+                    if tf-ti>=dn.dt:
+                        tf = ti
+                        i+=1
+                        self.calibrationdata.append(dn.pull(device))
+        ND, ok = qtw.QInputDialog().getInt()(self,
+                                        'Sample Length', 
+                                        'Number seconds per Rotation: ', 
+                                        value=5, minValue=1, maxValue=10)
+        if ok and ND:
+            self.ND = ND//dn.dt
+        for ii in range(0,6,2):
+            ok = qtw.QMessageBox(self, 'Rotation axis {}-{}'.format(ii+1,ii+2),
+                                        'Rotate 180 deg around axis {}-{}'.format(ii+1,ii+2))
+            if ok:
+                i=0
+                tf = time.perf_counter()
+                while i<self.ND:
+                    ti=time.perf_counter()
+                    if tf-ti>=dn.dt:
+                        tf = ti
+                        i+=1
+                        self.calibrationdata.append(dn.pull(device))
 
-    
+        self.calibrationdata = np.array(self.calibrationdata)
+        self.updatePlot(self.calibrationdata)
+        sensor['acc_p'] = dn.calibacc(self.calibrationdata[0:6*self.NS,3:6])
+        gc.collect()
+        sensor['gyr_p'] = dn.calibgyr(self.calibrationdata[:,0:3])        
+        np.savez('./sensors/'+sensor['name'], sensor['gyr_p'], sensor['acc_p'])
+
+            
 
 
 
