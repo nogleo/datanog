@@ -191,12 +191,14 @@ class appnog(qtw.QMainWindow):
         if ok and msg:
             sensor ={'name': msg} 
         
-        NS, ok = qtw.QInputDialog().getInt(self, 'Sample Length', 'Number seconds per Position: ', 5, 1, 10, 1)
+        NS, ok = qtw.QInputDialog().getInt(self,    'Sample Length',
+                                                    'Number seconds per Position: ',
+                                                    5, 1, 10, 1)
         if ok and NS:
             self.NS = NS//dn.dt
         
         for ii in range(6):
-            ok = qtw.QMessageBox.question(self, 'Position {}'.format(ii+1),
+            ok = qtw.QMessageBox.information(self, 'Position {}'.format(ii+1),
                                         'Position Calibration Dice with the side {} upwards'.format(ii+1))
             if ok:
                 i=0
@@ -207,14 +209,15 @@ class appnog(qtw.QMainWindow):
                         tf = ti
                         i+=1
                         self.calibrationdata.append(dn.pull(device))
-        ND, ok = qtw.QInputDialog().getInt()(self,
-                                        'Sample Length', 
-                                        'Number seconds per Rotation: ', 
-                                        value=5, minValue=1, maxValue=10)
+            else:
+                ii-=1
+        ND, ok = qtw.QInputDialog().getInt()(self,  'Sample Length', 
+                                                    'Number seconds per Rotation: ',
+                                                    5, 1, 10,1)
         if ok and ND:
             self.ND = ND//dn.dt
         for ii in range(0,6,2):
-            ok = qtw.QMessageBox(self, 'Rotation axis {}-{}'.format(ii+1,ii+2),
+            ok = qtw.QMessageBox.information(self, 'Rotation axis {}-{}'.format(ii+1,ii+2),
                                         'Rotate 180 deg around axis {}-{}'.format(ii+1,ii+2))
             if ok:
                 i=0
@@ -225,6 +228,8 @@ class appnog(qtw.QMainWindow):
                         tf = ti
                         i+=1
                         self.calibrationdata.append(dn.pull(device))
+            else:
+                ii-=1                        
 
         self.calibrationdata = np.array(self.calibrationdata)
         self.updatePlot(self.calibrationdata)
