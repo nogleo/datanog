@@ -196,42 +196,47 @@ class appnog(qtw.QMainWindow):
                                                     5, 1, 10, 1)
         if ok:
             self.NS = NS*dn.fs
-        
-        for ii in range(6):
-            msgbx = qtw.QMessageBox()
-            msgbx.setIcon(qtw.QMessageBox.Information)
-            msgbx.setText('Position Calibration Dice with the side {} upwards'.format(ii+1))
-            msgbx.setWindowTitle('Position {}'.format(ii+1))
-            
-            
-            i=0
-            tf = time.perf_counter()
-            while i<self.NS:
-                ti=time.perf_counter()
-                if tf-ti>=dn.dt:
-                    tf = ti
-                    i+=1
-                    self.calibrationdata.append(dn.pull(device))
+        ii=0
+        while ii < 6:
+            msgbx = qtw.QMessageBox.information(self,
+                                                'Position {}'.format(ii+1),
+                                                'Position Calibration Dice with the side {} upwards'.format(ii+1),
+                                                qtw.QMessageBox.Ok,
+                                                qtw.QMessageBox.Cancel)
+            if msgbx==qtw.QMessageBox.Ok:
+                ii+=1
+                i=0
+                tf = time.perf_counter()
+                while i<self.NS:
+                    ti=time.perf_counter()
+                    if tf-ti>=dn.dt:
+                        tf = ti
+                        i+=1
+                        self.calibrationdata.append(dn.pull(device))
+                
             
         ND, ok = qtw.QInputDialog().getInt()(self,  'Sample Length', 
                                                     'Number seconds per Rotation: ',
                                                     5, 1, 10,1)
         if ok:
             self.ND = ND*dn.fs
-        for ii in range(0,6,2):
-            msgbx = qtw.QMessageBox()
-            msgbx.setIcon(qtw.QMessageBox.Information)
-            msgbx.setText('Rotate 180 deg around axis {}-{}'.format(ii+1,ii+2))
-            msgbx.setWindowTitle('Rotation axis {}-{}'.format(ii+1,ii+2))
+        while ii <6:
+            msgbx = qtw.QMessageBox.information(self,
+                                                'Rotation axis {}-{}'.format(ii+1,ii+2),
+                                                'Rotate 180 deg around axis {}-{}'.format(ii+1,ii+2),
+                                                qtw.QMessageBox.Ok,
+                                                qtw.QMessageBox.Cancel)
             
-            i=0
-            tf = time.perf_counter()
-            while i<self.ND:
-                ti=time.perf_counter()
-                if tf-ti>=dn.dt:
-                    tf = ti
-                    i+=1
-                    self.calibrationdata.append(dn.pull(device))
+            if msgbx==qtw.QMessageBox.Ok:
+                ii+=2
+                i=0
+                tf = time.perf_counter()
+                while i<self.ND:
+                    ti=time.perf_counter()
+                    if tf-ti>=dn.dt:
+                        tf = ti
+                        i+=1
+                        self.calibrationdata.append(dn.pull(device))
                                     
 
         self.calibrationdata = np.array(self.calibrationdata)
