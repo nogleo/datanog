@@ -191,10 +191,7 @@ class appnog(qtw.QMainWindow):
         if ok and msg:
             sensor ={'name': msg} 
         
-        NS, ok = qtw.QInputDialog().getInt(self,
-                                        'Sample Length', 
-                                        'Number seconds per Position: ', 
-                                        value=5, minValue=1, maxValue=10)
+        NS, ok = qtw.QInputDialog().getInt(self, 'Sample Length', 'Number seconds per Position: ', value=5, minValue=1, maxValue=10)
         if ok and NS:
             self.NS = NS//dn.dt
         
