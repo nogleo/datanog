@@ -201,18 +201,17 @@ class appnog(qtw.QMainWindow):
             msgbx = qtw.QMessageBox.information(self,
                                                 'Position {}'.format(ii+1),
                                                 'Position Calibration Dice with the side {} upwards'.format(ii+1),
-                                                qtw.QMessageBox.Ok,
-                                                qtw.QMessageBox.Cancel)
-            if msgbx==qtw.QMessageBox.Ok:
-                ii+=1
-                i=0
-                tf = time.perf_counter()
-                while i<self.NS:
-                    ti=time.perf_counter()
-                    if tf-ti>=dn.dt:
-                        tf = ti
-                        i+=1
-                        self.calibrationdata.append(dn.pull(device))
+                                                qtw.QMessageBox.Ok)
+            
+            i=0
+            tf = time.perf_counter()
+            while i<self.NS:
+                ti=time.perf_counter()
+                if tf-ti>=dn.dt:
+                    tf = ti
+                    i+=1
+                    self.calibrationdata.append(dn.pull(device))
+            ii+=1
                 
             
         ND, ok = qtw.QInputDialog().getInt()(self,  'Sample Length', 
@@ -224,19 +223,18 @@ class appnog(qtw.QMainWindow):
             msgbx = qtw.QMessageBox.information(self,
                                                 'Rotation axis {}-{}'.format(ii+1,ii+2),
                                                 'Rotate 180 deg around axis {}-{}'.format(ii+1,ii+2),
-                                                qtw.QMessageBox.Ok,
-                                                qtw.QMessageBox.Cancel)
+                                                qtw.QMessageBox.Ok)
             
-            if msgbx==qtw.QMessageBox.Ok:
-                ii+=2
-                i=0
-                tf = time.perf_counter()
-                while i<self.ND:
-                    ti=time.perf_counter()
-                    if tf-ti>=dn.dt:
-                        tf = ti
-                        i+=1
-                        self.calibrationdata.append(dn.pull(device))
+            
+            i=0
+            tf = time.perf_counter()
+            while i<self.ND:
+                ti=time.perf_counter()
+                if tf-ti>=dn.dt:
+                    tf = ti
+                    i+=1
+                    self.calibrationdata.append(dn.pull(device))
+            ii+=2
                                     
 
         self.calibrationdata = np.array(self.calibrationdata)
