@@ -196,7 +196,7 @@ class appnog(qtw.QMainWindow):
             self.NS = NS//dn.dt
         
         for ii in range(6):
-            ok = qtw.QMessageBox(self, 'Position {}'.format(ii+1),
+            ok = qtw.QMessageBox.question(self, 'Position {}'.format(ii+1),
                                         'Position Calibration Dice with the side {} upwards'.format(ii+1))
             if ok:
                 i=0
