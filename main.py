@@ -194,8 +194,8 @@ class appnog(qtw.QMainWindow):
         NS, ok = qtw.QInputDialog().getInt(self,    'Sample Length',
                                                     'Number seconds per Position: ',
                                                     5, 1, 10, 1)
-        if ok and NS:
-            self.NS = NS//dn.dt
+        if ok:
+            self.NS = NS*dn.fs
         
         for ii in range(6):
             ok = qtw.QMessageBox.information(self, 'Position {}'.format(ii+1),
@@ -214,8 +214,8 @@ class appnog(qtw.QMainWindow):
         ND, ok = qtw.QInputDialog().getInt()(self,  'Sample Length', 
                                                     'Number seconds per Rotation: ',
                                                     5, 1, 10,1)
-        if ok and ND:
-            self.ND = ND//dn.dt
+        if ok:
+            self.ND = ND*dn.fs
         for ii in range(0,6,2):
             ok = qtw.QMessageBox.information(self, 'Rotation axis {}-{}'.format(ii+1,ii+2),
                                         'Rotate 180 deg around axis {}-{}'.format(ii+1,ii+2))
