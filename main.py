@@ -196,7 +196,7 @@ class appnog(qtw.QMainWindow):
                                                     5, 1, 10, 1)
         if ok:
             self.NS = NS*dn.fs
-        ND, ok = qtw.QInputDialog().getInt()(self,  'Sample Length', 
+        ND, ok = qtw.QInputDialog().getInt(self,  'Sample Length', 
                                                     'Number seconds per Rotation: ',
                                                     5, 1, 10,1)
         if ok:
