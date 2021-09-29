@@ -199,7 +199,7 @@ class appnog(qtw.QMainWindow):
         
         for ii in range(6):
             msgbx = qtw.QMessageBox()
-            msgbx.setIcon(qtw.QMessageBox.information)
+            msgbx.setIcon(qtw.QMessageBox.Information)
             msgbx.setText('Position Calibration Dice with the side {} upwards'.format(ii+1))
             msgbx.setWindowTitle('Position {}'.format(ii+1))
             msgbx.setStandardButtons(qtw.QMessageBox.Ok | qtw.QMessageBox.Cancel)
@@ -223,8 +223,7 @@ class appnog(qtw.QMainWindow):
             self.ND = ND*dn.fs
         for ii in range(0,6,2):
             msgbx = qtw.QMessageBox()
-            msgbx = qtw.QMessageBox()
-            msgbx.setIcon(qtw.QMessageBox.information)
+            msgbx.setIcon(qtw.QMessageBox.Information)
             msgbx.setText('Rotate 180 deg around axis {}-{}'.format(ii+1,ii+2))
             msgbx.setWindowTitle('Rotation axis {}-{}'.format(ii+1,ii+2))
             msgbx.setStandardButtons(qtw.QMessageBox.Ok | qtw.QMessageBox.Cancel)
