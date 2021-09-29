@@ -198,10 +198,12 @@ class appnog(qtw.QMainWindow):
             self.NS = NS*dn.fs
         ii=0
         while ii < 6:
-            self.msgbx = qtw.QMessageBox.information(self,
-                                        'Position {}'.format(ii+1),
-                                        'Position Calibration Dice with the side {} upwards'.format(ii+1))
-            if self.msgbx==qtw.QMessageBox.Ok:    
+            msgbx = qtw.QMessageBox()
+            msgbx.setWindowTitle('Position {}'.format(ii+1),)
+            msgbx.setText('Position Calibration Dice with the side {} upwards'.format(ii+1))
+
+            ret = msgbx.exec_()
+            if ret:    
                 i=0
                 tf = time.perf_counter()
                 while i<self.NS:
@@ -222,10 +224,13 @@ class appnog(qtw.QMainWindow):
         if ok:
             self.ND = ND*dn.fs
         while ii <6:
-            self.msgbx = qtw.QMessageBox.information(self,
-                                        'Rotation axis {}-{}'.format(ii+1,ii+2),
-                                        'Rotate 180 deg around axis {}-{}'.format(ii+1,ii+2))
-            if self.msgbx==qtw.QMessageBox.Ok:
+            msgbx = qtw.QMessageBox()
+            msgbx.setWindowTitle('Rotation axis {}-{}'.format(ii+1,ii+2))
+            msgbx.setText('Rotate 180 deg around axis {}-{}'.format(ii+1,ii+2))
+
+            ret = msgbx.exec_()
+            
+            if ret:
                 i=0
                 tf = time.perf_counter()
                 while i<self.ND:
