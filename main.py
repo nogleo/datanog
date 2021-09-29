@@ -196,11 +196,13 @@ class appnog(qtw.QMainWindow):
                                                     5, 1, 10, 1)
         if ok:
             self.NS = NS*dn.fs
+            print(self.NS)
         ND, ok = qtw.QInputDialog().getInt(self,  'Sample Length', 
                                                     'Number seconds per Rotation: ',
                                                     5, 1, 10,1)
         if ok:
             self.ND = ND*dn.fs
+            print(self.ND)
 
         self.calibrationdata = np.zeros((6*self.NS+3*self.ND, 6))
         ii=0
@@ -209,10 +211,11 @@ class appnog(qtw.QMainWindow):
                                      "Position",
                                      "Select Position to be measured", 
                                      ["1", "2", "3", "4", "5", "6",]                                     )
-            if ok:    
+            if ok:
+                print('ok'+ item)    
                 i=int(item)*self.NS
                 tf = time.perf_counter()
-                while i<self.NS:
+                while i<(int(item)+1)*self.NS:
                     ti=time.perf_counter()
                     if tf-ti>=dn.dt:
                         tf = ti
@@ -234,7 +237,7 @@ class appnog(qtw.QMainWindow):
             if ok:
                 i=6*self.NS+int(item[0])*self.ND
                 tf = time.perf_counter()
-                while i<self.ND:
+                while i<(6*self.NS+int(item[0])+1)*self.ND:
                     ti=time.perf_counter()
                     if tf-ti>=dn.dt:
                         tf = ti
@@ -247,9 +250,9 @@ class appnog(qtw.QMainWindow):
 
         self.calibrationdata = np.array(self.calibrationdata)
         self.updatePlot(self.calibrationdata)
-        sensor['acc_p'] = dn.calibacc(self.calibrationdata[0:6*self.NS,3:6])
+        sensor['acc_p'] = dn.calibacc(self.calibrationdata[0:6*self.NS,3:6], self.NS)
         gc.collect()
-        sensor['gyr_p'] = dn.calibgyr(self.calibrationdata[:,0:3])        
+        sensor['gyr_p'] = dn.calibgyr(self.calibrationdata[:,0:3], self.NS, self.ND)        
         np.savez('./sensors/'+sensor['name'], sensor['gyr_p'], sensor['acc_p'])
 
             

@@ -189,7 +189,7 @@ class daq:
         _sensor = {'name': _sensname}
         self._caldata = []
         print('Iniciando 6 pos calibration')
-        self.Ns = int((input('KiloSamples/Position: ') or 6)*1000)
+        NS = int((input('KiloSamples/Position: ') or 6)*1000)
 
         for _n in range(6):
             input('Position {}'.format(_n+1))
@@ -201,12 +201,12 @@ class daq:
                     tf = ti
                     i+=1
                     self._caldata.append(self.pull(_device))
-        self.Nd = int((input('KiloSamples/Rotation: ') or 6)*1000)
+        ND = int((input('KiloSamples/Rotation: ') or 6)*1000)
         for _n in range(0,6,2):
             input('Rotate 180 deg around axis {}-{}'.format(_n+1,_n+2))
             i=0
             tf = time.perf_counter()
-            while i<self.Nd:
+            while i<ND:
                 ti=time.perf_counter()
                 if ti-tf>=self.dt:
                     tf = ti
@@ -215,25 +215,25 @@ class daq:
         
         
         _data = np.array(self._caldata)
-        self.acc_raw = _data[0:6*self.Ns,3:6]
+        self.acc_raw = _data[0:6*NS,3:6]
         self.gyr_raw = _data[:,0:3]
         np.save('./sensors/'+_sensor['name']+'rawdata.npy', _data)
         print('Calculating calibration parameters. Wait...')
         gc.collect()
-        _sensor['acc_p'] = self.calibacc(self.acc_raw)
+        _sensor['acc_p'] = self.calibacc(self.acc_raw, NS)
         gc.collect()
-        _sensor['gyr_p'] = self.calibgyr(self.gyr_raw)        
+        _sensor['gyr_p'] = self.calibgyr(self.gyr_raw, NS, ND)        
         np.savez('./sensors/'+_sensor['name'], _sensor['gyr_p'], _sensor['acc_p'])
        
         print(_sensor['name']+' saved')
         gc.collect()
         
     
-    def calibacc(self, _accdata):        
+    def calibacc(self, _accdata, NS):        
         #mean values for the 6 positions
         aux=[]
         for ii in range(6):
-            aux.append(_accdata[ii*self.Ns:(ii+1)*self.Ns,:].mean(0))
+            aux.append(_accdata[ii*NS:(ii+1)*NS,:].mean(0))
         a_m = np.array(aux).T
         #determination of biases
         aux=[]
@@ -257,16 +257,16 @@ class daq:
     
  
         
-    def calibgyr(self, _gyrdata):
-        g_s = _gyrdata[0:6*self.Ns,:]            #static gyro data
-        g_d = _gyrdata[6*self.Ns:,:]             #dynamic gyro data
+    def calibgyr(self, _gyrdata, NS, ND):
+        g_s = _gyrdata[0:6*NS,:]            #static gyro data
+        g_d = _gyrdata[6*NS:,:]             #dynamic gyro data
         
         b = g_s.mean(0).reshape(3,1)            #bias from mean static measurements
         # integrate dynamic rates to determine total angle
         g_dm = np.zeros((3,3))              
 
         for ii in range(3):
-            g_dm[ii,:] = np.abs(intg.trapz(g_d[ii*self.Nd:(ii+1)*self.Nd,:].T-b,dx=self.dt , axis=1))
+            g_dm[ii,:] = np.abs(intg.trapz(g_d[ii*ND:(ii+1)*ND,:].T-b,dx=self.dt , axis=1))
         g_dr = np.zeros_like(g_dm)
 
         for ii in range(3):
