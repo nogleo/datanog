@@ -70,8 +70,8 @@ class appnog(qtw.QMainWindow):
         global dn, fs, dt
         dn = nog.daq()
         
-        '''
         self.devsens={}
+        '''
         try:
             with open(root+'sensors.data', 'rb') as f:
                 dn.dev = pickle.load(f)
