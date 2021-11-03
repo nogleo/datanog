@@ -70,17 +70,17 @@ class appnog(qtw.QMainWindow):
         global dn, fs, dt
         dn = nog.daq()
         
-        self.devsens={}
         '''
+        self.devsens={}
         try:
             with open(root+'sensors.data', 'rb') as f:
                 dn.dev = pickle.load(f)
             print(root+'sensors.data loaded')
         except:
             print('no previous sensor data')
-        '''
         for _dev in dn.dev:
             self.devsens[str(_dev[0])] = str(_dev[-1])
+        '''
         self.loadDevices()
         self.ui.linkSensor.setEnabled(True)
         self.ui.calibutton.setEnabled(True)
