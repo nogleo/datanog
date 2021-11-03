@@ -190,7 +190,7 @@ class appnog(qtw.QMainWindow):
         msgBox.setWindowTitle("Acc - Calibration")
         msgBox.setStandardButtons(qtw.QMessageBox.Ok | qtw.QMessageBox.Cancel)
         
-        returnValue = msgBox.exec()
+        return msgBox.exec()
 
 
 
@@ -223,19 +223,26 @@ class appnog(qtw.QMainWindow):
         ii=0
         i=0
         while ii < 6:
-            self.showmessage('Move your IMU to the '+str(ii+1)+' position')
-            
-            
-            print('collecting position  '+ str(ii+1))   
+            ok = self.showmessage('Move your IMU to the '+str(ii+1)+' position')
+            if ok:
+                print('collecting position  '+ str(ii+1))   
+                    
+                ti = tf = time.perf_counter()
                 
-            ti = tf = time.perf_counter()
-            
-            while i<(i+1)*self.NS:
-                tf=time.perf_counter()
-                if tf-ti>=dn.dt:
-                    ti = tf
-                    self.calibrationdata[i,:] = np.array(dn.pull(device))
-                    i+=1
+                while i<(i+1)*self.NS:
+                    tf=time.perf_counter()
+                    if tf-ti>=dn.dt:
+                        ti = tf
+                        try:
+                            self.calibrationdata[i,:] = np.array(dn.pull(device))
+                            i+=1
+                        except Exception as e:
+                            print(e)
+                            self.calibrationdata[i,:] = 0
+                            pass
+            else:
+                print('cancelled')
+                break
             ii+=1
             
             
@@ -253,14 +260,19 @@ class appnog(qtw.QMainWindow):
                 ti=time.perf_counter()
                 if tf-ti>=dn.dt:
                     ti = tf
-                    self.calibrationdata[i,:] = np.array(dn.pull(device))
-                    i+=1
+                    try:
+                            self.calibrationdata[i,:] = np.array(dn.pull(device))
+                            i+=1
+                    except Exception as e:
+                            print(e)
+                            self.calibrationdata[i,:] = 0
+                            pass
             ii+=1
         
                                     
 
         self.calibrationdata = np.array(self.calibrationdata)
-        self.updatePlot(self.calibrationdata)
+        #self.updatePlot(self.calibrationdata)
         sensor['acc_p'] = dn.calibacc(self.calibrationdata[0:6*self.NS,3:6], self.NS)
         gc.collect()
         sensor['gyr_p'] = dn.calibgyr(self.calibrationdata[:,0:3], self.NS, self.ND)        
