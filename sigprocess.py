@@ -9,7 +9,7 @@ from numpy import pi
 from scipy.fftpack import fft, ifft, dct, idct, dst, idst, fftshift, fftfreq
 from numpy import linspace, zeros, array, pi, sin, cos, exp, arange
 import emd 
-import ssqueezepy as sq
+#import ssqueezepy as sq
 fs = 1660
 dt = 1/fs
 def prep_data(df, fs, fc, factor):
@@ -258,7 +258,7 @@ def apply_emd(df, fs):
     # emd.plotting.plot_imfs(Ip,t, scale_y=True, cmap=True)
     # emd.plotting.plot_imfs(If,t, scale_y=True, cmap=True)    
     
-    
+'''   
 def WSST(df, fs, ridge_ext = False):
     t = df.index.to_numpy()
     for frame in df.columns:
@@ -267,5 +267,5 @@ def WSST(df, fs, ridge_ext = False):
         vizspect(t, nf, np.abs(Tw), 'WSST - '+frame, ylims=[1, 480])
         if ridge_ext:
            ridge = sq.ridge_extraction.extract_ridges(Tw, bw=4, scales=nf, n_ridges=3)
-    
+'''    
 
