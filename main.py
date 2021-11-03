@@ -183,9 +183,22 @@ class appnog(qtw.QMainWindow):
             print('==>',e)
         self.canv.draw()
 
+    def showmessage(self, msg):
+        msgBox = qtw.QMessageBox()
+        msgBox.setIcon(qtw.QMessageBox.Information)
+        msgBox.setText(msg)
+        msgBox.setWindowTitle("Acc - Calibration")
+        msgBox.setStandardButtons(qtw.QMessageBox.Ok | qtw.QMessageBox.Cancel)
+        
+        returnValue = msgBox.exec()
+
+
+
     def calibration(self):
         device = dn.dev[self.ui.comboBox.currentIndex()]
         
+        
+
         msg, ok = qtw.QInputDialog().getText(self,
                                         'Name your IMU',
                                         'Type the name of your IMU for calibration: ',
@@ -208,48 +221,42 @@ class appnog(qtw.QMainWindow):
 
         self.calibrationdata = np.zeros((6*self.NS+3*self.ND, 6))
         ii=0
+        i=0
         while ii < 6:
-            dialog = qtw.QInputDialog(self)
-            item, ok = dialog.getItem(self,
-                                     "Position",
-                                     "Select Position to be measured", 
-                                     ["1", "2", "3", "4", "5", "6",])
-            if ok:
-                print('ok '+ item)    
-                i=int(item)*self.NS
-                tf = time.perf_counter()
-                while i<(int(item)+1)*self.NS:
-                    ti=time.perf_counter()
-                    if tf-ti>=dn.dt:
-                        tf = ti
-                        self.calibrationdata[i,:] = np.array(dn.pull(device))
-                        i+=1
-                ii+=1
-                dialog.close()
-            else:
-                dialog.close()
+            self.showmessage('Move your IMU to the '+str(ii+1)+' position')
+            
+            
+            print('collecting position  '+ str(ii+1))   
+                
+            ti = tf = time.perf_counter()
+            
+            while i<(i+1)*self.NS:
+                tf=time.perf_counter()
+                if tf-ti>=dn.dt:
+                    ti = tf
+                    self.calibrationdata[i,:] = np.array(dn.pull(device))
+                    i+=1
+            ii+=1
+            
+            
 
                 
         ii=0    
         while ii <3:
-            item, ok = qtw.QInputDialog.getItem(self,
-                                     "Position",
-                                     "Select Position to be measured", 
-                                     ["1 (1-2)", "2 (3-4)", "3 (5-6)"])
+            self.showmessage('Rotate Cube Around Axis '+str(ii+1))
+                        
+            print('collecting rotation  '+ str(ii+1))         
             
             
-            if ok:
-                i=6*self.NS+int(item[0])*self.ND
-                tf = time.perf_counter()
-                while i<(6*self.NS+int(item[0])+1)*self.ND:
-                    ti=time.perf_counter()
-                    if tf-ti>=dn.dt:
-                        tf = ti
-                        self.calibrationdata[i,:] = np.array(dn.pull(device))
-                        i+=1
-                ii+=1
-            else:
-                pass
+            ti = tf = time.perf_counter()
+            while i<=(6*self.NS+i+1*self.ND):
+                ti=time.perf_counter()
+                if tf-ti>=dn.dt:
+                    ti = tf
+                    self.calibrationdata[i,:] = np.array(dn.pull(device))
+                    i+=1
+            ii+=1
+        
                                     
 
         self.calibrationdata = np.array(self.calibrationdata)
