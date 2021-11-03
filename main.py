@@ -207,12 +207,13 @@ class appnog(qtw.QMainWindow):
         self.calibrationdata = np.zeros((6*self.NS+3*self.ND, 6))
         ii=0
         while ii < 6:
-            item, ok = qtw.QInputDialog.getItem(self,
+            dialog = qtw.QInputDialog(self)
+            item, ok = dialog.getItem(self,
                                      "Position",
                                      "Select Position to be measured", 
-                                     ["1", "2", "3", "4", "5", "6",]                                     )
+                                     ["1", "2", "3", "4", "5", "6",])
             if ok:
-                print('ok'+ item)    
+                print('ok '+ item)    
                 i=int(item)*self.NS
                 tf = time.perf_counter()
                 while i<(int(item)+1)*self.NS:
@@ -222,8 +223,9 @@ class appnog(qtw.QMainWindow):
                         self.calibrationdata[i,:] = np.array(dn.pull(device))
                         i+=1
                 ii+=1
+                dialog.close()
             else:
-                pass
+                dialog.close()
 
                 
         ii=0    

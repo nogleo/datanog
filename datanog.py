@@ -2,7 +2,6 @@ import os, gc, queue
 from struct import unpack
 import time
 import numpy as np
-from numpy.core.fromnumeric import ndim
 import scipy.integrate as intg
 from numpy.linalg import norm, inv, pinv
 from smbus import SMBus
@@ -15,7 +14,7 @@ root = os.getcwd()
 
 
 class daq:
-    def __init__(self, fs=1666):
+    def __init__(self, fs=1660):
         self.__name__ = "daq"
         try:
             self.bus = SMBus(1)

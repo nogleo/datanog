@@ -8,37 +8,63 @@ from scipy import ndimage
 import ghostipy as gsp
 import gc
 import ssqueezepy as sq
-
+import os
 
 from sigprocess import *
-num = 5
 
+
+
+root = os.getcwd()
+# %%
+
+
+
+
+
+for file in os.listdir('DATA'):
+    num = int(file[5:-4])
+    print(num)
+
+    df = pd.read_csv('DATA/data_{}.csv'.format(num), index_col='t')
+    A, B, C, FS = prep_data(df, 1660, 480, 10)
+    try:
+        os.mkdir('./PROCDATA/data_{}'.format(num))
+        os.chdir('./PROCDATA/data_{}'.format(num))
+    except:
+        os.chdir('./PROCDATA/data_{}'.format(num))
+    
+    A.to_csv('A.csv')
+    B.to_csv('B.csv')
+    C.to_csv('C.csv')
+    os.chdir(root)
 # PSD(df,1660)
 
-df = pd.read_csv('DATA/data_{}.csv'.format(num), index_col='t')
-A, B, C, FS = prep_data(df, 1660, 480, 10)
 # PSD(A,FS)
 # PSD(B,FS)
 # PSD(C,FS)
 
+# %%
+num = 8
+A = pd.read_csv('./PROCDATA/data_{}/A.csv'.format(num), index_col=0)
+B = pd.read_csv('./PROCDATA/data_{}/B.csv'.format(num), index_col=0)
+C = pd.read_csv('./PROCDATA/data_{}/C.csv'.format(num), index_col=0)
+
+
+PSD(B, fs)
+PSD(B[['Ax', 'Ay', 'Az']], fs)
+PSD(np.unwrap(C.rot), fs)
+
 
 # %%
-
-PSD(A, fs)
-PSD(B[['Ay']], fs)
-PSD(C, fs)
-
-
-# %%
-df=B[['Ay']]
-frame = df.columns[0]
-S = df.to_numpy().reshape(-1)
+df=C
+frames = df.columns
+S = df.to_numpy()
 t = df.index
 
 spect(df,fs)
 
-apply_emd(S, fs)
-WSST(S, fs)
+apply_emd(df, fs)
+WSST(df, fs)
 
 
 
@@ -106,18 +132,5 @@ emd.plotting.plot_hilberthuang(shht, t, freq_bins, fig=fig,freq_lims=(1, 480), l
 
 
 
-# %%
-
-def viz(x, Tx, Wx):
-    plt.imshow(np.abs(Tw), aspect='auto', cmap='turbo', extent=[tt[0], tt[-1], ff[0], ff[-1]])
-    plt.show()
-    
-    # plt.imshow(np.abs(Tx), aspect='auto',  cmap='turbo')
-    # plt.show()
-def WSST(S, fs):
-    Tw, _, nf, *_ = sq.ssq_cwt(S, fs=fs, nv=32, ssq_freqs='linear', maprange='energy')
-    vizspect(t, nf, np.abs(Tw), 'WSST '+frame, ylims=[1, 480])
-
-     
 
 

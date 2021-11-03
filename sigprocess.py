@@ -9,6 +9,7 @@ from numpy import pi
 from scipy.fftpack import fft, ifft, dct, idct, dst, idst, fftshift, fftfreq
 from numpy import linspace, zeros, array, pi, sin, cos, exp, arange
 import emd 
+import ssqueezepy as sq
 fs = 1660
 dt = 1/fs
 def prep_data(df, fs, fc, factor):
@@ -88,7 +89,7 @@ def PSD(df, fs):
     # plt.legend(df.columns)
     plt.subplot(212)
     plt.semilogx(f, 20*np.log10(abs(Pxx)))
-    plt.xlim((1,500))
+    plt.xlim((1,fs//2))
     plt.grid()   
 
 
@@ -226,6 +227,7 @@ def imu2body(df, t, fs, pos=[0, 0, 0]):
 
 def vizspect(tt, ff, Sxx, Title, xlims=None, ylims=None, fscale='linear'):
     
+    
     fig = plt.figure() 
     ax = fig.add_subplot(111)
     plt.yscale(fscale)
@@ -241,16 +243,29 @@ def vizspect(tt, ff, Sxx, Title, xlims=None, ylims=None, fscale='linear'):
     
     
     
-def apply_emd(S, fs):
+def apply_emd(df, fs):
+    t = df.index.to_numpy()
     mfreqs = np.array([360,300,240,180,120,90,60,30,15,7.5])
+    for frame in df.columns:
+        S = df[frame].to_numpy()
+        
     imf, _ = emd.sift.mask_sift(S, mask_freqs=mfreqs/fs,  mask_amp_mode='ratio_sig', ret_mask_freq=True, nphases=8, mask_amp=S.max())
     Ip, If, Ia = emd.spectra.frequency_transform(imf, fs, 'nht')
     emd.plotting.plot_imfs(imf,t, scale_y=True, cmap=True)
+    plt.suptitle('IMFs - {}'.format(frame))
     emd.plotting.plot_imfs(Ia,t, scale_y=True, cmap=True)
-    emd.plotting.plot_imfs(Ip,t, scale_y=True, cmap=True)
-    emd.plotting.plot_imfs(If,t, scale_y=True, cmap=True)    
+    plt.suptitle(' Envelope - {}'.format(frame))
+    # emd.plotting.plot_imfs(Ip,t, scale_y=True, cmap=True)
+    # emd.plotting.plot_imfs(If,t, scale_y=True, cmap=True)    
     
     
+def WSST(df, fs, ridge_ext = False):
+    t = df.index.to_numpy()
+    for frame in df.columns:
+        S = df[frame].to_numpy()
+        Tw, _, nf, na, *_ = sq.ssq_cwt(S, fs=fs, nv=64, ssq_freqs='linear', maprange='energy')
+        vizspect(t, nf, np.abs(Tw), 'WSST - '+frame, ylims=[1, 480])
+        if ridge_ext:
+           ridge = sq.ridge_extraction.extract_ridges(Tw, bw=4, scales=nf, n_ridges=3)
     
-    
-    
+
