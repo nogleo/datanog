@@ -229,7 +229,7 @@ class appnog(qtw.QMainWindow):
                     
                 ti = tf = time.perf_counter()
                 
-                while i<(i+1)*self.NS:
+                while i<(ii+1)*self.NS:
                     tf=time.perf_counter()
                     if tf-ti>=dn.dt:
                         ti = tf
@@ -238,7 +238,7 @@ class appnog(qtw.QMainWindow):
                             i+=1
                         except Exception as e:
                             print(e)
-                            self.calibrationdata[i,:] = 0
+                            self.calibrationdata[i,:] = 6*(0,)
                             pass
             else:
                 print('cancelled')
@@ -256,7 +256,7 @@ class appnog(qtw.QMainWindow):
             
             
             ti = tf = time.perf_counter()
-            while i<=(6*self.NS+i+1*self.ND):
+            while i<=(6*self.NS+(ii+1)*self.ND):
                 ti=time.perf_counter()
                 if tf-ti>=dn.dt:
                     ti = tf
