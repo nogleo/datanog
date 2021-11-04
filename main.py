@@ -269,7 +269,7 @@ class appnog(qtw.QMainWindow):
             if ok:        
                 print('collecting rotation  '+ str(ii+1))       
                 ti = tf = time.perf_counter()
-                while i<=(6*self.NS+((ii+1)*self.ND)):
+                while i<(6*self.NS+((ii+1)*self.ND)):
                     tf=time.perf_counter()
                     if tf-ti>=dn.dt:
                         ti = tf
