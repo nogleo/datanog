@@ -145,8 +145,9 @@ class daq:
                     data_out = np.hstack((data_out, arr))
             elif str(self.dev[_j][0]) == '106' or str(self.dev[_j][0]) == '107':
                 if self.dev[_j][-1] != None:
-                    _param = np.load(root+'/sensors/'+self.dev[_j][-1], allow_pickle=True)
-                    data_out = np.hstack((data_out, np.hstack((self.transl(arr[:,0:3], _param['arr_0']), self.transl(arr[:,3:6], _param['arr_1'])))))
+                    #_param = np.load(root+'/sensors/'+self.dev[_j][-1], allow_pickle=True)
+                    params = pd.read_csv(root+'/sensors/'+self.dev[_j][-1], index_col=0)
+                    data_out = np.hstack((data_out, np.hstack((self.transl(arr[:,0:3], params['gyr_p']), self.transl(arr[:,3:6], params['gyr_p'])))))
                 else:
                     data_out = np.hstack((data_out, arr))
             elif str(self.dev[_j][0]) == '72':

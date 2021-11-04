@@ -187,7 +187,7 @@ class appnog(qtw.QMainWindow):
         msgBox = qtw.QMessageBox()
         msgBox.setIcon(qtw.QMessageBox.Information)
         msgBox.setText(msg)
-        msgBox.setWindowTitle("Acc - Calibration")
+        msgBox.setWindowTitle("Calibration")
         msgBox.setStandardButtons(qtw.QMessageBox.Ok | qtw.QMessageBox.Cancel)
         
         return msgBox.exec()
@@ -293,7 +293,7 @@ class appnog(qtw.QMainWindow):
         #self.updatePlot(self.calibrationdata)
         sensor['acc_p'] = dn.calibacc(self.calibrationdata[0:6*self.NS,3:6], self.NS)
         sensor['gyr_p'] = dn.calibgyr(self.calibrationdata[:,0:3], self.NS, self.ND) 
-        sensorframe = pd.DataFrame(sensor, columns=[ 'acc_p', 'gyr_p'])
+        sensorframe = pd.DataFrame(sensor, columns=[ 'acc_p', 'gyr_p'], index=False)
         sensorframe.to_csv('{}.csv'.format(sensor['name']))     
         np.savez(sensor['name'], sensor['gyr_p'], sensor['acc_p'])
         gc.collect()
