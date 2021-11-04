@@ -210,6 +210,9 @@ class appnog(qtw.QMainWindow):
         if ok and msg:
             sensor ={'name': msg} 
             _path = 'rawdata_{}.csv'.format(sensor['name'])
+        else:
+                print('cancelled')
+                return
         
         NS, ok = qtw.QInputDialog().getInt(self,    'Sample Length',
                                                     'Number seconds per Position: ',
@@ -217,12 +220,19 @@ class appnog(qtw.QMainWindow):
         if ok:
             self.NS = NS*dn.fs
             print(self.NS)
+        else:
+                print('cancelled')
+                return
+
         ND, ok = qtw.QInputDialog().getInt(self,  'Sample Length', 
                                                     'Number seconds per Rotation: ',
                                                     5, 1, 10,1)
         if ok:
             self.ND = ND*dn.fs
             print(self.ND)
+        else:
+                print('cancelled')
+                return
 
         self.calibrationdata = np.zeros((6*self.NS+3*self.ND, 6))
         ii=0
