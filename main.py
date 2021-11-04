@@ -195,6 +195,10 @@ class appnog(qtw.QMainWindow):
 
 
     def calibration(self):
+        os.chdir(root)
+        if 'sensors' not in os.listdir():
+            os.mkdir('sensors')
+        os.chdir('sensors')
         device = dn.dev[self.ui.comboBox.currentIndex()]
         
         
@@ -205,6 +209,7 @@ class appnog(qtw.QMainWindow):
                                         qtw.QLineEdit.Normal)
         if ok and msg:
             sensor ={'name': msg} 
+            _path = 'rawdata_{}.csv'.format(sensor['name'])
         
         NS, ok = qtw.QInputDialog().getInt(self,    'Sample Length',
                                                     'Number seconds per Position: ',
@@ -242,36 +247,39 @@ class appnog(qtw.QMainWindow):
                             pass
             else:
                 print('cancelled')
-                break
+                return  
             ii+=1
             
             
-
+        print(i)
                 
         ii=0    
         while ii <3:
-            self.showmessage('Rotate Cube Around Axis '+str(ii+1))
-                        
-            print('collecting rotation  '+ str(ii+1))         
-            
-            
-            ti = tf = time.perf_counter()
-            while i<=(6*self.NS+(ii+1)*self.ND):
-                ti=time.perf_counter()
-                if tf-ti>=dn.dt:
-                    ti = tf
-                    try:
-                            self.calibrationdata[i,:] = np.array(dn.pull(device))
-                            i+=1
-                    except Exception as e:
-                            print(e)
-                            self.calibrationdata[i,:] = 0
-                            pass
+            ok = self.showmessage('Rotate Cube Around Axis '+str(ii+1))
+            if ok:        
+                print('collecting rotation  '+ str(ii+1))       
+                ti = tf = time.perf_counter()
+                while i<=(6*self.NS+(ii+1)*self.ND):
+                    ti=time.perf_counter()
+                    if tf-ti>=dn.dt:
+                        ti = tf
+                        try:
+                                self.calibrationdata[i,:] = np.array(dn.pull(device))
+                                i+=1
+                        except Exception as e:
+                                print(e)
+                                self.calibrationdata[i,:] = 6*(0,)
+                                pass
+            else:
+                print('cancelled')
+                return  
             ii+=1
         
                                     
 
         self.calibrationdata = np.array(self.calibrationdata)
+        df = pd.DataFrame(self.calibrationdata)
+        df.to_csv(_path, index=False)
         #self.updatePlot(self.calibrationdata)
         sensor['acc_p'] = dn.calibacc(self.calibrationdata[0:6*self.NS,3:6], self.NS)
         gc.collect()
