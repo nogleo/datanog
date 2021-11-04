@@ -254,7 +254,7 @@ class appnog(qtw.QMainWindow):
                         except Exception as e:
                             print(e)
                             self.calibrationdata[i,:] = 6*(0,)
-                            pass
+                            
             else:
                 print('cancelled')
                 return  
@@ -274,12 +274,12 @@ class appnog(qtw.QMainWindow):
                     if tf-ti>=dn.dt:
                         ti = tf
                         try:
-                                self.calibrationdata[i,:] = np.array(dn.pull(device))
-                                i+=1
+                            self.calibrationdata[i,:] = np.array(dn.pull(device))
+                            i+=1
                         except Exception as e:
-                                print(e)
-                                self.calibrationdata[i,:] = 6*(0,)
-                                pass
+                            print(e)
+                            self.calibrationdata[i,:] = 6*(0,)
+                            
             else:
                 print('cancelled')
                 return  
