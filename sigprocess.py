@@ -9,7 +9,7 @@ from numpy import pi
 from scipy.fftpack import fft, ifft, dct, idct, dst, idst, fftshift, fftfreq
 from numpy import linspace, zeros, array, pi, sin, cos, exp, arange
 import emd 
-#import ssqueezepy as sq
+import ssqueezepy as sq
 fs = 1660
 dt = 1/fs
 def prep_data(df, fs, fc, factor):
@@ -82,14 +82,22 @@ def fix_outlier(_data):
 #     plt.grid()
 
 def PSD(df, fs):
-    f, Pxx = scipy.signal.welch(df, fs, nperseg=fs//4, noverlap=fs//8, window='hann', average='mean', scaling='spectrum', detrend=False, axis=0)
+    f, Pxx = scipy.signal.welch(df, fs, nperseg=fs//4, noverlap=fs//8, window='hann', average='mean', scaling='density', detrend=False, axis=0)
     plt.figure()
     plt.subplot(211)
+    plt.title('Sinal')
+    plt.xlabel('Tempo [s]')
+    plt.ylabel('Amplitude [m/s²]')
+    plt.legend(['Piezo', 'MEMS'])
     plt.plot(df)
     # plt.legend(df.columns)
     plt.subplot(212)
-    plt.semilogx(f, 20*np.log10(abs(Pxx)))
-    plt.xlim((1,fs//2))
+    plt.title('Densidade do Espectro de Potência')
+    plt.plot(f, 20*np.log10(abs(Pxx)))
+    plt.xlim((1,830))
+    plt.xlabel('Frequência [Hz]')
+    plt.ylabel('PSD [(m/s²)²/Hz]')
+    plt.legend(['Piezo', 'MEMS'])
     plt.grid()   
 
 
@@ -258,7 +266,6 @@ def apply_emd(df, fs):
     # emd.plotting.plot_imfs(Ip,t, scale_y=True, cmap=True)
     # emd.plotting.plot_imfs(If,t, scale_y=True, cmap=True)    
     
-'''   
 def WSST(df, fs, ridge_ext = False):
     t = df.index.to_numpy()
     for frame in df.columns:
@@ -267,5 +274,4 @@ def WSST(df, fs, ridge_ext = False):
         vizspect(t, nf, np.abs(Tw), 'WSST - '+frame, ylims=[1, 480])
         if ridge_ext:
            ridge = sq.ridge_extraction.extract_ridges(Tw, bw=4, scales=nf, n_ridges=3)
-'''    
 

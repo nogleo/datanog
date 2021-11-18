@@ -51,7 +51,7 @@ C = pd.read_csv('./PROCDATA/data_{}/C.csv'.format(num), index_col=0)
 
 
 PSD(B, fs)
-PSD(B[['Ax', 'Ay', 'Az']], fs)
+PSD(df[['B_Ax', 'B_Ay', 'B_Az']], fs)
 PSD(np.unwrap(C.rot), fs)
 
 
@@ -132,5 +132,99 @@ emd.plotting.plot_hilberthuang(shht, t, freq_bins, fig=fig,freq_lims=(1, 480), l
 
 
 
+# %%
+num=17
+df = pd.read_csv('DATA/data_{}.csv'.format(num), index_col='t')[['B_Az']]
+dp = pd.read_clipboard(index_col=0)
+dp.columns = ['acc1_x', 'acc1_y', 'acc1_z', 'acc2_x', 'acc2_y', 'acc2_z', 'acc3_x', 'acc3_y', 'acc3_z', 'acc4_x', 'acc4_y', 'acc4_z']
+dp.index.name = 't'
+dp = dp * 9.81
+df.B_Az = (df.B_Az + 9.81 )*-1
+
+ilocs_df = scipy.signal.argrelextrema(abs(df.B_Az.values), np.greater_equal, order=1660*2)[0]
+ilocs_dp = scipy.signal.argrelextrema(abs(dp.acc.values), np.greater_equal, order=3200*2)[0]
+
+plt.figure()
+df.B_Az.plot()
+df.iloc[ilocs_df].B_Az.plot(style='.', lw=10, color='red', marker="v");
+
+dp.acc.plot()
+dp.iloc[ilocs_dp].acc.plot(style='.', lw=10, color='green', marker="v");
+
+
+df.iloc[ilocs_df[0]:ilocs_df[-1]].B_Az.plot()
+dp.iloc[ilocs_dp[0]:ilocs_dp[-1]].acc.plot()
+
+d1 = df.iloc[ilocs_df[0]:ilocs_df[-1]]
+d2 = dp.iloc[ilocs_dp[0]:ilocs_dp[-1]]
+d1.index = d1.index - d1.index[0]
+d2.index = d2.index - d2.index[0]
+d1.B_Az.plot()
+d2.acc.plot()
+
+PSD(d1[:6],1660)
+PSD(d2[:6],3200)
+PSD(dp[0:2],3200)
+
+WSST(d1[:6], 1660)
+WSST(d2[:6], 3200)
+
+
+spect(d1[:6], 1660)
+spect(d2[:6], 3200)
+
+
+ss, tt = scipy.signal.resample(df,10*len(df), t=df.index.to_numpy(), axis=0, window='hann')
+FS = 10*fs
+
+B = imu2body(ss,tt,FS)
+
+
+
+# %% Teste imu vs 4 acc triax
+num_imu = 6
+for num_imu in range(10):
+    df = pd.read_csv('teste12acc/imu_{}.csv'.format(num_imu), index_col='t')[['B_Gx','B_Gy', 'B_Gz', 'B_Ax', 'B_Ay', 'B_Az']]
+    # df.B_Az = df.B_Az - 9.81
+    cmb = np.array([8.0563e-005,	5.983e-004,	-6.8188e-003])
+    Lb = np.array([5.3302e-018, -7.233e-002, 3.12e-002+2.0e-003])
+    posb = Lb-cmb
+    b,a = scipy.signal.cheby1(23, 0.175, 480, fs=fs)
+    S = scipy.signal.filtfilt(b, a, df, axis=0)
+    t = df.index.to_numpy()
+    ss, tt = scipy.signal.resample(S,10*len(S), t=t, axis=0, window='hann')
+    FS = 10*fs
+    B = imu2body(ss, tt, FS, posb)
+    B[['Ax', 'Ay', 'Az']].plot()
+    plt.title('IMU {}'.format(num_imu))
+
+num_acc = 6
+for num_acc in range(8):
+    dp = pd.read_csv('teste12acc/acc12_{}.csv'.format(num_acc), index_col='t')
+    dp = dp * 9.81
+    # dp.plot()
+    rho = [[ -5.016e-002,	4.4227e-002,	  2.87e-002],
+           [ 1.6226e-002,	 5.958e-002,	6.6699e-002],
+           [ 4.1268e-002,	-4.302e-002,	  3.37e-002],
+           [ -4.1268e-002,	-4.302e-002,	  3.37e-002]]
+    
+    C = np.zeros((12,12))
+    for ii in range(4):
+        gg = [[          0, -rho[ii][0], -rho[ii][0],            0,  rho[ii][2], -rho[ii][1],  rho[ii][1],              0,  rho[ii][2]],
+              [-rho[ii][1],           0, -rho[ii][1],  -rho[ii][2],           0,  rho[ii][0],  rho[ii][0],     rho[ii][2],           0],
+              [-rho[ii][2], -rho[ii][2],           0,   rho[ii][1], -rho[ii][0],           0,           0,     rho[ii][1], -rho[ii][0]]]
+        G = np.hstack((np.identity(3), np.array(gg)))
+        C[ii*3:(ii*3)+3,:] = G
+    Cinv = np.linalg.inv(C)
+    S = np.zeros_like(dp.values)
+    
+    for jj in range(len(dp)):
+        A_c = dp.iloc[jj].to_numpy()
+        S[jj] = Cinv@A_c.T
+    
+    state = pd.DataFrame(S, index=dp.index, columns=['acc_x', 'acc_y', 'acc_z', 'p²', 'q²', 'r²', 'p.', 'q.', 'r.', 'pq', 'qr', 'rp'])
+    
+    state[['acc_x', 'acc_y', 'acc_z']].plot()
+    plt.title('ACC {}'.format(num_acc))
 
 
