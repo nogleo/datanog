@@ -9,7 +9,7 @@ from numpy import pi
 from scipy.fftpack import fft, ifft, dct, idct, dst, idst, fftshift, fftfreq
 from numpy import linspace, zeros, array, pi, sin, cos, exp, arange
 import emd 
-import ssqueezepy as sq
+#import ssqueezepy as sq
 fs = 1660
 dt = 1/fs
 def prep_data(df, fs, fc, factor):
