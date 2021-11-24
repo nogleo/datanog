@@ -182,49 +182,61 @@ B = imu2body(ss,tt,FS)
 
 
 # %% Teste imu vs 4 acc triax
-num_imu = 6
+# num_imu = 9
 for num_imu in range(10):
-    df = pd.read_csv('teste12acc/imu_{}.csv'.format(num_imu), index_col='t')[['B_Gx','B_Gy', 'B_Gz', 'B_Ax', 'B_Ay', 'B_Az']]
+    df = pd.read_csv('teste2211/data_{}.csv'.format(num_imu), index_col='t')[['A_Gx','A_Gy', 'A_Gz', 'A_Ax', 'A_Ay', 'A_Az']]
     # df.B_Az = df.B_Az - 9.81
-    cmb = np.array([8.0563e-005,	5.983e-004,	-6.8188e-003])
-    Lb = np.array([5.3302e-018, -7.233e-002, 3.12e-002+2.0e-003])
-    posb = Lb-cmb
-    b,a = scipy.signal.cheby1(23, 0.175, 480, fs=fs)
-    S = scipy.signal.filtfilt(b, a, df, axis=0)
+    # cmb = np.array([8.0563e-005,	5.983e-004,	-6.8188e-003])
+    # Lb = np.array([5.3302e-018, -7.233e-002, 3.12e-002+2.0e-003])
+    # posb = Lb-cmb
+    posb = [-8.0563e-005,	-7.2928e-002,	4.0019e-002,]
+    # b,a = scipy.signal.cheby1(23, 0.175, 480, fs=fs)
+    # S = scipy.signal.filtfilt(b, a, df, axis=0)
+    S=df.to_numpy()
     t = df.index.to_numpy()
     ss, tt = scipy.signal.resample(S,10*len(S), t=t, axis=0, window='hann')
     FS = 10*fs
     B = imu2body(ss, tt, FS, posb)
-    B[['Ax', 'Ay', 'Az']].plot()
+    PSD(B[['Ax', 'Ay', 'Az']], FS)
+    PSD(B[['alx', 'aly', 'alz']], FS)
     plt.title('IMU {}'.format(num_imu))
 
-num_acc = 6
-for num_acc in range(8):
-    dp = pd.read_csv('teste12acc/acc12_{}.csv'.format(num_acc), index_col='t')
+# num_acc = 9
+for num_acc in range(10):
+    dp = pd.read_csv('teste2211/tetra_{}.csv'.format(num_acc),header=None,sep='   ', index_col=0, keep_default_na=False, prefix= 'acc_')[['acc_{}'.format(N) for N in range(3,70,6)]]
+    dp.index.name = 't'
     dp = dp * 9.81
     # dp.plot()
-    rho = [[ -5.016e-002,	4.4227e-002,	  2.87e-002],
-           [ 1.6226e-002,	 5.958e-002,	6.6699e-002],
-           [ 4.1268e-002,	-4.302e-002,	  3.37e-002],
-           [ -4.1268e-002,	-4.302e-002,	  3.37e-002]]
+#     rho =np.array([[-2.8098e-002,	3.3131e-002,	7.0019e-002],
+# 	               [ 1.0146e-002,	5.8982e-002,	 8.039e-002],
+# 	               [4.7067e-002,   -4.4248e-002,	    4.8519e-002],
+# 	               [-3.8802e-002,  -4.3618e-002,	    4.7519e-002]])
     
+    rho = np.array([[ 5.0093e-002,	 4.3560e-002,	 3.5519e-002],
+ 	                [ 4.1802e-002,	-5.4928e-002,	-3.3981e-002],
+ 	                [-4.2797e-002,	-4.4248e-002,	 4.1519e-002],
+ 	                [-4.1703e-002,	 4.3072e-002,	-3.9981e-002]])*20
+	      
+	
     C = np.zeros((12,12))
     for ii in range(4):
-        gg = [[          0, -rho[ii][0], -rho[ii][0],            0,  rho[ii][2], -rho[ii][1],  rho[ii][1],              0,  rho[ii][2]],
-              [-rho[ii][1],           0, -rho[ii][1],  -rho[ii][2],           0,  rho[ii][0],  rho[ii][0],     rho[ii][2],           0],
-              [-rho[ii][2], -rho[ii][2],           0,   rho[ii][1], -rho[ii][0],           0,           0,     rho[ii][1], -rho[ii][0]]]
+        gg = [[         0,  rho[ii,2], -rho[ii,1],           0, -rho[ii,0],  rho[ii,1],  rho[ii,2],  rho[ii,2],          0],
+              [-rho[ii,2],          0,  rho[ii,0],  -rho[ii,1],          0,  rho[ii,0],          0,          0,  rho[ii,2]],
+              [ rho[ii,1], -rho[ii,0],          0,  -rho[ii,2], -rho[ii,2],          0,  rho[ii,0],  rho[ii,0],  rho[ii,1]]]
         G = np.hstack((np.identity(3), np.array(gg)))
         C[ii*3:(ii*3)+3,:] = G
     Cinv = np.linalg.inv(C)
+    Fs = 3200
     S = np.zeros_like(dp.values)
-    
+    b,a = scipy.signal.cheby1(23, 0.175, 300, fs=Fs)
+    Sbk = scipy.signal.filtfilt(b, a, dp, axis=0)
+    # Sbk = dp.values
     for jj in range(len(dp)):
-        A_c = dp.iloc[jj].to_numpy()
-        S[jj] = Cinv@A_c.T
+        S[jj] = (Cinv@Sbk[jj].reshape((12,1))).T
+    state = pd.DataFrame(S, index=dp.index, columns=['acc_x', 'acc_y', 'acc_z', 'p.', 'q.', 'r.', 'p²', 'q²', 'r²', 'pq', 'pr', 'qr'])
     
-    state = pd.DataFrame(S, index=dp.index, columns=['acc_x', 'acc_y', 'acc_z', 'p²', 'q²', 'r²', 'p.', 'q.', 'r.', 'pq', 'qr', 'rp'])
-    
-    state[['acc_x', 'acc_y', 'acc_z']].plot()
+    PSD(state[['acc_x', 'acc_y', 'acc_z']], 3200)
+    PSD(state[['p.', 'q.', 'r.']], 3200)
     plt.title('ACC {}'.format(num_acc))
 
 

@@ -94,7 +94,7 @@ def PSD(df, fs):
     plt.subplot(212)
     plt.title('Densidade do Espectro de Potência')
     plt.plot(f, 20*np.log10(abs(Pxx)))
-    plt.xlim((1,830))
+    plt.xlim((1,1600))
     plt.xlabel('Frequência [Hz]')
     plt.ylabel('PSD [(m/s²)²/Hz]')
     plt.legend(['Piezo', 'MEMS'])
