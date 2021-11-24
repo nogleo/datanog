@@ -118,9 +118,10 @@ class appnog(qtw.QMainWindow):
                     GPIO.output(control_pins[pin], halfstep_seq[halfstep][pin])
                     time.sleep(0.0008
                             )
-            GPIO.cleanup()
+        GPIO.cleanup()
 
     def servogo(self):
+        time.sleep(0.5)
         worker = Worker(self.servorun)
         self.threadpool.start(worker)
         
@@ -298,7 +299,8 @@ class appnog(qtw.QMainWindow):
         while ii <3:
             ok = self.showmessage('Rotate Cube Around Axis '+str(ii+1))
             if ok:        
-                print('collecting rotation  '+ str(ii+1))       
+                print('collecting rotation  '+ str(ii+1))   
+                self.servogo()    
                 ti = tf = time.perf_counter()
                 while i<(6*self.NS+((ii+1)*self.ND)):
                     tf=time.perf_counter()
