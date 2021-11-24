@@ -299,8 +299,8 @@ class appnog(qtw.QMainWindow):
         while ii <3:
             ok = self.showmessage('Rotate Cube Around Axis '+str(ii+1))
             if ok:        
-                print('collecting rotation  '+ str(ii+1))   
                 self.servogo()    
+                print('collecting rotation  '+ str(ii+1))   
                 ti = tf = time.perf_counter()
                 while i<(6*self.NS+((ii+1)*self.ND)):
                     tf=time.perf_counter()
