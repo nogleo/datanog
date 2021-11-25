@@ -189,6 +189,7 @@ class appnog(qtw.QMainWindow):
             print(e)
             pass
         self.canvTF = MatplotlibCanvas(self)
+        self.toolbarTF = Navi(self.canv,self.ui.tab_2)
         self.ui.horizontalLayout.addWidget(self.toolbarTF)
         self.ui.plotLayout.addWidget(self.canvTF)
         t, f, S_db = sp.spect(data, 1660, print=False)
