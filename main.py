@@ -51,6 +51,7 @@ class appnog(qtw.QMainWindow):
         self.ui.linkSensor.setEnabled(False)
         self.ui.calibutton.setEnabled(False)
         self.ui.initbttn.clicked.connect(self.initDevices)
+        self.ui.load_TF.clicked.connect(self.loadTF)
         
         
         self.datacache = []
@@ -157,8 +158,22 @@ class appnog(qtw.QMainWindow):
         self.datacache = pd.read_csv(self.filename, index_col='t')
         self.updatePlot(self.datacache)
         
+    def loadTF(self):
+        os.chdir(root)
+        try:
+            os.chdir('DATA')
+        except :
+            pass
+
+        self.filename = qtw.QFileDialog.getOpenFileName()[0]
+        print("File :", self.filename)
+        self.datacache = pd.read_csv(self.filename, index_col='t')
+        self.ui.combo_TF.addItens(self.datacache.columns)
+        self.plotTF(self.datacache)
+
 
     def plotTF(self, data):
+        
         plt.clf()
         try:
             self.ui.horizontalLayout_TF.removeWidget(self.toolbar)

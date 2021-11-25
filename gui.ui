@@ -263,7 +263,10 @@
              </widget>
             </item>
             <item>
-             <spacer name="horizontalSpacer_2">
+             <widget class="QComboBox" name="combo_TF"/>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_TF">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
