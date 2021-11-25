@@ -177,7 +177,7 @@ class appnog(qtw.QMainWindow):
 
 
     def plotTF(self):
-        frame = self.ui.combo_TF.currentText()
+        frame = str(self.ui.combo_TF.currentText())
         data = self.datacache[[frame]]
         plt.clf()
         try:
