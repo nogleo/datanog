@@ -53,7 +53,7 @@ class appnog(qtw.QMainWindow):
         self.ui.initbttn.clicked.connect(self.initDevices)
         self.ui.loadbttn.clicked.connect(self.loadTF)
         
-        self.ui.combo_TF.currentIndexChanged.connect(self.updatePlotTF)
+        self.ui.combo_TF.currentIndexChanged.connect(self.plotTF)
         
         
         self.datacache = []
