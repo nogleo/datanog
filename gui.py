@@ -141,6 +141,9 @@ class Ui_MainWindow(object):
         self.loadbttn = QtWidgets.QPushButton(self.tab_TF)
         self.loadbttn.setObjectName("loadbttn")
         self.horizontalLayout_TF.addWidget(self.loadbttn)
+        self.combo_TF = QtWidgets.QComboBox(self.tab_TF)
+        self.combo_TF.setObjectName("combo_TF")
+        self.horizontalLayout_TF.addWidget(self.combo_TF)
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_TF.addItem(spacerItem2)
         self.verticalLayout_TF.addLayout(self.horizontalLayout_TF)
@@ -181,7 +184,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
         self.horizontalSlider.valueChanged['int'].connect(self.label.setNum)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
