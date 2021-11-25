@@ -191,10 +191,10 @@ class appnog(qtw.QMainWindow):
         self.canvTF = MatplotlibCanvas(self)
         t, f, S_db = sp.spect(data, 1660, print=False)
         self.canvTF.axes.pcolormesh(t, f, S_db, shading='gouraud',  cmap='turbo')
-        self.canvTF.axes.set_title('Time-Frequency')
+        self.canvTF.axes.set_title('Time-Frequency - {}'.format(frame))
         self.canvTF.axes.set_xlabel('Time')
         self.canvTF.axes.set_ylabel('Frequency')
-        self.canvTF.axes.title(frame)
+        
         self.canvTF.draw()
        
     def updatePlot(self, plotdata):
