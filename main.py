@@ -51,7 +51,8 @@ class appnog(qtw.QMainWindow):
         self.ui.linkSensor.setEnabled(False)
         self.ui.calibutton.setEnabled(False)
         self.ui.initbttn.clicked.connect(self.initDevices)
-        self.ui.load_TF.clicked.connect(self.loadTF)
+        self.ui.loadbttn.clicked.connect(self.loadTF)
+        
         self.ui.combo_TF.currentIndexChanged.connect(self.updatePlotTF)
         
         
