@@ -4,7 +4,7 @@ import scipy.signal as signal
 import os
 import time
 import pickle
-
+import sigprocess as sp
 from PyQt5 import QtCore as qtc
 from PyQt5 import QtWidgets as qtw
 from PyQt5 import Qt as qt
@@ -157,7 +157,25 @@ class appnog(qtw.QMainWindow):
         self.datacache = pd.read_csv(self.filename, index_col='t')
         self.updatePlot(self.datacache)
         
-        
+
+    def plotTF(self, data):
+        plt.clf()
+        try:
+            self.ui.horizontalLayout_TF.removeWidget(self.toolbar)
+            self.ui.verticalLayout_TF.removeWidget(self.canv)
+            self.toolbarTF = None
+            self.canvTF = None
+        except Exception as e:
+            print(e)
+            pass
+        self.canvTF = MatplotlibCanvas(self)
+        t, f, S_db = sp.spect(data, 1660)
+        self.canvTF.axes.pcolormesh(t, f, S_db, shading='gouraud',  cmap='turbo')
+        self.canvTF.axes.set_title('Time-Frequency')
+        self.canvTF.axes.set_xlabel('Time')
+        self.canvTF.axes.set_ylabel('Frequency')
+        self.canvTF.axes.title('')
+        self.canvTF.draw()
        
     def updatePlot(self, plotdata):
         plt.clf()

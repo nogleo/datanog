@@ -6,8 +6,8 @@ import pandas as pd
 import scipy.signal as signal
 import scipy.integrate as intg
 from numpy import pi
-from scipy.fftpack import fft, ifft, dct, idct, dst, idst, fftshift, fftfreq
-from numpy import linspace, zeros, array, pi, sin, cos, exp, arange
+from scipy.fftpack import fft, ifft, fftfreq
+from numpy import pi
 import emd 
 #import ssqueezepy as sq
 fs = 1660
@@ -136,19 +136,22 @@ def FDI(data, factor=1, NFFT=fs//4):
 #         plt.tight_layout()
 #         plt.show()
 
-def spect(df,fs, dbmin=80):
+def spect(df,fs, dbmin=80, print=True, freqlims=(1,480)):
     for frame in df:
-        plt.figure()
         f, t, Sxx = scipy.signal.spectrogram(df[frame], fs=fs, axis=0, scaling='spectrum', nperseg=fs//2, noverlap=fs//4, detrend=False, mode='psd', window='hann')
         Sxx[Sxx==0] = 10**(-20)
-        plt.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud',  cmap='turbo',vmax=20*np.log10(abs(Sxx)).max(), vmin=20*np.log10(abs(Sxx)).max()-dbmin)
-        plt.ylim((1, 480))
-        plt.colorbar()
-        plt.title(frame)
-        plt.ylabel('Frequency [Hz]')
-        plt.xlabel('Time [sec]')
-        plt.tight_layout()
-        plt.show()
+        if print==True:
+            plt.figure()
+            plt.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud',  cmap='turbo',vmax=20*np.log10(abs(Sxx)).max(), vmin=20*np.log10(abs(Sxx)).max()-dbmin)
+            plt.ylim(freqlims)
+            plt.colorbar()
+            plt.title(frame)
+            plt.ylabel('Frequency [Hz]')
+            plt.xlabel('Time [sec]')
+            plt.tight_layout()
+            plt.show()
+        else:
+            return t, f, 20*np.log10(abs(Sxx))
 
 
 
