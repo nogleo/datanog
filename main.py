@@ -181,14 +181,16 @@ class appnog(qtw.QMainWindow):
         data = self.datacache[[frame]]
         plt.clf()
         try:
-            self.ui.horizontalLayout_TF.removeWidget(self.toolbar)
-            self.ui.verticalLayout_TF.removeWidget(self.canv)
+            self.ui.horizontalLayout_TF.removeWidget(self.toolbarTF)
+            self.ui.verticalLayout_TF.removeWidget(self.canvTF)
             self.toolbarTF = None
             self.canvTF = None
         except Exception as e:
             print(e)
             pass
         self.canvTF = MatplotlibCanvas(self)
+        self.ui.horizontalLayout.addWidget(self.toolbarTF)
+        self.ui.plotLayout.addWidget(self.canvTF)
         t, f, S_db = sp.spect(data, 1660, print=False)
         self.canvTF.axes.pcolormesh(t, f, S_db, shading='gouraud',  cmap='turbo')
         self.canvTF.axes.set_title('Time-Frequency - {}'.format(frame))
