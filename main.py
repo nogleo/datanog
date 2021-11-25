@@ -52,6 +52,7 @@ class appnog(qtw.QMainWindow):
         self.ui.calibutton.setEnabled(False)
         self.ui.initbttn.clicked.connect(self.initDevices)
         self.ui.load_TF.clicked.connect(self.loadTF)
+        self.ui.combo_TF.currentIndexChanged.connect(self.updatePlotTF)
         
         
         self.datacache = []
@@ -169,11 +170,11 @@ class appnog(qtw.QMainWindow):
         print("File :", self.filename)
         self.datacache = pd.read_csv(self.filename, index_col='t')
         self.ui.combo_TF.addItens(self.datacache.columns)
-        self.plotTF(self.datacache)
+        self.plotTF()
 
 
-    def plotTF(self, data):
-        
+    def plotTF(self):
+        frame = self.ui.combo_TF.currentText()
         plt.clf()
         try:
             self.ui.horizontalLayout_TF.removeWidget(self.toolbar)
@@ -184,12 +185,12 @@ class appnog(qtw.QMainWindow):
             print(e)
             pass
         self.canvTF = MatplotlibCanvas(self)
-        t, f, S_db = sp.spect(data, 1660)
+        t, f, S_db = sp.spect(self.datacache[[frame]], 1660)
         self.canvTF.axes.pcolormesh(t, f, S_db, shading='gouraud',  cmap='turbo')
         self.canvTF.axes.set_title('Time-Frequency')
         self.canvTF.axes.set_xlabel('Time')
         self.canvTF.axes.set_ylabel('Frequency')
-        self.canvTF.axes.title('')
+        self.canvTF.axes.title(frame)
         self.canvTF.draw()
        
     def updatePlot(self, plotdata):
