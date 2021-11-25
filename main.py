@@ -189,7 +189,7 @@ class appnog(qtw.QMainWindow):
             print(e)
             pass
         self.canvTF = MatplotlibCanvas(self)
-        t, f, S_db = sp.spect(data, 1660)
+        t, f, S_db = sp.spect(data, 1660, print=False)
         self.canvTF.axes.pcolormesh(t, f, S_db, shading='gouraud',  cmap='turbo')
         self.canvTF.axes.set_title('Time-Frequency')
         self.canvTF.axes.set_xlabel('Time')
