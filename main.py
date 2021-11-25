@@ -170,7 +170,9 @@ class appnog(qtw.QMainWindow):
         self.filename = qtw.QFileDialog.getOpenFileName()[0]
         print("File :", self.filename)
         self.datacache = pd.read_csv(self.filename, index_col='t')
-        self.ui.combo_TF.addItens(self.datacache.columns)
+        for item in self.datacache.columns:
+            self.ui.combo_TF.addItem(item)
+        self.ui.combo_TF.setCurrentIndex(0)
         self.plotTF()
 
 
