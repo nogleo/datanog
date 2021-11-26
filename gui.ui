@@ -265,7 +265,7 @@
      </attribute>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout">
+       <layout class="QVBoxLayout" name="verticalLayout_TF">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_TF">
           <item>
