@@ -200,8 +200,8 @@ class appnog(qtw.QMainWindow):
         self.canvTF.axes.set_title('Time-Frequency - {}'.format(frame))
         self.canvTF.axes.set_xlabel('Time')
         self.canvTF.axes.set_ylabel('Frequency')
-        self.canvTF.fig.tight_layout()
         self.canvTF.draw()
+        self.canvTF.fig.tight_layout()
        
     def updatePlot(self, plotdata):
         plt.clf()
