@@ -193,8 +193,8 @@ class appnog(qtw.QMainWindow):
             pass
         self.canvTF = MatplotlibCanvas(self)
         self.toolbarTF = Navi(self.canvTF,self.ui.tab_TF)
-        self.ui.verticalLayout_TF.addWidget(self.canvTF)
         self.ui.horizontalLayout_TF.addWidget(self.toolbarTF)
+        self.ui.verticalLayout_TF.addWidget(self.canvTF)
         t, f, S_db = sp.spect(data, 1660, print=False)
         self.canvTF.axes.pcolormesh(t, f, S_db, shading='gouraud',  cmap='turbo')
         self.canvTF.axes.set_title('Time-Frequency - {}'.format(frame))
