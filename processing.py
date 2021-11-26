@@ -182,26 +182,27 @@ B = imu2body(ss,tt,FS)
 
 
 # %% Teste imu vs 4 acc triax
-# num_imu = 9
+# num_imu = 7
 for num_imu in range(10):
     df = pd.read_csv('teste2211/data_{}.csv'.format(num_imu), index_col='t')[['A_Gx','A_Gy', 'A_Gz', 'A_Ax', 'A_Ay', 'A_Az']]
     # df.B_Az = df.B_Az - 9.81
     # cmb = np.array([8.0563e-005,	5.983e-004,	-6.8188e-003])
     # Lb = np.array([5.3302e-018, -7.233e-002, 3.12e-002+2.0e-003])
     # posb = Lb-cmb
-    posb = [-8.0563e-005,	-7.2928e-002,	4.0019e-002,]
-    # b,a = scipy.signal.cheby1(23, 0.175, 480, fs=fs)
-    # S = scipy.signal.filtfilt(b, a, df, axis=0)
-    S=df.to_numpy()
+    posb = [-8.0563e-005	, -7.2928e-002,  4.1019e-002]
+    b,a = scipy.signal.cheby1(23, 0.175, 480, fs=fs)
+    S = scipy.signal.filtfilt(b, a, df, axis=0)
+    # S=df.to_numpy()
     t = df.index.to_numpy()
-    ss, tt = scipy.signal.resample(S,10*len(S), t=t, axis=0, window='hann')
-    FS = 10*fs
+    ss, tt = scipy.signal.resample(S,15*len(S), t=t, axis=0, window='hann')
+    FS = 15*fs
     B = imu2body(ss, tt, FS, posb)
     PSD(B[['Ax', 'Ay', 'Az']], FS)
-    PSD(B[['alx', 'aly', 'alz']], FS)
-    plt.title('IMU {}'.format(num_imu))
+    plt.title('Aceleração Linear - IMU {}'.format(num_imu))
+    PSD(B[['thx', 'thy', 'thz']], FS)
+    plt.title('Acelereção Angular - IMU {}'.format(num_imu))
 
-# num_acc = 9
+# num_acc = 7
 for num_acc in range(10):
     dp = pd.read_csv('teste2211/tetra_{}.csv'.format(num_acc),header=None,sep='   ', index_col=0, keep_default_na=False, prefix= 'acc_')[['acc_{}'.format(N) for N in range(3,70,6)]]
     dp.index.name = 't'
@@ -212,31 +213,46 @@ for num_acc in range(10):
 # 	               [4.7067e-002,   -4.4248e-002,	    4.8519e-002],
 # 	               [-3.8802e-002,  -4.3618e-002,	    4.7519e-002]])
     
-    rho = np.array([[ 5.0093e-002,	 4.3560e-002,	 3.5519e-002],
- 	                [ 4.1802e-002,	-5.4928e-002,	-3.3981e-002],
- 	                [-4.2797e-002,	-4.4248e-002,	 4.1519e-002],
- 	                [-4.1703e-002,	 4.3072e-002,	-3.9981e-002]])*20
+
+    rho = np.array([[-4.3211e-002,	 5.2702e-002	,   -3.3981e-002],
+ 	                [ 5.3941e-002,	 4.6393e-002	,    4.1519e-002],
+ 	                [ 4.3049e-002,	-6.4558e-002	,   -3.6981e-002],
+ 	                [-4.6081e-002,	-4.6196e-002,	 4.8519e-002]])
 	      
 	
     C = np.zeros((12,12))
     for ii in range(4):
-        gg = [[         0,  rho[ii,2], -rho[ii,1],           0, -rho[ii,0],  rho[ii,1],  rho[ii,2],  rho[ii,2],          0],
-              [-rho[ii,2],          0,  rho[ii,0],  -rho[ii,1],          0,  rho[ii,0],          0,          0,  rho[ii,2]],
-              [ rho[ii,1], -rho[ii,0],          0,  -rho[ii,2], -rho[ii,2],          0,  rho[ii,0],  rho[ii,0],  rho[ii,1]]]
+        gg = [[         0,  rho[ii,2], -rho[ii,1],           0, -rho[ii,0], -rho[ii,0],  rho[ii,1],  rho[ii,2],          0],
+              [-rho[ii,2],          0,  rho[ii,0],  -rho[ii,1],          0, -rho[ii,1],  rho[ii,0],          0,  rho[ii,2]],
+              [ rho[ii,1], -rho[ii,0],          0,  -rho[ii,2], -rho[ii,2],          0,          0,  rho[ii,0],  rho[ii,1]]]
         G = np.hstack((np.identity(3), np.array(gg)))
         C[ii*3:(ii*3)+3,:] = G
     Cinv = np.linalg.inv(C)
     Fs = 3200
     S = np.zeros_like(dp.values)
-    b,a = scipy.signal.cheby1(23, 0.175, 300, fs=Fs)
+    b,a = scipy.signal.cheby1(23, 0.175, 480, fs=Fs)
     Sbk = scipy.signal.filtfilt(b, a, dp, axis=0)
     # Sbk = dp.values
     for jj in range(len(dp)):
         S[jj] = (Cinv@Sbk[jj].reshape((12,1))).T
     state = pd.DataFrame(S, index=dp.index, columns=['acc_x', 'acc_y', 'acc_z', 'p.', 'q.', 'r.', 'p²', 'q²', 'r²', 'pq', 'pr', 'qr'])
     
-    PSD(state[['acc_x', 'acc_y', 'acc_z']], 3200)
-    PSD(state[['p.', 'q.', 'r.']], 3200)
-    plt.title('ACC {}'.format(num_acc))
+    PSD(state[['acc_x', 'acc_y', 'acc_z']], Fs)
+    # plt.title('Aceleração Linear - ACC {}'.format(num_acc))
+    # PSD(state[['p.', 'q.', 'r.']], Fs)
+    # plt.title('Aceleração Angular - ACC {}'.format(num_acc))
+    # PSD(FDI(FDI(state[['acc_x', 'acc_y', 'acc_z']].to_numpy(), NFFT=Fs//4), NFFT=Fs//4),Fs)
+    # PSD(FDI(FDI(state[['p.', 'q.', 'r.']].to_numpy(), NFFT=Fs//4), NFFT=Fs//4),Fs)
 
 
+
+# %%
+
+d1= pd.read_csv('DATA/gangorra.csv', header=None,sep='   ', index_col=0, keep_default_na=False)[[3,9,15]]
+d1.columns = ['acc_x', 'acc_y', 'acc_z']
+d1.index.name = 't'
+d1 = d1 * 9.81
+
+
+d2 = pd.read_csv('DATA/data_10.csv')
+ss, tt = scipy.signal.resample(d2[['B_Gz']].to_numpy(),15*len(d2), t=d2.index, axis=0, window='hann')

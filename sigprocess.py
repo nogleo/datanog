@@ -6,8 +6,8 @@ import pandas as pd
 import scipy.signal as signal
 import scipy.integrate as intg
 from numpy import pi
-from scipy.fftpack import fft, ifft, fftfreq
-from numpy import pi
+from scipy.fftpack import fft, ifft, dct, idct, dst, idst, fftshift, fftfreq
+from numpy import linspace, zeros, array, pi, sin, cos, exp, arange
 import emd 
 #import ssqueezepy as sq
 fs = 1660
@@ -87,17 +87,17 @@ def PSD(df, fs):
     plt.subplot(211)
     plt.title('Sinal')
     plt.xlabel('Tempo [s]')
-    plt.ylabel('Amplitude [m/s²]')
-    plt.legend(['Piezo', 'MEMS'])
+    plt.ylabel('Amplitude')
+    # plt.legend(['Piezo', 'MEMS'])
     plt.plot(df)
     # plt.legend(df.columns)
     plt.subplot(212)
     plt.title('Densidade do Espectro de Potência')
     plt.plot(f, 20*np.log10(abs(Pxx)))
-    plt.xlim((1,1600))
+    plt.xlim((1,480))
     plt.xlabel('Frequência [Hz]')
-    plt.ylabel('PSD [(m/s²)²/Hz]')
-    plt.legend(['Piezo', 'MEMS'])
+    plt.ylabel('PSD [(unid)²/Hz]')
+    # plt.legend(['Piezo', 'MEMS'])
     plt.grid()   
 
 
@@ -136,22 +136,19 @@ def FDI(data, factor=1, NFFT=fs//4):
 #         plt.tight_layout()
 #         plt.show()
 
-def spect(df,fs, dbmin=80, print=True, freqlims=(1,480)):
+def spect(df,fs, dbmin=80):
     for frame in df:
+        plt.figure()
         f, t, Sxx = scipy.signal.spectrogram(df[frame], fs=fs, axis=0, scaling='spectrum', nperseg=fs//2, noverlap=fs//4, detrend=False, mode='psd', window='hann')
         Sxx[Sxx==0] = 10**(-20)
-        if print==True:
-            plt.figure()
-            plt.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud',  cmap='turbo',vmax=20*np.log10(abs(Sxx)).max(), vmin=20*np.log10(abs(Sxx)).max()-dbmin)
-            plt.ylim(freqlims)
-            plt.colorbar()
-            plt.title(frame)
-            plt.ylabel('Frequency [Hz]')
-            plt.xlabel('Time [sec]')
-            plt.tight_layout()
-            plt.show()
-        else:
-            return t, f, 20*np.log10(abs(Sxx))
+        plt.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud',  cmap='turbo',vmax=20*np.log10(abs(Sxx)).max(), vmin=20*np.log10(abs(Sxx)).max()-dbmin)
+        plt.ylim((1, 480))
+        plt.colorbar()
+        plt.title(frame)
+        plt.ylabel('Frequency [Hz]')
+        plt.xlabel('Time [sec]')
+        plt.tight_layout()
+        plt.show()
 
 
 
