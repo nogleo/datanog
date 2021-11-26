@@ -92,6 +92,7 @@ class appnog(qtw.QMainWindow):
     def pull(self):
         for _dev in self.devsens:
             dn.config(_dev[0])
+            time.sleep(dn.dt)
         dn.savedata(dn.pulldata(self.ui.label.text()))
         
         self.ui.startbutton.setEnabled(True)
