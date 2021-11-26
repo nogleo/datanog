@@ -90,8 +90,9 @@ class appnog(qtw.QMainWindow):
         self.ui.calibutton.setEnabled(True)
 
     def pull(self):
-        dn = nog.daq()
-        data = dn.savedata(dn.pulldata(self.ui.label.text()))
+        for _dev in self.devsens:
+            dn.config(_dev[0])
+        dn.savedata(dn.pulldata(self.ui.label.text()))
         
         self.ui.startbutton.setEnabled(True)
 

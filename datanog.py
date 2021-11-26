@@ -72,6 +72,8 @@ class daq:
                 self.bus.write_i2c_block_data(_device, _settings[0], _settings[1])
             except Exception as e:
                     print("ERROR: ",e)
+        else:
+            pass
         
 
     def pull(self, _device):
