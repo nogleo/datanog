@@ -19,7 +19,7 @@ import gc
 root = os.getcwd()
 
 class MatplotlibCanvas(FigureCanvasQTAgg):
-    def __init__(self,parent=None, dpi = 80):
+    def __init__(self,parent=None, dpi = 50):
         self.fig = Figure(dpi = dpi)
         self.axes = self.fig.add_subplot(111)
         super(MatplotlibCanvas,self).__init__(self.fig)
@@ -184,17 +184,17 @@ class appnog(qtw.QMainWindow):
         data = self.datacache[[frame]]
         plt.clf()
         try:
-            #self.ui.horizontalLayout_TF.removeWidget(self.toolbarTF)
+            self.ui.horizontalLayout_TF.removeWidget(self.toolbarTF)
             self.ui.verticalLayout_TF.removeWidget(self.canvTF)
-            #self.toolbarTF = None
-            self.canvTF = None
         except Exception as e:
-            print(e)
+            print('warning =>> '+str(e))
+            self.toolbarTF = None
+            self.canvTF = None
             pass
         self.canvTF = MatplotlibCanvas(self)
-        #self.toolbarTF = Navi(self.canvTF,self.ui.tab_TF)
-        #self.ui.horizontalLayout_TF.addWidget(self.toolbarTF)
+        self.toolbarTF = Navi(self.canvTF,self.ui.tab_TF)
         self.ui.verticalLayout_TF.addWidget(self.canvTF)
+        self.ui.horizontalLayout_TF.addWidget(self.toolbarTF)
         t, f, S_db = sp.spect(data, 1660, print=False)
         self.canvTF.axes.pcolormesh(t, f, S_db, shading='gouraud',  cmap='turbo')
         self.canvTF.axes.set_title('Time-Frequency - {}'.format(frame))
