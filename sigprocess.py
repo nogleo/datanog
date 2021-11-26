@@ -81,24 +81,24 @@ def fix_outlier(_data):
 #     plt.xlim((1,415))
 #     plt.grid()
 
-def PSD(df, fs):
+def PSD(df, fs, units='unid.'):
     f, Pxx = scipy.signal.welch(df, fs, nperseg=fs//4, noverlap=fs//8, window='hann', average='mean', scaling='density', detrend=False, axis=0)
     plt.figure()
     plt.subplot(211)
     plt.title('Sinal')
     plt.xlabel('Tempo [s]')
-    plt.ylabel('Amplitude')
-    # plt.legend(['Piezo', 'MEMS'])
+    plt.ylabel('Amplitude [{}]'.format(units))
     plt.plot(df)
-    # plt.legend(df.columns)
+    plt.legend(df.columns)
     plt.subplot(212)
     plt.title('Densidade do Espectro de Potência')
     plt.plot(f, 20*np.log10(abs(Pxx)))
     plt.xlim((1,480))
     plt.xlabel('Frequência [Hz]')
-    plt.ylabel('PSD [(unid)²/Hz]')
+    plt.ylabel('PSD [({})²/Hz]'.format(units))
     # plt.legend(['Piezo', 'MEMS'])
-    plt.grid()   
+    plt.grid()  
+    plt.tight_layout() 
 
 
 def FDI(data, factor=1, NFFT=fs//4):
@@ -136,20 +136,22 @@ def FDI(data, factor=1, NFFT=fs//4):
 #         plt.tight_layout()
 #         plt.show()
 
-def spect(df,fs, dbmin=80):
+def spect(df,fs, dbmin=80, print=True, freqlims=(1,480)):
     for frame in df:
-        plt.figure()
         f, t, Sxx = scipy.signal.spectrogram(df[frame], fs=fs, axis=0, scaling='spectrum', nperseg=fs//2, noverlap=fs//4, detrend=False, mode='psd', window='hann')
         Sxx[Sxx==0] = 10**(-20)
-        plt.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud',  cmap='turbo',vmax=20*np.log10(abs(Sxx)).max(), vmin=20*np.log10(abs(Sxx)).max()-dbmin)
-        plt.ylim((1, 480))
-        plt.colorbar()
-        plt.title(frame)
-        plt.ylabel('Frequency [Hz]')
-        plt.xlabel('Time [sec]')
-        plt.tight_layout()
-        plt.show()
-
+        if print==True:
+            plt.figure()
+            plt.pcolormesh(t, f, 20*np.log10(abs(Sxx)), shading='gouraud',  cmap='turbo',vmax=20*np.log10(abs(Sxx)).max(), vmin=20*np.log10(abs(Sxx)).max()-dbmin)
+            plt.ylim(freqlims)
+            plt.colorbar()
+            plt.title(frame)
+            plt.ylabel('Frequency [Hz]')
+            plt.xlabel('Time [sec]')
+            plt.tight_layout()
+            plt.show()
+        else:
+            return t, f, 20*np.log10(abs(Sxx))
 
 
     
