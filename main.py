@@ -223,7 +223,7 @@ class appnog(qtw.QMainWindow):
         try:        
                        
             ax.plot(plotdata)
-            ax.legend(self.data.columns)            
+            ax.legend(plotdata.columns)            
             
 
         except Exception as e:
