@@ -19,11 +19,11 @@ import gc
 root = os.getcwd()
 
 class MatplotlibCanvas(FigureCanvasQTAgg):
-    def __init__(self,parent=None, dpi = 100):
-        fig = Figure(dpi = dpi)
-        self.axes = fig.add_subplot(111)
-        super(MatplotlibCanvas,self).__init__(fig)
-        fig.tight_layout()
+    def __init__(self,parent=None, dpi = 120):
+        self.fig = Figure(dpi = dpi)
+        self.axes = self.fig.add_subplot(111)
+        super(MatplotlibCanvas,self).__init__(self.fig)
+        self.fig.tight_layout()
 
 class Worker(qtc.QRunnable):
     def __init__(self, fn):
@@ -90,6 +90,7 @@ class appnog(qtw.QMainWindow):
         self.ui.calibutton.setEnabled(True)
 
     def pull(self):
+        dn = nog.daq()
         data = dn.savedata(dn.pulldata(self.ui.label.text()))
         
         self.ui.startbutton.setEnabled(True)
@@ -181,23 +182,23 @@ class appnog(qtw.QMainWindow):
         data = self.datacache[[frame]]
         plt.clf()
         try:
-            self.ui.horizontalLayout_TF.removeWidget(self.toolbarTF)
+            #self.ui.horizontalLayout_TF.removeWidget(self.toolbarTF)
             self.ui.verticalLayout_TF.removeWidget(self.canvTF)
-            self.toolbarTF = None
+            #self.toolbarTF = None
             self.canvTF = None
         except Exception as e:
             print(e)
             pass
         self.canvTF = MatplotlibCanvas(self)
-        self.toolbarTF = Navi(self.canvTF,self.ui.tab_TF)
-        self.ui.horizontalLayout_TF.addWidget(self.toolbarTF)
+        #self.toolbarTF = Navi(self.canvTF,self.ui.tab_TF)
+        #self.ui.horizontalLayout_TF.addWidget(self.toolbarTF)
         self.ui.verticalLayout_TF.addWidget(self.canvTF)
         t, f, S_db = sp.spect(data, 1660, print=False)
         self.canvTF.axes.pcolormesh(t, f, S_db, shading='gouraud',  cmap='turbo')
         self.canvTF.axes.set_title('Time-Frequency - {}'.format(frame))
         self.canvTF.axes.set_xlabel('Time')
         self.canvTF.axes.set_ylabel('Frequency')
-        
+        self.canvTF.fig.tight_layout()
         self.canvTF.draw()
        
     def updatePlot(self, plotdata):
