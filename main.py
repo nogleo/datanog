@@ -339,7 +339,7 @@ class appnog(qtw.QMainWindow):
         #self.updatePlot(self.calibrationdata)
         sensor['acc_p'] = dn.calibacc(self.calibrationdata[0:6*self.NS,3:6], self.NS)
         sensor['gyr_p'] = dn.calibgyr(self.calibrationdata[:,0:3], self.NS, self.ND) 
-        sensorframe = pd.DataFrame(sensor, columns=[ 'acc_p', 'gyr_p'], index=False)
+        sensorframe = pd.DataFrame(sensor, columns=[ 'acc_p', 'gyr_p'])
         sensorframe.to_csv('{}.csv'.format(sensor['name']))     
         np.savez(sensor['name'], sensor['gyr_p'], sensor['acc_p'])
         gc.collect()
