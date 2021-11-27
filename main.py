@@ -19,7 +19,7 @@ import gc
 root = os.getcwd()
 
 class MatplotlibCanvas(FigureCanvasQTAgg):
-    def __init__(self,parent=None, dpi = 80):
+    def __init__(self,parent=None, dpi = 250):
         self.fig = Figure(dpi = dpi)
         self.axes = self.fig.add_subplot(111)
         super(MatplotlibCanvas,self).__init__(self.fig)
@@ -208,7 +208,7 @@ class appnog(qtw.QMainWindow):
             print('warning =>> '+str(e))
             pass
         self.canvTF.draw()
-        #self.canvTF.fig.tight_layout()
+        self.canvTF.fig.tight_layout()
        
     def updatePlot(self, plotdata):
         plt.clf()
