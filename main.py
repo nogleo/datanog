@@ -202,11 +202,11 @@ class appnog(qtw.QMainWindow):
         self.canvTF.axes.set_ylabel('Frequency')
         self.canvTF.axes.set_title('Time-Frequency - {}'.format(frame))
         try:
-            self.canvTF.axes.imshow(S_db, aspect='auto', cmap='turbo', extent=[t[0], t[-1], f[0], f[-1]])
+            self.canvTF.axes.pcolormesh(t, f, S_db, shading='gouraud',  cmap='turbo')
+            #self.canvTF.axes.imshow(S_db, aspect='auto', cmap='turbo', extent=[t[0], t[-1], f[0], f[-1]])
         except Exception as e:
             print('warning =>> '+str(e))
             pass
-        #mesh = self.canvTF.axes.pcolormesh(t, f, S_db, shading='gouraud',  cmap='turbo')
         self.canvTF.draw()
         #self.canvTF.fig.tight_layout()
        
