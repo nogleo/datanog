@@ -19,7 +19,7 @@ import gc
 root = os.getcwd()
 
 class MatplotlibCanvas(FigureCanvasQTAgg):
-    def __init__(self,parent=None, dpi = 50):
+    def __init__(self,parent=None, dpi = 80):
         self.fig = Figure(dpi = dpi)
         self.axes = self.fig.add_subplot(111)
         super(MatplotlibCanvas,self).__init__(self.fig)
