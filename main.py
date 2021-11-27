@@ -195,7 +195,7 @@ class appnog(qtw.QMainWindow):
         self.canvTF = MatplotlibCanvas(self)
         self.toolbarTF = Navi(self.canvTF, self.ui.tab_TF)
         self.ui.horizontalLayout_TF.addWidget(self.toolbarTF)
-        self.ui.verticalLayout_TF.addWidget(self.canvTF, 5) 
+        self.ui.verticalLayout_TF.addWidget(self.canvTF) 
         self.canvTF.axes.cla()
         t, f, S_db = sp.spect(data, 1660, print=False)
         self.canvTF.axes.set_xlabel('Time')
