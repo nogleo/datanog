@@ -20,7 +20,7 @@ root = os.getcwd()
 
 class MatplotlibCanvas(FigureCanvasQTAgg):
     def __init__(self,parent=None, dpi = 60):
-        self.fig = Figure(dpi = dpi)
+        self.fig = Figure(figsize=(6,6), tight_layout=True, dpi=dpi)
         self.axes = self.fig.add_subplot(111)
         super(MatplotlibCanvas,self).__init__(self.fig)
         self.fig.tight_layout()
@@ -67,10 +67,12 @@ class appnog(qtw.QMainWindow):
         self.threadpool = qtc.QThreadPool()
         print("Multithreading with maximum %d threads" % self.threadpool.maxThreadCount())
         
-        self.canv = MatplotlibCanvas(self)
         self.toolbar = None
-        self.canvTF = MatplotlibCanvas(self)
+        self.canv = MatplotlibCanvas(self)
+        self.ui.vLayout_plot.addWidget(self.canv)
         self.toolbarTF = None
+        self.canvTF = MatplotlibCanvas(self)
+        self.ui.vLayout_TF.addWidget(self.canvTF)
     def initDevices(self):
         global dn, fs, dt
         dn = nog.daq()
@@ -185,17 +187,17 @@ class appnog(qtw.QMainWindow):
         data = self.datacache[[frame]]
         plt.clf()
         try:
-            self.ui.horizontalLayout_TF.removeWidget(self.toolbarTF)
-            self.ui.verticalLayout_TF.removeWidget(self.canvTF)
+            self.ui.hLayout_TF.removeWidget(self.toolbarTF)
+            self.ui.vLayout_TF.removeWidget(self.canvTF)
             self.toolbarTF = None
-            self.canvTF = MatplotlibCanvas(self)
+            self.canvTF = None
         except Exception as e:
             print('warning =>> '+str(e))
             pass
         self.canvTF = MatplotlibCanvas(self)
-        self.toolbarTF = Navi(self.canvTF, self.ui.tab_TF)
-        self.ui.horizontalLayout_TF.addWidget(self.toolbarTF)
-        self.ui.verticalLayout_TF.addWidget(self.canvTF) 
+        self.toolbarTF = Navi(self.canvTF,None)
+        self.ui.hLayout_TF.addWidget(self.toolbarTF)
+        self.ui.vLayout_TF.addWidget(self.canvTF,10) 
         self.canvTF.axes.cla()
         t, f, S_db = sp.spect(data, 1660, print=False)
         self.canvTF.axes.set_xlabel('Time')
@@ -213,24 +215,23 @@ class appnog(qtw.QMainWindow):
     def updatePlot(self, plotdata):
         plt.clf()
         try:
-            self.ui.horizontalLayout.removeWidget(self.toolbar)
-            self.ui.plotLayout.removeWidget(self.canv)
+            self.ui.hLayout_plot.removeWidget(self.toolbar)
+            self.ui.vLayout_plot.removeWidget(self.canv)
             self.toolbar = None
             self.canv = None
         except Exception as e:
-            print(e)
+            print('warning =>> '+e)
             pass
         self.canv = MatplotlibCanvas(self)
-        self.toolbar = Navi(self.canv,self.ui.tab_2)
-        self.ui.horizontalLayout.addWidget(self.toolbar)
-        self.ui.plotLayout.addWidget(self.canv)
-        self.canv.axes.cla()
-        ax = self.canv.axes
+        self.toolbar = Navi(self.canv,self.ui.tab_plot)
+        self.ui.hLayout_plot.addWidget(self.toolbar)
+        self.ui.vLayout_plot.addWidget(self.canv)
+        self.canv.axes
             
         try:        
                        
-            ax.plot(plotdata)
-            ax.legend(plotdata.columns)            
+            self.canv.axes.plot(plotdata)
+            self.canv.axes.legend(plotdata.columns)            
             
 
         except Exception as e:
