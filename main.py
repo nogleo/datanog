@@ -19,7 +19,7 @@ import gc
 root = os.getcwd()
 
 class MatplotlibCanvas(FigureCanvasQTAgg):
-    def __init__(self,parent=None, dpi = 250):
+    def __init__(self,parent=None, dpi = 60):
         self.fig = Figure(dpi = dpi)
         self.axes = self.fig.add_subplot(111)
         super(MatplotlibCanvas,self).__init__(self.fig)
@@ -188,7 +188,7 @@ class appnog(qtw.QMainWindow):
             self.ui.horizontalLayout_TF.removeWidget(self.toolbarTF)
             self.ui.verticalLayout_TF.removeWidget(self.canvTF)
             self.toolbarTF = None
-            self.canvTF = None
+            self.canvTF = MatplotlibCanvas(self)
         except Exception as e:
             print('warning =>> '+str(e))
             pass
