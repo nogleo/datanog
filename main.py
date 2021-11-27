@@ -19,7 +19,7 @@ import gc
 root = os.getcwd()
 
 class MatplotlibCanvas(FigureCanvasQTAgg):
-    def __init__(self,parent=None, dpi = 120, width = 5, height = 4):
+    def __init__(self,parent=None, dpi = 50):
         self.fig = Figure(dpi = dpi)
         self.axes = self.fig.add_subplot(111)
         super(MatplotlibCanvas,self).__init__(self.fig)
@@ -69,7 +69,8 @@ class appnog(qtw.QMainWindow):
         
         self.canv = MatplotlibCanvas(self)
         self.toolbar = None
-
+        self.canvTF = MatplotlibCanvas(self)
+        self.toolbarTF = None
     def initDevices(self):
         global dn, fs, dt
         dn = nog.daq()
@@ -186,22 +187,28 @@ class appnog(qtw.QMainWindow):
         try:
             self.ui.horizontalLayout_TF.removeWidget(self.toolbarTF)
             self.ui.verticalLayout_TF.removeWidget(self.canvTF)
-        except Exception as e:
-            print('warning =>> '+str(e))
             self.toolbarTF = None
             self.canvTF = None
+        except Exception as e:
+            print('warning =>> '+str(e))
             pass
         self.canvTF = MatplotlibCanvas(self)
-        self.toolbarTF = Navi(self.canvTF,self.ui.tab_TF)
+        self.toolbarTF = Navi(self.canvTF, self.ui.tab_TF)
         self.ui.horizontalLayout_TF.addWidget(self.toolbarTF)
-        self.ui.verticalLayout_TF.addWidget(self.canvTF)
+        self.ui.verticalLayout_TF.addWidget(self.canvTF, 5) 
+        self.canvTF.axes.cla()
         t, f, S_db = sp.spect(data, 1660, print=False)
-        self.canvTF.axes.pcolormesh(t, f, S_db, shading='gouraud',  cmap='turbo')
-        self.canvTF.axes.set_title('Time-Frequency - {}'.format(frame))
         self.canvTF.axes.set_xlabel('Time')
         self.canvTF.axes.set_ylabel('Frequency')
+        self.canvTF.axes.set_title('Time-Frequency - {}'.format(frame))
+        try:
+            self.canvTF.axes.imshow(S_db, aspect='auto', cmap='turbo', extent=[t[0], t[-1], f[0], f[-1]])
+        except Exception as e:
+            print('warning =>> '+str(e))
+            pass
+        #mesh = self.canvTF.axes.pcolormesh(t, f, S_db, shading='gouraud',  cmap='turbo')
         self.canvTF.draw()
-        self.canvTF.fig.tight_layout()
+        #self.canvTF.fig.tight_layout()
        
     def updatePlot(self, plotdata):
         plt.clf()
