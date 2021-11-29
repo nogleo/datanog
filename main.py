@@ -19,7 +19,7 @@ import gc
 root = os.getcwd()
 
 class MatplotlibCanvas(FigureCanvasQTAgg):
-    def __init__(self,parent=None, dpi = 60):
+    def __init__(self,parent=None, dpi = 50):
         self.fig = Figure(figsize=(6,6), tight_layout=True, dpi=dpi)
         self.axes = self.fig.add_subplot(111)
         super(MatplotlibCanvas,self).__init__(self.fig)
@@ -187,15 +187,15 @@ class appnog(qtw.QMainWindow):
         data = self.datacache[[frame]]
         plt.clf()
         try:
-            self.ui.hLayout_TF.removeWidget(self.toolbarTF)
             self.ui.vLayout_TF.removeWidget(self.canvTF)
+            self.ui.hLayout_TF.removeWidget(self.toolbarTF)
             self.toolbarTF = None
             self.canvTF = None
         except Exception as e:
             print('warning =>> '+str(e))
             pass
         self.canvTF = MatplotlibCanvas(self)
-        self.toolbarTF = Navi(self.canvTF,None)
+        self.toolbarTF = Navi(self.canvTF,self.ui.tab_TF)
         self.ui.hLayout_TF.addWidget(self.toolbarTF)
         self.ui.vLayout_TF.addWidget(self.canvTF,10) 
         self.canvTF.axes.cla()
@@ -205,7 +205,7 @@ class appnog(qtw.QMainWindow):
         self.canvTF.axes.set_title('Time-Frequency - {}'.format(frame))
         try:
             self.canvTF.axes.pcolormesh(t, f, S_db, shading='gouraud',  cmap='turbo')
-            #self.canvTF.axes.imshow(S_db, aspect='auto', cmap='turbo', extent=[t[0], t[-1], f[0], f[-1]])
+            self.canvTF.axes.imshow(S_db, aspect='auto', cmap='turbo', extent=[t[0], t[-1], f[0], f[-1]])
         except Exception as e:
             print('warning =>> '+str(e))
             pass
