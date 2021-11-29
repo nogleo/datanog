@@ -196,16 +196,16 @@ class appnog(qtw.QMainWindow):
             pass
         self.canvTF = MatplotlibCanvas(self)
         self.toolbarTF = Navi(self.canvTF,self.ui.tab_TF)
-        self.ui.hLayout_TF.addWidget(self.toolbarTF)
         self.ui.vLayout_TF.addWidget(self.canvTF,10) 
+        self.ui.hLayout_TF.addWidget(self.toolbarTF)
         self.canvTF.axes.cla()
         t, f, S_db = sp.spect(data, 1660, print=False)
         self.canvTF.axes.set_xlabel('Time')
         self.canvTF.axes.set_ylabel('Frequency')
-        self.canvTF.axes.set_title('Time-Frequency - {}'.format(frame))
+        #self.canvTF.axes.set_title('Time-Frequency - {}'.format(frame))
         try:
-            self.canvTF.axes.pcolormesh(t, f, S_db, shading='gouraud',  cmap='turbo')
-            self.canvTF.axes.imshow(S_db, aspect='auto', cmap='turbo', extent=[t[0], t[-1], f[0], f[-1]])
+            #self.canvTF.axes.pcolormesh(t, f, S_db, shading='gouraud',  cmap='turbo')
+            self.canvTF.axes.imshow(np.flip(S_db,axis=0), aspect='auto', cmap='turbo', extent=[t[0], t[-1], f[0], f[-1]])
         except Exception as e:
             print('warning =>> '+str(e))
             pass
@@ -226,7 +226,7 @@ class appnog(qtw.QMainWindow):
         self.toolbar = Navi(self.canv,self.ui.tab_plot)
         self.ui.hLayout_plot.addWidget(self.toolbar)
         self.ui.vLayout_plot.addWidget(self.canv)
-        self.canv.axes
+        self.canv.axes.cla()
             
         try:        
                        
