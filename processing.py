@@ -247,12 +247,39 @@ for num_acc in range(10):
 
 
 # %%
-
-d1= pd.read_csv('DATA/gangorra.csv', header=None,sep='   ', index_col=0, keep_default_na=False)[[3,9,15]]
-d1.columns = ['acc_x', 'acc_y', 'acc_z']
+num = 10
+fs1=3200
+d1= pd.read_csv('./301121/teste{}.txt'.format(num), header=None,sep='   ', index_col=0, skiprows=52, keep_default_na=False)[[3,9,15, 21, 27, 33]]
+d1.columns = ['acc0_x', 'acc0_y', 'acc0_z', 'acc1_x', 'acc1_y', 'acc1_z']
 d1.index.name = 't'
-d1 = d1 * 9.81
+# d1 = d1 * 9.81
+d1.plot()
 
+# %%
+d2 = pd.read_csv('./301121/data_{}.csv'.format(num), index_col=0)
+ss, tt = scipy.signal.resample(d2.to_numpy(),10*len(d2), t=d2.index, axis=0, window='hann')
+fs2 = 10*1660
 
-d2 = pd.read_csv('DATA/data_10.csv')
-ss, tt = scipy.signal.resample(d2[['B_Gz']].to_numpy(),15*len(d2), t=d2.index, axis=0, window='hann')
+# d2 = pd.DataFrame(ss[:,1:],columns=['acc0_x', 'acc0_y', 'acc0_z', 'acc1_x', 'acc1_y', 'acc1_z'], index=tt)
+# d2.index.name = 't'
+
+d2=imu2body(ss,tt,fs2)
+
+d2.thz.plot()
+
+th = np.rad2deg(np.unwrap(d2.thz, discont=0))
+
+r1 = np.array([0.05, 0.0, 0.0])
+r2 = np.array([-0.05, 0.0, 0.0])
+
+# %%
+with open('./301121/teste{}.txt'.format(num), encoding='utf8') as f:    
+
+lines = []
+with open('./301121/teste{}.txt'.format(num)) as f:
+    lines = f.readlines()
+
+count = 0yyyyyyyyyy
+for line in lines:
+    count += 1
+    print(f'line {count}: {line}') 
