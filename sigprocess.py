@@ -9,43 +9,66 @@ from numpy import pi
 from scipy.fftpack import fft, ifft, dct, idct, dst, idst, fftshift, fftfreq
 from numpy import linspace, zeros, array, pi, sin, cos, exp, arange
 import emd 
-#import ssqueezepy as sq
+import ssqueezepy as sq
 fs = 1660
 dt = 1/fs
-def prep_data(df, fs, fc, factor):
+def prep_data(df, fs,  factor=1, rotroll=None, fc=None, senslist=None):
     t = df.index.to_numpy()
-    if df.rot.max()>=300.0:
-        df['rot'] = np.deg2rad(df['rot'])
+    if 'rot' in df.columns:        
+        if df.rot.max()>=300.0:
+            df['rot'] = np.deg2rad(df['rot'])
+        df.rot = np.unwrap(df.rot)
+        if fc!= None:
+            b,a = scipy.signal.cheby1(23, 0.175, fc, fs=fs)
+            S = scipy.signal.filtfilt(b, a, df, axis=0)
+        else:
+            S = df.to_numpy()
     
-    df.rot = np.unwrap(df.rot)
-    b,a = scipy.signal.cheby1(23, 0.175, fc, fs=fs)
-    S = scipy.signal.filtfilt(b, a, df, axis=0)
-    # S[:,2:] = freqfilt(S[:,2:], fs, fc)
     ss, tt = scipy.signal.resample(S,factor*len(S), t=t, axis=0, window='hann')
+    df = pd.DataFrame(ss, tt, columns=df.columns)   
+    
+    # S[:,2:] = freqfilt(S[:,2:], fs, fc)
     # ss[:,0] = ss[:,0]%(2*np.pi)
     # ss = ss[100:-100,:]
     # tt = tt[100:-100]
     FS = factor*fs
+    n_start = 0
+    Nq = 0
+    Q = [None,]*len(senslist)
+    if senslist!=None and 'C'in senslist:
+        n_start=+2
+        Q[Nq] = df[['cur','rot']]
+        Nq=+1
+        
+    if senslist!=None and 'A'in senslist:
+        cma = np.array([-4.4019e-004	, 1.2908e-003,	-1.9633e-002])
+        La = np.array([-8.3023e-019, 	-8.1e-002,	-8.835e-002])
+        posa = La-cma
+        Q[Nq] = imu2body(df[df.columns[n_start: n_start+6]].to_numpy(),tt, FS, posa)
+        Nq=+1
+        
+    if senslist!=None and 'B'in senslist:
+        cmb = np.array([8.0563e-005,	5.983e-004,	-6.8188e-003])
+        Lb = np.array([5.3302e-018, -7.233e-002, 3.12e-002+2.0e-003])
+        posb = Lb-cmb
+        Q[Nq] = imu2body(df[df.columns[-6:]].to_numpy(), tt, FS, posb)
+        
     
-    cma = np.array([-4.4019e-004	, 1.2908e-003,	-1.9633e-002])
-    La = np.array([-8.3023e-019, 	-8.1e-002,	-8.835e-002])
-    posa = La-cma
-    cmb = np.array([8.0563e-005,	5.983e-004,	-6.8188e-003])
-    Lb = np.array([5.3302e-018, -7.233e-002, 3.12e-002+2.0e-003])
-    posb = Lb-cmb
     
-    A = imu2body(ss[:,2:8],tt, FS, posa)
-    B = imu2body(ss[:,8:], tt, FS, posb)
-    C = pd.DataFrame({'cur': ss[:,1],'rot': ss[:,0]},tt)
     
-    Q = [A, B, C]
     
     for ii in range(len(Q)):
-        _q, _t = scipy.signal.resample(Q[ii], len(Q[ii])//factor, t=Q[ii].index, axis=0, window='hann')
-        Q[ii] = pd.DataFrame(_q,_t, columns=Q[ii].columns)
-    A, B, C = Q
-    C['rot'] = C['rot']%(2*np.pi)
-    return A, B, C, FS/factor
+        try:
+            _q, _t = scipy.signal.resample(Q[ii], len(Q[ii])//factor, t=Q[ii].index, axis=0, window='hann')
+            Q[ii] = pd.DataFrame(_q,_t, columns=Q[ii].columns)
+        except:
+            print(Exception)
+        if 'rot'in Q[ii].columns:
+            Q[ii]['rot'] = Q[ii]['rot']%(2*np.pi)
+        
+   
+    
+    return Q
    
 
 def freqfilt(data, fs, fc):
@@ -81,24 +104,26 @@ def fix_outlier(_data):
 #     plt.xlim((1,415))
 #     plt.grid()
 
-def PSD(df, fs, units='unid.'):
+def PSD(df, fs, units='unid.', fig=None, line='-', linewidth=1, S_ref=1):
     f, Pxx = scipy.signal.welch(df, fs, nperseg=fs//4, noverlap=fs//8, window='hann', average='mean', scaling='density', detrend=False, axis=0)
-    plt.figure()
+    if fig==None:
+        fig=plt.figure()
     plt.subplot(211)
-    plt.title('Sinal')
+    # plt.title('Sinal')
     plt.xlabel('Tempo [s]')
     plt.ylabel('Amplitude [{}]'.format(units))
-    plt.plot(df)
+    plt.plot(df, line, linewidth=linewidth)
     plt.legend(df.columns)
+    plt.grid(True, which='both')
     plt.subplot(212)
-    plt.title('Densidade do Espectro de Potência')
-    plt.plot(f, 20*np.log10(abs(Pxx)))
-    plt.xlim((1,480))
+    # plt.title('Densidade do Espectro de Potência')
+    plt.plot(f, 20*np.log10(abs(Pxx/S_ref)))
+    plt.xlim((1,800))
     plt.xlabel('Frequência [Hz]')
-    plt.ylabel('PSD [({})²/Hz]'.format(units))
-    # plt.legend(['Piezo', 'MEMS'])
-    plt.grid()  
+    plt.ylabel('PSD [dB/Hz] ref= {} {}'.format(S_ref,units))
+    plt.grid(True, which='both')  
     plt.tight_layout() 
+    return fig
 
 
 def FDI(data, factor=1, NFFT=fs//4):
@@ -197,7 +222,7 @@ def imu2body(df, t, fs, pos=[0, 0, 0]):
     alpha = FDD(gyr)
     accc = acc + np.cross(gyr,np.cross(gyr,pos)) + np.cross(alpha,pos)
     q0=ahrs.Quaternion(ahrs.common.orientation.acc2q(accc[0]))
-    imu = ahrs.filters.Complementary(acc=accc, gyr=gyr, frequency=fs, q0=q0, gain=0.000001)
+    imu = ahrs.filters.Complementary(acc=accc, gyr=gyr, frequency=fs, q0=q0, gain=0.001)
     theta = ahrs.QuaternionArray(imu.Q).to_angles()
     
     acccc = np.zeros_like(accc)

@@ -199,7 +199,7 @@ class appnog(qtw.QMainWindow):
         self.ui.vLayout_TF.addWidget(self.canvTF,10) 
         self.ui.hLayout_TF.addWidget(self.toolbarTF)
         self.canvTF.axes.cla()
-        t, f, S_db = sp.spect(data, 1660, print=False)
+        t, f, S_db = sp.spect(data, 1666, print=False)
         self.canvTF.axes.set_xlabel('Time')
         self.canvTF.axes.set_ylabel('Frequency')
         #self.canvTF.axes.set_title('Time-Frequency - {}'.format(frame))
