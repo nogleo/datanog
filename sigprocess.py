@@ -10,7 +10,7 @@ from scipy.fftpack import fft, ifft, dct, idct, dst, idst, fftshift, fftfreq
 from numpy import linspace, zeros, array, pi, sin, cos, exp, arange
 import emd 
 import ssqueezepy as sq
-fs = 1660
+fs = 1666
 dt = 1/fs
 def prep_data(df, fs,  factor=1, rotroll=None, fc=None, senslist=None):
     t = df.index.to_numpy()
