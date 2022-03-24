@@ -25,7 +25,7 @@ import emd
 # %%
 
 
-fs = 1660
+fs = 1666
 dt = 1/fs
 
 
