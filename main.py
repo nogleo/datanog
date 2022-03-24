@@ -173,13 +173,13 @@ class appnog(qtw.QMainWindow):
         except :
             pass
 
-        self.filename = qtw.QFileDialog.getOpenFileName()[0]
+        self.filename = qtw.QFileDialog.getOpenFileName(directory='~/datanog/DATA')[0]
         print("File :", self.filename)
         self.datacache = pd.read_csv(self.filename, index_col='t')
         for item in self.datacache.columns:
             self.ui.combo_TF.addItem(item)
         self.ui.combo_TF.setCurrentIndex(0)
-        self.plotTF()
+        #self.plotTF()
 
 
     def plotTF(self):
